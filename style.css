@@ -42,7 +42,6 @@ body {
 .app-frame {
     width: 100%;
     max-width: var(--max-width);
-    min-height: 100vh;
     background: var(--cream);
     display: flex;
     flex-direction: column;
@@ -73,6 +72,16 @@ body {
     color: var(--ink);
     text-decoration: none;
     letter-spacing: 0.01em;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+}
+
+.logo-home-icon {
+    width: 1.05rem;
+    height: 1.05rem;
+    flex-shrink: 0;
+    color: var(--gold-deep);
 }
 
 .site-header--landing {
@@ -117,7 +126,7 @@ main {
     overflow: hidden;
     display: flex;
     align-items: flex-end;
-    background: linear-gradient(160deg, #EFE2C4 0%, #D9BE8C 45%, #B8945A 100%);
+    background: url('home.jpg') center / cover no-repeat;
 }
 
 .hero::before {
