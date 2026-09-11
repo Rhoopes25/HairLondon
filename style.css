@@ -129,6 +129,10 @@ main {
     background: url('home.jpg') center / cover no-repeat;
 }
 
+.hero-frame {
+    padding: 2.25rem 1.25rem 0;
+}
+
 .hero::before {
     content: '';
     position: absolute;
