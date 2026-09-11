@@ -130,7 +130,7 @@ main {
 }
 
 .hero-frame {
-    padding: 3.25rem 2.25rem 0;
+    padding: 1.75rem 1.25rem 0;
 }
 
 .hero::before {
@@ -617,4 +617,46 @@ button:focus-visible,
 .service-option:focus-within {
     outline: 2px solid var(--gold-deep);
     outline-offset: 2px;
+}
+
+.site-header--line-only {
+    padding: 1.1rem 1.25rem;
+    min-height: 4.5rem;
+}
+
+
+/* ---------- Tab bar ---------- */
+
+.tab-bar {
+    position: sticky;
+    bottom: 0;
+    z-index: 20;
+    display: flex;
+    background: rgba(251, 247, 239, 0.97);
+    backdrop-filter: blur(6px);
+    border-top: 1px solid var(--gold-soft);
+    padding: 0.55rem 0.5rem 0.8rem;
+}
+
+.tab-item {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.25rem;
+    text-decoration: none;
+    color: var(--ink-soft);
+    font-size: 0.68rem;
+    letter-spacing: 0.01em;
+    padding: 0.3rem 0;
+}
+
+.tab-item svg {
+    width: 1.3rem;
+    height: 1.3rem;
+}
+
+.tab-item.active {
+    color: var(--gold-deep);
+    font-weight: 500;
 }
