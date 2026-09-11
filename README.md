@@ -27,3 +27,23 @@ Prediction: Nap time, or sometime after the kids are in bed. This tests whether 
 
 Capability (5-second test): "I'm going to show you this for five seconds, then hide it. What do you think this is for?"
 Prediction: "I think this is a site where you can book haircuts." This tests whether the photo of the woman with scissors, plus the name "Hair by London," communicate the site's purpose instantly.
+## 4. Design Justification and First Read
+
+Opening the live site fresh:
+
+Does the landing screen signal the primary capability and fundamental value at first glance, before reading?
+Yes. The photo, the name, and the "Book Now" button are the main content on the screen. There's nothing to read to understand what it's for.
+
+Does every element on the landing screen earn its place, or does anything compete with the primary job?
+No, nothing competes. The other content, links to other pages and social media, is small and minimal, so it doesn't take attention away from the main message.
+
+What information and actions belong together on each screen, and which Gestalt grouping principle communicates that?
+On the Work screen, the photo grid uses proximity, the cards sit close together so they read as one connected portfolio. The reviews live inside their own bordered card, which is common region, a shared boundary that visually separates them from the photos above.
+
+On the Book screen, the service, day, and time sections are separated using proximity and spacing, so each decision stays distinct from the others. Within each section, the individual options (each service card, each day chip, each time slot) share the same visual style, that's similarity, showing they're all the same type of choice within that group.
+
+Do screens 2 and 3 stay on mission, and can you return to the landing screen from everywhere?
+Yes. Both screens stay on mission, Work builds trust, Book handles the actual appointment, so nothing drifts into unrelated content. And yes, you can return to the landing screen from both, the tab bar's Home button is visible on every screen.
+
+What did the AI initially get wrong, skip, or oversimplify, and what did you change?
+The first version of the site relied on a small home link in the header text for navigation, but it wasn't obvious. I pointed this out, and we added a bottom tab bar (Home / Work / Book) visible on every screen, so navigating between screens is easy and clear.
