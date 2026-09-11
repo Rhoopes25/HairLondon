@@ -14,3 +14,16 @@ Home: Its job is to show what the site is for right away: a photo, the name "Hai
 Work: Its job is to let her see real photos of the stylist's work and read reviews before booking. This earned its spot because the whole idea behind the site is trust: she won't book with someone she doesn't already trust, and this screen is what builds that trust. This answers the question: does this screen actually build trust before she books?
 
 Book: Its job is to let her pick a service, day, and time and confirm the appointment. This earned its spot because it's here to show that booking an appointment is simple and easy. This answers the question: is booking quick and clear once she's ready?
+## 3. Feedback Questions & Predictions
+
+Need: "What did you do the last time you needed a haircut or recoloring?"
+Prediction: She'll say nothing worked with her timeline, so she gave up and started wearing her hair in a bun more. This tests whether the Book screen's day/time picker actually lets her find and grab a workable time quickly.
+
+Value: "If you walked into an appointment already trusting the stylist, what's the one word for how that would feel?"
+Prediction: "Calm." This tests whether the portfolio photos on the Work screen build that trust, and whether the site's calm color palette reinforces the feeling.
+
+Persona: "When during your day would you actually have a few free minutes to look something like this up?"
+Prediction: Nap time, or sometime after the kids are in bed. This tests whether the site is simple and clear enough for her to move through it quickly and stress-free in a short window.
+
+Capability (5-second test): "I'm going to show you this for five seconds, then hide it. What do you think this is for?"
+Prediction: "I think this is a site where you can book haircuts." This tests whether the photo of the woman with scissors, plus the name "Hair by London," communicate the site's purpose instantly.
