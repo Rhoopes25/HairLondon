@@ -378,7 +378,7 @@ main {
 
 .service-option:has(input:checked) {
     border-color: var(--gold-deep);
-    background: var(--gold-soft);
+    background: var(--white);
 }
 
 .service-option input {
@@ -395,6 +395,35 @@ main {
 .service-price {
     font-size: 0.8rem;
     color: var(--ink-soft);
+}
+
+.service-check {
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    border: 1.5px solid var(--cream-deep);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-left: 0.7rem;
+    flex-shrink: 0;
+    transition: background 0.15s ease, border-color 0.15s ease;
+}
+
+.service-check::after {
+    content: '\2713';
+    color: var(--white);
+    font-size: 0.75rem;
+    opacity: 0;
+}
+
+.service-option:has(input:checked) .service-check {
+    background: var(--gold-deep);
+    border-color: var(--gold-deep);
+}
+
+.service-option:has(input:checked) .service-check::after {
+    opacity: 1;
 }
 
 .service-label {
@@ -483,14 +512,25 @@ main {
 }
 
 .confirm-summary {
-    font-size: 0.82rem;
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    font-size: 0.85rem;
     color: var(--ink-soft);
-    margin-bottom: 0.9rem;
+    margin-bottom: 1.1rem;
+    padding-bottom: 1rem;
+    border-bottom: 1px solid var(--cream-deep);
 }
 
 .confirm-summary strong {
     color: var(--ink);
     font-weight: 500;
+    font-size: 0.95rem;
+}
+
+.confirm-total-label {
+    font-weight: 500;
+    color: var(--ink);
 }
 
 .confirm-btn {
@@ -512,6 +552,12 @@ main {
 .confirm-btn:hover,
 .confirm-btn:focus-visible {
     background: var(--ink);
+}
+
+.confirm-btn--added {
+    background: var(--gold-deep) !important;
+    color: var(--white) !important;
+    cursor: default;
 }
 
 
