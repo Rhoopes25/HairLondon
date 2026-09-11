@@ -58,7 +58,7 @@ body {
     z-index: 20;
     display: flex;
     align-items: center;
-    justify-content: space-between;
+    justify-content: center;
     padding: 1.1rem 1.25rem;
     background: rgba(251, 247, 239, 0.92);
     backdrop-filter: blur(6px);
@@ -117,7 +117,7 @@ main {
     overflow: hidden;
     display: flex;
     align-items: flex-end;
-    background: url('home.jpg') center / cover no-repeat;
+    background: linear-gradient(160deg, #EFE2C4 0%, #D9BE8C 45%, #B8945A 100%);
 }
 
 .hero::before {
@@ -223,45 +223,42 @@ main {
     max-width: 34ch;
 }
 
-.bubble-grid {
+.work-grid {
     display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 1.1rem 0.85rem;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1rem;
     padding: 1.4rem 1.5rem 0.5rem;
 }
 
-.bubble {
+.work-card {
+    border-radius: 20px;
+    overflow: hidden;
     display: flex;
     flex-direction: column;
-    align-items: center;
-    gap: 0.5rem;
-    text-decoration: none;
-    color: var(--ink);
+    box-shadow: 0 8px 20px rgba(43, 36, 32, 0.1);
 }
 
-.bubble-photo {
+.work-card-photo {
+    position: relative;
+    aspect-ratio: 4 / 5;
+    background: var(--card-bg, linear-gradient(145deg, #EFE2C4, #B8945A));
+}
+
+.work-card-photo img {
+    position: absolute;
+    inset: 0;
     width: 100%;
-    aspect-ratio: 1;
-    border-radius: 50%;
-    background: var(--bubble-bg, linear-gradient(145deg, #EFE2C4, #B8945A));
-    border: 2px solid var(--white);
-    box-shadow: 0 0 0 2px var(--gold-soft);
-    display: flex;
-    align-items: center;
-    justify-content: center;
+    height: 100%;
+    object-fit: cover;
+    display: block;
 }
 
-.bubble-photo svg {
-    width: 38%;
-    height: 38%;
-    opacity: 0.75;
-}
-
-.bubble span {
-    font-size: 0.72rem;
+.work-card figcaption {
     text-align: center;
+    font-size: 0.65rem;
     color: var(--ink-soft);
-    letter-spacing: 0.01em;
+    padding: 0.4rem 0.3rem;
+    letter-spacing: 0.02em;
 }
 
 .reviews {
@@ -273,9 +270,6 @@ main {
 }
 
 .reviews-header {
-    display: flex;
-    align-items: baseline;
-    justify-content: space-between;
     margin-bottom: 0.85rem;
 }
 
@@ -285,9 +279,21 @@ main {
     font-weight: 600;
 }
 
+.review-top {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    margin-bottom: 0.15rem;
+}
+
+.review-top strong {
+    font-weight: 500;
+    color: var(--ink);
+}
+
 .stars {
     color: var(--gold-deep);
-    font-size: 0.85rem;
+    font-size: 0.8rem;
     letter-spacing: 1px;
 }
 
@@ -301,13 +307,6 @@ main {
 .review:first-of-type {
     border-top: none;
     padding-top: 0;
-}
-
-.review strong {
-    display: block;
-    color: var(--ink);
-    font-weight: 500;
-    margin-bottom: 0.15rem;
 }
 
 .portfolio-cta {
