@@ -28,39 +28,43 @@
             </section>
 
             <section class="booking-section">
-                <h2>Choose a service</h2>
+                <h2>Choose your services</h2>
                 <div class="service-list">
                     <label class="service-option">
-                        <span class="service-label">
-                            <input type="radio" name="service" value="haircut" data-price="65">
-                            <span class="service-name">Haircut</span>
-                        </span>
+                        <input type="checkbox" name="service" value="haircut" data-price="65" class="service-input">
+                        <span class="service-check" aria-hidden="true"></span>
+                        <span class="service-name">Haircut</span>
                         <span class="service-price">$65</span>
-                        <span class="service-check"></span>
                     </label>
                     <label class="service-option">
-                        <span class="service-label">
-                            <input type="radio" name="service" value="color" data-price="120">
-                            <span class="service-name">Color</span>
-                        </span>
+                        <input type="checkbox" name="service" value="color" data-price="120" class="service-input">
+                        <span class="service-check" aria-hidden="true"></span>
+                        <span class="service-name">Color</span>
                         <span class="service-price">$120</span>
-                        <span class="service-check"></span>
                     </label>
                     <label class="service-option">
-                        <span class="service-label">
-                            <input type="radio" name="service" value="highlights" data-price="150">
-                            <span class="service-name">Highlights</span>
-                        </span>
+                        <input type="checkbox" name="service" value="highlights" data-price="150" class="service-input">
+                        <span class="service-check" aria-hidden="true"></span>
+                        <span class="service-name">Highlights</span>
                         <span class="service-price">$150</span>
-                        <span class="service-check"></span>
                     </label>
                     <label class="service-option">
-                        <span class="service-label">
-                            <input type="radio" name="service" value="cut-color" data-price="170">
-                            <span class="service-name">Cut &amp; Color</span>
-                        </span>
-                        <span class="service-price">$170</span>
-                        <span class="service-check"></span>
+                        <input type="checkbox" name="service" value="blowout" data-price="45" class="service-input">
+                        <span class="service-check" aria-hidden="true"></span>
+                        <span class="service-name">Blowout</span>
+                        <span class="service-price">$45</span>
+                    </label>
+                    <label class="service-option">
+                        <input type="checkbox" name="service" value="root-touch-up" data-price="80" class="service-input">
+                        <span class="service-check" aria-hidden="true"></span>
+                        <span class="service-name">Root Touch-Up</span>
+                        <span class="service-price">$80</span>
+                    </label>
+                    <label class="service-option">
+                        <input type="checkbox" name="service" value="deep-conditioning" data-price="35" class="service-input">
+                        <span class="service-check" aria-hidden="true"></span>
+                        <span class="service-name">Deep Conditioning</span>
+                        <span class="service-price">$35</span>
                     </label>
                 </div>
             </section>
@@ -68,29 +72,24 @@
             <section class="booking-section">
                 <h2>Choose a day</h2>
                 <div class="day-scroll">
-                    <div class="day-chip"><span>Tue</span><span class="day-num">14</span></div>
-                    <div class="day-chip"><span>Wed</span><span class="day-num">15</span></div>
-                    <div class="day-chip"><span>Thu</span><span class="day-num">16</span></div>
-                    <div class="day-chip"><span>Fri</span><span class="day-num">17</span></div>
-                    <div class="day-chip"><span>Sat</span><span class="day-num">18</span></div>
+                    <div class="day-chip" data-day="Tue"><span>Tue</span><span class="day-num">14</span></div>
+                    <div class="day-chip" data-day="Wed"><span>Wed</span><span class="day-num">15</span></div>
+                    <div class="day-chip" data-day="Thu"><span>Thu</span><span class="day-num">16</span></div>
+                    <div class="day-chip" data-day="Fri"><span>Fri</span><span class="day-num">17</span></div>
+                    <div class="day-chip" data-day="Sat"><span>Sat</span><span class="day-num">18</span></div>
                 </div>
             </section>
 
             <section class="booking-section">
                 <h2>Choose a time</h2>
-                <div class="time-grid">
-                    <div class="time-slot">10:00</div>
-                    <div class="time-slot">11:30</div>
-                    <div class="time-slot unavailable">1:00</div>
-                    <div class="time-slot">2:30</div>
-                    <div class="time-slot">4:00</div>
-                    <div class="time-slot unavailable">5:30</div>
+                <div class="time-grid" id="time-grid">
+                    <p class="time-placeholder">Select a day to see available times</p>
                 </div>
             </section>
 
             <div class="confirm-bar">
                 <div class="confirm-summary">
-                    <span id="summary-line">Select a service, day &amp; time</span>
+                    <span id="summary-line">Select services, day &amp; time</span>
                 </div>
                 <div class="confirm-summary" style="border-bottom: none; padding-bottom: 0; margin-bottom: 1.1rem;">
                     <span class="confirm-total-label">Total</span>
@@ -114,75 +113,124 @@
             </div>
             <p>&copy; 2026 Hair by London</p>
         </footer>
-
-
     </div>
 
     <script>
         const state = {
-            service: null,
-            price: null,
+            services: [],
             day: null,
             time: null
         };
+
+        const allTimes = ['10:00', '11:30', '1:00', '2:30', '4:00', '5:30'];
+        const unavailableByDay = {
+            Tue: ['1:00', '5:30'],
+            Wed: ['11:30'],
+            Thu: ['10:00', '5:30'],
+            Fri: ['1:00'],
+            Sat: ['2:30', '5:30']
+        };
+
         const summaryLine = document.getElementById('summary-line');
         const summaryPrice = document.getElementById('summary-price');
         const confirmBtn = document.getElementById('confirm-btn');
+        const timeGrid = document.getElementById('time-grid');
 
         function updateSummary() {
             const parts = [];
-            if (state.service) parts.push(state.service);
+            if (state.services.length) parts.push(state.services.map(s => s.name).join(' + '));
             if (state.day) parts.push(state.day);
             if (state.time) parts.push(state.time);
 
             summaryLine.textContent = parts.length ?
                 parts.join(' \u00b7 ') :
-                'Select a service, day & time';
+                'Select services, day & time';
 
-            summaryPrice.textContent = state.price ? '$' + state.price : '\u2014';
+            const total = state.services.reduce((sum, s) => sum + s.price, 0);
+            summaryPrice.textContent = total ? '$' + total : '\u2014';
 
-            const allSelected = state.service && state.day && state.time;
+            const allSelected = state.services.length && state.day && state.time;
             confirmBtn.disabled = !allSelected;
+        }
+
+        function renderTimeSlots(day) {
+            timeGrid.innerHTML = '';
+            const unavailable = unavailableByDay[day] || [];
+
+            allTimes.forEach(time => {
+                const slot = document.createElement('div');
+                const isUnavailable = unavailable.includes(time);
+                slot.className = 'time-slot' + (isUnavailable ? ' unavailable' : '');
+                slot.textContent = time;
+
+                if (!isUnavailable) {
+                    slot.addEventListener('click', () => {
+                        const prevSelected = timeGrid.querySelector('.time-slot.selected');
+
+                        if (slot === prevSelected) {
+                            slot.classList.remove('selected');
+                            state.time = null;
+                            updateSummary();
+                            return;
+                        }
+
+                        if (prevSelected) prevSelected.classList.remove('selected');
+                        slot.classList.add('selected');
+                        state.time = time;
+                        updateSummary();
+                    });
+                }
+
+                timeGrid.appendChild(slot);
+            });
         }
 
         document.querySelectorAll('.day-chip').forEach(chip => {
             chip.addEventListener('click', () => {
                 const prevSelected = document.querySelector('.day-chip.selected');
-                if (prevSelected) {
-                    prevSelected.classList.remove('selected');
-                }
-                chip.classList.add('selected');
-                state.day = chip.textContent.trim();
-                updateSummary();
-            });
-        });
 
-        document.querySelectorAll('.time-slot:not(.unavailable)').forEach(slot => {
-            slot.addEventListener('click', () => {
-                const prevSelected = document.querySelector('.time-slot.selected');
-                if (prevSelected) {
-                    prevSelected.classList.remove('selected');
+                if (chip === prevSelected) {
+                    chip.classList.remove('selected');
+                    state.day = null;
+                    state.time = null;
+                    timeGrid.innerHTML = '<p class="time-placeholder">Select a day to see available times</p>';
+                    updateSummary();
+                    return;
                 }
-                slot.classList.add('selected');
-                state.time = slot.textContent.trim();
+
+                if (prevSelected) prevSelected.classList.remove('selected');
+                chip.classList.add('selected');
+
+                state.day = chip.dataset.day;
+                state.time = null;
+                renderTimeSlots(state.day);
                 updateSummary();
             });
         });
 
         document.querySelectorAll('input[name="service"]').forEach(input => {
             input.addEventListener('change', () => {
-                state.service = input.closest('.service-option').querySelector('.service-name').textContent;
-                state.price = input.dataset.price;
+                const name = input.closest('.service-option').querySelector('.service-name').textContent;
+                const price = Number(input.dataset.price);
+
+                if (input.checked) {
+                    state.services.push({
+                        name,
+                        price
+                    });
+                } else {
+                    state.services = state.services.filter(s => s.name !== name);
+                }
                 updateSummary();
             });
         });
+
         confirmBtn.addEventListener('click', () => {
             confirmBtn.textContent = 'Added \u2713';
             confirmBtn.classList.add('confirm-btn--added');
             confirmBtn.disabled = true;
         });
     </script>
-
 </body>
 
 </html>

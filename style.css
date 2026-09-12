@@ -403,7 +403,7 @@ main {
 .service-option {
     display: flex;
     align-items: center;
-    justify-content: space-between;
+    gap: 0.8rem;
     padding: 0.9rem 1.1rem;
     background: var(--white);
     border: 1.5px solid var(--cream-deep);
@@ -417,15 +417,22 @@ main {
     background: var(--white);
 }
 
-.service-option input {
-    accent-color: var(--gold-deep);
-    width: 1.1rem;
-    height: 1.1rem;
+.service-input {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border: 0;
+    margin: -1px;
+    padding: 0;
 }
 
 .service-name {
     font-size: 0.92rem;
     font-weight: 500;
+    flex: 1;
 }
 
 .service-price {
@@ -441,7 +448,6 @@ main {
     display: flex;
     align-items: center;
     justify-content: center;
-    margin-left: 0.7rem;
     flex-shrink: 0;
     transition: background 0.15s ease, border-color 0.15s ease;
 }
@@ -462,11 +468,9 @@ main {
     opacity: 1;
 }
 
-.service-label {
-    display: flex;
-    align-items: center;
-    gap: 0.8rem;
-    flex: 1;
+.service-option:has(input:focus-visible) .service-check {
+    outline: 2px solid var(--gold-deep);
+    outline-offset: 2px;
 }
 
 .day-scroll {
@@ -513,6 +517,14 @@ main {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
     gap: 0.6rem;
+}
+
+.time-placeholder {
+    grid-column: 1 / -1;
+    text-align: center;
+    font-size: 0.85rem;
+    color: var(--ink-soft);
+    padding: 0.5rem 0;
 }
 
 .time-slot {
@@ -654,41 +666,4 @@ button:focus-visible,
 .site-header--line-only {
     padding: 1.1rem 1.25rem;
     min-height: 2.5rem;
-}
-
-
-/* ---------- Tab bar ---------- */
-
-.tab-bar {
-    position: sticky;
-    bottom: 0;
-    z-index: 20;
-    display: flex;
-    background: rgba(251, 247, 239, 0.97);
-    backdrop-filter: blur(6px);
-    border-top: 1px solid var(--gold-soft);
-    padding: 0.55rem 0.5rem 0.8rem;
-}
-
-.tab-item {
-    flex: 1;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 0.25rem;
-    text-decoration: none;
-    color: var(--ink-soft);
-    font-size: 0.68rem;
-    letter-spacing: 0.01em;
-    padding: 0.3rem 0;
-}
-
-.tab-item svg {
-    width: 1.3rem;
-    height: 1.3rem;
-}
-
-.tab-item.active {
-    color: var(--gold-deep);
-    font-weight: 500;
 }
