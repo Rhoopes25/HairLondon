@@ -47,4 +47,4 @@ Do screens 2 and 3 stay on mission, and can you return to the landing screen fro
 Yes. Both screens stay on mission, Work builds trust, Book handles the actual appointment, so nothing drifts into unrelated content. And yes, you can return to the landing screen from both, the top nav's Home link is visible on every screen.
 
 What did the AI initially get wrong, skip, or oversimplify, and what did you change?
-The first version of the site relied on a small home link in the header text for navigation, but it wasn't obvious. I pointed this out, and we added a bottom tab bar (Home / Work / Book) visible on every screen, so navigating between screens is easy and clear.
+The first version of the site relied on a small home link in the header text for navigation, but it wasn't obvious. I pointed this out, and we added a top nav (Home / Work / Book) visible on every screen, so navigating between screens is easy and clear.
