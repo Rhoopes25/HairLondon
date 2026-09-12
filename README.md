@@ -34,7 +34,7 @@ Opening the live site fresh:
 Does the landing screen signal the primary capability and fundamental value at first glance, before reading?
 Yes. The photo, the name, and the "Book Now" button are the main content on the screen. There's nothing to read to understand what it's for.
 
-Does every element on the landing screen earn its place, or does anything compete with the primary job?
+Does every element on the landing screen earn its place, or does anything compete with the primary job? 
 
 No, nothing competes. The other content, the social media icons, is small and minimal, so it doesn't take attention away from the main message.
 
