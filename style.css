@@ -77,6 +77,12 @@ body {
     gap: 0.4rem;
 }
 
+.site-header a.logo svg {
+    width: 1.4rem;
+    height: 1.4rem;
+    color: var(--gold-deep);
+}
+
 .logo-home-icon {
     width: 1.05rem;
     height: 1.05rem;
@@ -86,6 +92,32 @@ body {
 
 .site-header--landing {
     justify-content: center;
+}
+
+.site-header--split {
+    justify-content: space-between;
+}
+
+.header-nav {
+    display: flex;
+    gap: 1.35rem;
+}
+
+.header-nav-link {
+    font-size: 0.95rem;
+    color: var(--ink-soft);
+    text-decoration: none;
+    letter-spacing: 0.01em;
+}
+
+.header-nav-link.active {
+    color: var(--gold-deep);
+    font-weight: 500;
+}
+
+.header-nav-link:hover,
+.header-nav-link:focus-visible {
+    color: var(--gold-deep);
 }
 
 .book-btn {
