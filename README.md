@@ -35,7 +35,8 @@ Does the landing screen signal the primary capability and fundamental value at f
 Yes. The photo, the name, and the "Book Now" button are the main content on the screen. There's nothing to read to understand what it's for.
 
 Does every element on the landing screen earn its place, or does anything compete with the primary job?
-No, nothing competes. The other content, links to other pages and social media, is small and minimal, so it doesn't take attention away from the main message.
+
+No, nothing competes. The other content, the social media icons, is small and minimal, so it doesn't take attention away from the main message.
 
 What information and actions belong together on each screen, and which Gestalt grouping principle communicates that?
 On the Work screen, the photo grid uses proximity, the cards sit close together so they read as one connected portfolio. The reviews live inside their own bordered card, which is common region, a shared boundary that visually separates them from the photos above.
