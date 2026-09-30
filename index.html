@@ -4,33 +4,37 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Hair by London — Book Your Appointment</title>
-    <meta name="description" content="See real client work, check availability, and book your appointment in minutes.">
+    <title>Hair by London | Find a stylist you trust</title>
+    <meta name="description" content="See real client work, compare stylists, and book in minutes.">
     <link rel="stylesheet" href="style.css">
 </head>
 
 <body>
     <div class="app-frame">
         <header class="site-header site-header--split">
-            <a href="index.html" class="logo" aria-label="Hair by London — Home">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="6" cy="6" r="3"/><circle cx="6" cy="18" r="3"/><line x1="20" y1="4" x2="8.12" y2="15.88"/><line x1="14.47" y1="14.48" x2="20" y2="20"/><line x1="8.12" y1="8.12" x2="12" y2="12"/></svg>
+            <a href="index.html" class="logo" aria-label="Hair by London, home">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><circle cx="6" cy="6" r="3"/><circle cx="6" cy="18" r="3"/><line x1="20" y1="4" x2="8.12" y2="15.88"/><line x1="14.47" y1="14.48" x2="20" y2="20"/><line x1="8.12" y1="8.12" x2="12" y2="12"/></svg>
             </a>
-            <nav class="header-nav">
-                <a href="index.html" class="header-nav-link active">Home</a>
-                <a href="portfolio.html" class="header-nav-link">Portfolio</a>
-                <a href="booking.html" class="header-nav-link">Book</a>
+            <nav class="header-nav" aria-label="Main">
+                <a href="index.html" class="header-nav-link active" aria-current="page">Home</a>
+                <a href="stylists.html" class="header-nav-link">Stylists</a>
             </nav>
         </header>
 
         <main>
             <div class="hero-frame">
-                <section class="hero">
+                <section class="hero" aria-label="A stylist holding her shears">
                     <div class="hero-overlay hero-overlay--center">
                         <h1>Hair by London</h1>
-                        <a href="booking.html" class="hero-cta">Book Now</a>
+                        <a href="stylists.html" class="hero-cta">Find a stylist</a>
                     </div>
                 </section>
             </div>
+
+            <section class="booking-section">
+                <h2>What are you booking?</h2>
+                <div class="service-shortcuts" id="service-shortcuts"></div>
+            </section>
         </main>
 
         <footer class="site-footer">
@@ -48,6 +52,22 @@
             <p>&copy; 2026 Hair by London</p>
         </footer>
     </div>
+
+    <script src="data.js"></script>
+    <script>
+        const wrap = document.getElementById('service-shortcuts');
+        Object.entries(SERVICES).forEach(([id, svc]) => {
+            const range = priceRange(id);
+            if (!range) return;
+            const price = range.min === range.max ? '$' + range.min : '$' + range.min + '\u2013' + range.max;
+            const a = document.createElement('a');
+            a.className = 'shortcut';
+            a.href = 'stylists.html?service=' + id;
+            a.innerHTML = '<span class="shortcut-name">' + svc.name + '</span>' +
+                '<span class="shortcut-price">' + price + '</span>';
+            wrap.appendChild(a);
+        });
+    </script>
 </body>
 
 </html>
