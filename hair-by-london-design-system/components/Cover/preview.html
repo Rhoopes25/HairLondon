@@ -1,0 +1,44 @@
+<!-- @dsCard height=288 -->
+<!doctype html><html><head><meta charset="utf-8"><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500&amp;family=Jost:wght@300;400;500;600&amp;display=swap">
+<style>
+html,body{margin:0}
+.cover{position:relative;width:960px;height:288px;overflow:hidden;background:var(--cream);color:var(--ink)}
+svg{position:absolute;left:0;top:0;width:960px;height:288px}
+.text{position:absolute;left:2rem;bottom:2rem;width:440px}
+h1{margin:0;font:italic 500 96px/91px var(--font-display);color:var(--ink)}
+h1 span{display:block}
+p{margin:.6rem 0 0;font:400 14px/20px var(--font-sans);color:var(--ink-soft)}
+.gd{fill:var(--gold-deep)} .g{fill:var(--gold)} .gs{fill:var(--gold-soft)} .ink{fill:var(--ink)}
+.block{rx:var(--radius-xl);ry:var(--radius-xl)}
+.pill{fill:var(--cream);rx:16px;ry:16px}
+.pill-sel{fill:var(--gold-soft);rx:16px;ry:16px}
+.pill-out{fill:none;stroke:var(--cream);stroke-width:2;rx:15px;ry:15px}
+.gpill{fill:var(--gold);rx:16px;ry:16px}
+.gpill-out{fill:none;stroke:var(--gold);stroke-width:2;rx:15px;ry:15px}
+</style></head><body>
+<div class="cover">
+<svg viewBox="0 0 960 288" aria-hidden="true">
+<!-- Blocks: gold-deep 200x240, gold 120x112, gold-soft 120x116, ink 160x200 bleeding off top and right, gold-deep 112x52; corners radius-xl (20px).
+     Arrangement: a tall gold-deep slab with a stepped stack to its right, ending in an ink slab that bleeds off the top-right edge.
+     Pattern: pills (a 2x4 time-slot grid; some filled cream, one gold-soft as the chosen slot, two outlined as unavailable) because the booking screen's time grid and its pill buttons are the brand's signature shapes and the README says "calm, soft".
+     Steps and radii: pitch 48 = 32 pill height + 16 gap; pill radius half the short side (16), matching radius-pill. -->
+<rect class="block gd" x="504" y="24" width="200" height="240"/>
+<rect class="block g" x="716" y="24" width="120" height="112"/>
+<rect class="block gs" x="716" y="148" width="120" height="116"/>
+<rect class="block ink" x="848" y="0" width="160" height="200"/>
+<rect class="block gd" x="848" y="212" width="112" height="52"/>
+<rect class="pill-out" x="517" y="57" width="78" height="30"/>
+<rect class="pill" x="612" y="56" width="80" height="32"/>
+<rect class="pill-sel" x="516" y="104" width="80" height="32"/>
+<rect class="pill" x="612" y="104" width="80" height="32"/>
+<rect class="pill" x="516" y="152" width="80" height="32"/>
+<rect class="pill-out" x="613" y="153" width="78" height="30"/>
+<rect class="pill" x="516" y="200" width="80" height="32"/>
+<rect class="pill" x="612" y="200" width="80" height="32"/>
+<rect class="gpill-out" x="873" y="41" width="78" height="30"/>
+<rect class="gpill" x="872" y="88" width="80" height="32"/>
+<rect class="gpill" x="872" y="136" width="80" height="32"/>
+</svg>
+<div class="text"><h1><span>Hair by</span><span>London</span></h1><p>See the work, then book a time that fits.</p></div>
+</div>
+</body></html>
