@@ -26,15 +26,10 @@
                 <section class="hero" aria-label="A stylist holding her shears">
                     <div class="hero-overlay hero-overlay--center">
                         <h1>Hair by London</h1>
-                        <a href="stylists.html" class="hero-cta">Find a stylist</a>
+                        <a href="services.html" class="hero-cta">Choose a service</a>
                     </div>
                 </section>
             </div>
-
-            <section class="booking-section">
-                <h2>What are you booking?</h2>
-                <div class="service-shortcuts" id="service-shortcuts"></div>
-            </section>
         </main>
 
         <footer class="site-footer">
@@ -52,22 +47,6 @@
             <p>&copy; 2026 Hair by London</p>
         </footer>
     </div>
-
-    <script src="data.js"></script>
-    <script>
-        const wrap = document.getElementById('service-shortcuts');
-        Object.entries(SERVICES).forEach(([id, svc]) => {
-            const range = priceRange(id);
-            if (!range) return;
-            const price = range.min === range.max ? '$' + range.min : '$' + range.min + '\u2013' + range.max;
-            const a = document.createElement('a');
-            a.className = 'shortcut';
-            a.href = 'stylists.html?service=' + id;
-            a.innerHTML = '<span class="shortcut-name">' + svc.name + '</span>' +
-                '<span class="shortcut-price">' + price + '</span>';
-            wrap.appendChild(a);
-        });
-    </script>
 </body>
 
 </html>

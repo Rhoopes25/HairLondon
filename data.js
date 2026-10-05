@@ -140,6 +140,26 @@ function getStylist(id) {
     return STYLISTS.find(s => s.id === id) || null;
 }
 
+// Valid service ids from a comma-separated query param, in listed order
+function parseServiceIds(param) {
+    if (!param) return [];
+    const seen = {};
+    return param.split(',').map(s => s.trim()).filter(id => {
+        if (!SERVICES[id] || seen[id]) return false;
+        seen[id] = true;
+        return true;
+    });
+}
+
+function servicesQuery(ids) {
+    return ids.length ? 'services=' + ids.join(',') : '';
+}
+
+function stylistsOffering(ids) {
+    if (!ids.length) return STYLISTS.slice();
+    return STYLISTS.filter(s => ids.every(id => s.services[id] != null));
+}
+
 function avgRating(stylist) {
     const r = stylist.reviews;
     if (!r.length) return null;

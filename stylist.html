@@ -91,7 +91,19 @@
             throw new Error('Unknown stylist');
         }
 
-        const bookUrl = 'booking.html?stylist=' + stylist.id;
+        const selectedServices = parseServiceIds(params.get('services'));
+        const singleService = SERVICES[params.get('service')] ? params.get('service') : null;
+        if (singleService && !selectedServices.includes(singleService)) selectedServices.push(singleService);
+
+        function bookingHref(extraId) {
+            const ids = selectedServices.slice();
+            if (extraId && !ids.includes(extraId)) ids.push(extraId);
+            let url = 'booking.html?stylist=' + stylist.id;
+            if (ids.length) url += '&' + servicesQuery(ids);
+            return url;
+        }
+
+        const bookUrl = bookingHref();
         document.title = stylist.name + ' | Hair by London';
 
         // Header
@@ -123,7 +135,7 @@
         Object.entries(stylist.services).forEach(([id, price]) => {
             const svc = SERVICES[id];
             rows.insertAdjacentHTML('beforeend',
-                '<a class="service-row" href="' + bookUrl + '&service=' + id + '">' +
+                '<a class="service-row" href="' + bookingHref(id) + '">' +
                 '<span class="service-row-body">' +
                 '<span class="service-name">' + svc.name + '</span>' +
                 '<span class="service-desc">' + svc.description + '</span>' +
@@ -162,7 +174,7 @@
             });
         });
         // Lead with the work, unless there are no photos yet or she came from a service filter
-        selectTab(params.get('service') || !stylist.portfolio.length ? tabs[1] : tabs[0]);
+        selectTab(params.get('service') || params.get('services') || !stylist.portfolio.length ? tabs[1] : tabs[0]);
     </script>
 </body>
 
