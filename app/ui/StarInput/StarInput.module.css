@@ -1,0 +1,47 @@
+.fieldset {
+  border: 0;
+  min-width: 0;
+}
+
+.fieldset legend {
+  font-size: var(--fs-body-sm);
+  font-weight: 500;
+  margin-bottom: 0.3rem;
+}
+
+.row {
+  display: flex;
+  gap: 0.15rem;
+}
+
+.star {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 2.75rem;
+  height: 2.75rem;
+  font-size: 1.9rem;
+  line-height: 1;
+  cursor: pointer;
+}
+
+.star:has(input:focus-visible) {
+  outline: 2px solid var(--gold-deep);
+  outline-offset: 2px;
+  border-radius: var(--radius-sm);
+}
+
+.on {
+  color: var(--gold-deep);
+}
+
+.off {
+  color: var(--gold);
+}
+
+.error {
+  display: block;
+  font-size: 0.78rem;
+  color: var(--danger);
+  min-height: 1em;
+}

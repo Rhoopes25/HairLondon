@@ -1,0 +1,33 @@
+.row {
+  display: flex;
+  gap: 0.5rem;
+  overflow-x: auto;
+  padding: 0.2rem var(--space-5) 0.4rem;
+  scrollbar-width: none;
+}
+
+.row::-webkit-scrollbar {
+  display: none;
+}
+
+.chip {
+  flex: 0 0 auto;
+  font-family: var(--font-sans);
+  font-size: 0.82rem;
+  line-height: 1.6;
+  color: var(--ink);
+  background: var(--white);
+  border: 1.5px solid var(--cream-deep);
+  border-radius: var(--radius-pill);
+  padding: 0.45rem 1rem;
+  min-height: 2.75rem;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.selected {
+  background: var(--gold-ink);
+  border-color: var(--gold-ink);
+  color: var(--white);
+  font-weight: 500;
+}

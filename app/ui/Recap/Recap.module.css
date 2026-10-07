@@ -1,0 +1,34 @@
+.recap {
+  margin: 0 var(--space-5);
+  padding: 1.1rem 1.25rem;
+  background: var(--white);
+  border: 1px solid var(--gold-soft);
+  border-radius: var(--radius-lg);
+  font-size: 0.88rem;
+}
+
+.row {
+  display: flex;
+  justify-content: space-between;
+  gap: var(--space-3);
+  padding: 0.45rem 0;
+  border-top: 1px solid var(--cream-deep);
+}
+
+.row:first-child {
+  border-top: none;
+  padding-top: 0;
+}
+
+.row:last-child {
+  padding-bottom: 0;
+}
+
+.row dt {
+  color: var(--ink-soft);
+}
+
+.row dd {
+  text-align: right;
+  font-weight: 500;
+}

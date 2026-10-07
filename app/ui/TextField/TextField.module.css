@@ -1,0 +1,47 @@
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+}
+
+.field label {
+  font-size: var(--fs-body-sm);
+  font-weight: 500;
+}
+
+.field input,
+.field textarea {
+  font-family: var(--font-sans);
+  font-size: var(--fs-body);
+  color: var(--ink);
+  background: var(--white);
+  border: 1.5px solid var(--cream-deep);
+  border-radius: var(--radius-md);
+  padding: 0.75rem 1rem;
+  min-height: 2.75rem;
+}
+
+.field textarea {
+  resize: vertical;
+}
+
+.field input:focus,
+.field textarea:focus {
+  border-color: var(--gold-deep);
+}
+
+.field input[aria-invalid='true'],
+.field textarea[aria-invalid='true'] {
+  border-color: var(--danger);
+}
+
+.error {
+  font-size: 0.78rem;
+  color: var(--danger);
+  min-height: 1em;
+}
+
+.hint {
+  font-size: 0.78rem;
+  color: var(--ink-soft);
+}

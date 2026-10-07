@@ -1,0 +1,46 @@
+.head {
+  padding: var(--space-5) var(--space-5) 0;
+}
+
+.top {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+}
+
+.who {
+  flex: 1;
+  min-width: 0;
+}
+
+.who h1 {
+  font-family: var(--font-display);
+  font-weight: 500;
+  font-size: var(--fs-display-lg);
+  line-height: 1.2;
+}
+
+.studio {
+  font-size: var(--fs-body-sm);
+  color: var(--ink-soft);
+}
+
+.aside {
+  align-self: flex-start;
+}
+
+.bio {
+  font-size: 0.9rem;
+  color: var(--ink-soft);
+  margin: var(--space-2) 0 0;
+  max-width: 38ch;
+}
+
+.tabRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-3);
+  border-bottom: 1px solid var(--gold-soft);
+  margin: var(--space-4) var(--space-5) 0;
+}

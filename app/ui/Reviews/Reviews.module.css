@@ -1,0 +1,56 @@
+.card {
+  margin: var(--space-4) var(--space-5) 0.5rem;
+  padding: var(--space-4) 1.3rem;
+  background: var(--white);
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--gold-soft);
+}
+
+.heading {
+  font-family: var(--font-display);
+  font-size: 1.2rem;
+  font-weight: 600;
+}
+
+.summary {
+  margin: 0.15rem 0 0.85rem;
+}
+
+.empty {
+  font-size: var(--fs-body-sm);
+  color: var(--ink-soft);
+}
+
+.list {
+  list-style: none;
+}
+
+.review {
+  font-size: var(--fs-body-sm);
+  color: var(--ink-soft);
+  padding: 0.7rem 0;
+  border-top: 1px solid var(--cream-deep);
+}
+
+.review:first-child {
+  border-top: none;
+  padding-top: 0;
+}
+
+.top {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  margin-bottom: 0.15rem;
+}
+
+.top strong {
+  font-weight: 500;
+  color: var(--ink);
+}
+
+.action {
+  margin-top: var(--space-3);
+  padding-top: var(--space-3);
+  border-top: 1px solid var(--cream-deep);
+}

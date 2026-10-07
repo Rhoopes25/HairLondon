@@ -65,10 +65,22 @@ These are in the current stylesheet. Keep them visible rather than hiding them.
 - **The confirm button has no disabled style.** It is disabled in the script but looks the same as when it is ready. See Button for the added state.
 - Touch targets are at least 44px high; the chips and slots already come close.
 
+## Status in the React app
+
+The React implementation lives in `app/ui`. `tokens.json` is the source of truth and `app/ui/tokens/tokens.css` is generated from it (`npm run tokens`; a test fails if they drift). Where the sections above describe known gaps, the app now does this:
+
+- **Contrast.** Filled buttons and small text use `gold-ink`; `gold-deep` is for icons, stars, borders, and the focus ring. `scripts/contrast.test.ts` checks every text pair against WCAG AA.
+- **Picker controls** are real buttons with `aria-pressed` and `disabled`. Unavailable slots are struck through.
+- **Disabled button state** exists (`cream-deep` fill, `ink-soft` text).
+- **Error color** `danger` was added to the tokens (it was hard-coded in the old stylesheet).
+- **Times** carry AM or PM.
+- **Navigation** is a header with Home, Stylists, Appointments, Saved. The bottom tab bar was not built.
+- Marketplace pressure (spots left, deal badges, countdowns) is deliberately absent.
+
+Components added beyond the original list: Modal, Sheet, ConfirmDialog, TextField, TextAreaField, StarInput, BackLink, Chip, Tabs, Recap, StylistCard, ServiceRow, Avatar, Stars, and Icon. All of them are shown together at `/#/design-library` in the running app.
+
 ## Open items
 
-1. Decide between the header nav the site has and the bottom tab bar the project README describes. Only the header is in style.css.
-2. The nav says "Portfolio" while the page says "My Work" and the README says "Work". Pick one.
-3. Add the six client photos and the home photo as assets.
-4. Replace the sample reviews with real ones before launch.
-5. Add AM and PM to time slots, and real dates and availability.
+1. Replace the sample reviews and most sample stylists with real ones before any real launch.
+2. Add real availability from a calendar, in place of the seeded sample openings.
+3. Re-check the visual design by eye on real phones; the automated checks do not judge how it looks.

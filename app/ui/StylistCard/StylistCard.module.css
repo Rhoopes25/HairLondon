@@ -1,0 +1,43 @@
+.card {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  padding: 0.9rem 1.1rem;
+  background: var(--white);
+  border: 1.5px solid var(--cream-deep);
+  border-radius: var(--radius-md);
+  text-decoration: none;
+  color: var(--ink);
+  transition: border-color 0.15s ease;
+}
+
+.card:hover {
+  border-color: var(--gold-deep);
+}
+
+.body {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.name {
+  font-family: var(--font-display);
+  font-size: 1.2rem;
+  font-weight: 600;
+  line-height: 1.25;
+}
+
+.studio {
+  font-size: 0.8rem;
+  color: var(--ink-soft);
+}
+
+.price {
+  font-size: 0.8rem;
+  color: var(--ink);
+  font-weight: 500;
+  text-align: right;
+  white-space: nowrap;
+}

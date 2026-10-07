@@ -1,0 +1,58 @@
+/* GENERATED from hair-by-london-design-system/tokens.json. Do not edit by hand.
+   Run `npm run tokens` after changing tokens.json. */
+:root {
+  /* Color */
+  --cream: #FBF7EF;
+  --cream-deep: #F3ECDD;
+  --white: #FFFFFF;
+  --gold-soft: #E8D9BB;
+  --gold: #C9A66B;
+  --gold-deep: #A9803F;
+  --gold-ink: #7A5A2B;
+  --ink: #2B2420;
+  --ink-soft: #6B6055;
+  --unavailable: #C9C1B4;
+  --danger: #A8453A;
+  --photo-light: #EFE2C4;
+  --photo-deep: #B8945A;
+  --scrim: #2B2420B8;
+
+  /* Type families */
+  --font-sans: "Jost", sans-serif;
+  --font-display: "Cormorant Garamond", serif;
+
+  /* Type sizes */
+  --fs-display-xl: 2.5rem;
+  --fs-display-lg: 1.7rem;
+  --fs-display-md: 1.15rem;
+  --fs-numeral: 1.25rem;
+  --fs-body: 1rem;
+  --fs-body-sm: 0.85rem;
+  --fs-label: 0.92rem;
+  --fs-nav: 0.95rem;
+  --fs-button: 0.95rem;
+  --fs-caption: 0.75rem;
+
+  /* Spacing */
+  --space-1: 0.6rem;
+  --space-2: 0.9rem;
+  --space-3: 1rem;
+  --space-4: 1.25rem;
+  --space-5: 1.5rem;
+  --space-6: 2rem;
+
+  /* Radius */
+  --radius-sm: 10px;
+  --radius-md: 14px;
+  --radius-lg: 18px;
+  --radius-xl: 20px;
+  --radius-pill: 999px;
+  --radius-round: 50%;
+
+  /* Shadow */
+  --shadow-frame: 0 0 40px rgba(43, 36, 32, 0.06);
+  --shadow-card: 0 8px 20px rgba(43, 36, 32, 0.1);
+
+  /* Layout */
+  --app-width: 460px;
+}
