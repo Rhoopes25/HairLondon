@@ -1,0 +1,23 @@
+name: CI
+
+on:
+  push:
+    branches: [main, refactor]
+  pull_request:
+  workflow_call:
+
+permissions:
+  contents: read
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: ./.github/actions/setup
+      - run: npm run typecheck
+      - run: npm run lint
+      - run: npm test
+      # Prove the production build works in both router modes.
+      - run: npm run build
+      - run: npm run build:browser

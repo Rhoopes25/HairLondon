@@ -1,0 +1,10 @@
+{
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "lib": ["ES2023"],
+    "types": ["node"],
+    "allowImportingTsExtensions": true,
+    "paths": {}
+  },
+  "include": ["vite.config.ts", "vitest.config.ts", "scripts", "eslint.config.js"]
+}
