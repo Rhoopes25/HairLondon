@@ -45,6 +45,26 @@ export function assetUrl(path: string, base: string = config.base): string {
   return `${base}${path.replace(/^\/+/, '')}`;
 }
 
+/**
+ * The widths each photo is generated at (scripts/optimize-images.ts). The data refers to the
+ * middle one, `images/name.jpg`; the others are `images/name-640.jpg` and `images/name-1160.jpg`.
+ */
+export const PHOTO_WIDTHS = { small: 640, base: 900, large: 1160 } as const;
+
+/**
+ * The `srcSet` for a photo that has all three widths, so a phone downloads the small one and a
+ * wide screen the sharp one. Goes through assetUrl, so the deployed base path still applies.
+ */
+export function photoSrcSet(path: string, base: string = config.base): string {
+  const extension = /\.[^./]+$/.exec(path)?.[0] ?? '';
+  const stem = path.slice(0, path.length - extension.length);
+  return [
+    `${assetUrl(`${stem}-${PHOTO_WIDTHS.small}${extension}`, base)} ${PHOTO_WIDTHS.small}w`,
+    `${assetUrl(path, base)} ${PHOTO_WIDTHS.base}w`,
+    `${assetUrl(`${stem}-${PHOTO_WIDTHS.large}${extension}`, base)} ${PHOTO_WIDTHS.large}w`,
+  ].join(', ');
+}
+
 /** React Router basename: the base without its trailing slash ("" for the root). */
 export function routerBasename(base: string = config.base): string {
   return base === '/' ? '' : base.replace(/\/$/, '');

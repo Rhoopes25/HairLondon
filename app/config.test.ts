@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { assetUrl, createConfig, routerBasename } from './config';
+import { assetUrl, createConfig, photoSrcSet, routerBasename } from './config';
 
 describe('createConfig', () => {
   it('defaults to hash routing at the root', () => {
@@ -30,6 +30,22 @@ describe('assetUrl', () => {
   it('prefixes the deployed base', () => {
     expect(assetUrl('images/home.jpg', '/HairLondon/')).toBe('/HairLondon/images/home.jpg');
     expect(assetUrl('/images/home.jpg', '/')).toBe('/images/home.jpg');
+  });
+});
+
+describe('photoSrcSet', () => {
+  it('lists the three widths of a photo, each with its own width descriptor', () => {
+    expect(photoSrcSet('images/work-1.jpg', '/')).toBe(
+      '/images/work-1-640.jpg 640w, /images/work-1.jpg 900w, /images/work-1-1160.jpg 1160w',
+    );
+  });
+
+  it('keeps the deployed base path on every variant', () => {
+    const urls = photoSrcSet('images/home.jpg', '/HairLondon/')
+      .split(', ')
+      .map((entry) => entry.split(' ')[0]);
+    expect(urls).toHaveLength(3);
+    for (const url of urls) expect(url).toMatch(/^\/HairLondon\/images\/home/);
   });
 });
 
