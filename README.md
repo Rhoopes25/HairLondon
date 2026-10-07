@@ -1,3 +1,35 @@
+# Hair by London
+
+A mobile-first hair stylist booking prototype for IS 551. See a stylist's real work and reviews, then book a time that fits your day. It is an **early prototype**: the stylists and reviews are samples, nothing is sent, and your appointments live only in your browser.
+
+**Live:** `https://rhoopes25.github.io/HairLondon/` (once GitHub Pages is enabled; see `docs/deployment.md`)
+
+## Run it
+
+Needs Node 20 or newer.
+
+```
+npm install
+npm run dev          # http://localhost:5173
+npm test             # unit, integration, and accessibility tests
+npm run lint
+npm run build:pages  # the GitHub Pages build
+```
+
+## Where things are
+
+| Path | What |
+| --- | --- |
+| `app/` | The React frontend: `ui/` (design library), `features/` (screens), `shell/` (routes, layouts), `services/` |
+| `src/` | Pure TypeScript with no React or DOM: domain rules (scheduling, pricing, formatting) and the data layer |
+| `hair-by-london-design-system/` | The design system spec; `tokens.json` is the source of truth for the look |
+| `docs/` | `refactor-plan.md` (architecture and what was built), `usability-audit.md`, `deployment.md`, `submission-notes.md` |
+| `CLAUDE.md` | Rules for working in this repo, for people and for Claude Code |
+
+The sections below are the original discovery write-up. They describe the first three-screen concept (Home, Work, Book); the app has since grown to more screens, listed in `docs/submission-notes.md`.
+
+---
+
 ## 1. Need, Persona, Capability, Value
 
 Need: People looking for a new stylist often don't trust someone they haven't used before to cut or color their hair well, and can't easily find someone trustworthy with availability that fits their schedule, so they put off getting it done, leaving their hair to go too long without any treatment.
