@@ -1,0 +1,38 @@
+.footer {
+  margin-top: auto;
+  padding: 0.5rem var(--space-3) var(--space-3);
+  text-align: center;
+  border-top: 1px solid var(--gold-soft);
+}
+
+.links {
+  display: flex;
+  justify-content: center;
+  gap: var(--space-5);
+}
+
+.links a,
+.links button {
+  display: inline-flex;
+  align-items: center;
+  min-height: 2.75rem;
+  padding: 0;
+  font-family: var(--font-sans);
+  font-size: var(--fs-body-sm);
+  color: var(--gold-ink);
+  background: none;
+  border: 0;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  cursor: pointer;
+}
+
+.links a:hover,
+.links button:hover {
+  color: var(--ink);
+}
+
+.footer p {
+  font-size: 0.72rem;
+  color: var(--ink-soft);
+}

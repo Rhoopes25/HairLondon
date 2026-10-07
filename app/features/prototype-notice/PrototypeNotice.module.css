@@ -1,0 +1,45 @@
+.heading {
+  font-family: var(--font-display);
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: var(--ink);
+  margin: var(--space-3) 0 0.3rem;
+}
+
+.list {
+  padding-left: 1.2rem;
+}
+
+.list li + li {
+  margin-top: 0.3rem;
+}
+
+.strip {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 0.3rem var(--space-3);
+  background: var(--gold-soft);
+  color: var(--ink);
+  font-size: 0.78rem;
+  line-height: 1.4;
+}
+
+.strip strong {
+  font-weight: 600;
+}
+
+.stripButton {
+  background: none;
+  border: 0;
+  /* A 44px tap target that overlaps the slim strip instead of making it taller. */
+  padding: 0 0.25rem;
+  min-height: 2.75rem;
+  margin: -0.65rem 0;
+  font-size: inherit;
+  color: var(--gold-ink);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  cursor: pointer;
+}

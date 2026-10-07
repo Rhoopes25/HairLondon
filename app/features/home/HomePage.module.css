@@ -1,0 +1,38 @@
+.shortcuts {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: var(--space-1);
+}
+
+.shortcut {
+  display: flex;
+  flex-direction: column;
+  padding: 0.8rem 1rem;
+  background: var(--white);
+  border: 1.5px solid var(--cream-deep);
+  border-radius: var(--radius-md);
+  text-decoration: none;
+  color: var(--ink);
+  transition: border-color 0.15s ease;
+}
+
+.shortcut:hover {
+  border-color: var(--gold-deep);
+}
+
+.name {
+  font-size: var(--fs-label);
+  font-weight: 500;
+}
+
+.price {
+  font-size: 0.8rem;
+  color: var(--ink-soft);
+}
+
+.returning {
+  text-align: center;
+  font-size: var(--fs-body-sm);
+  color: var(--ink-soft);
+  padding: var(--space-5) var(--space-5) var(--space-6);
+}

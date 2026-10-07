@@ -1,0 +1,18 @@
+.facts {
+  display: flex;
+  gap: var(--space-5);
+  margin-top: var(--space-3);
+  padding-top: var(--space-3);
+  border-top: 1px solid var(--cream-deep);
+}
+
+.facts dt {
+  font-size: 0.78rem;
+  color: var(--ink-soft);
+}
+
+.facts dd {
+  font-size: 1.05rem;
+  font-weight: 500;
+  color: var(--ink);
+}

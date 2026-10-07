@@ -1,0 +1,47 @@
+.page {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-5);
+  padding: var(--space-4) 0 var(--space-6);
+}
+
+.specimen h2 {
+  font-family: var(--font-display);
+  font-size: var(--fs-display-md);
+  font-weight: 600;
+  padding: 0 var(--space-5) 0.4rem;
+}
+
+.stage {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  padding: var(--space-3) var(--space-5);
+  border-top: 1px solid var(--gold-soft);
+  border-bottom: 1px solid var(--gold-soft);
+  background: var(--cream);
+}
+
+.row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+.column {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--space-2);
+}
+
+.icon {
+  display: inline-flex;
+  color: var(--gold-deep);
+}
+
+.icon svg {
+  width: 1.5rem;
+  height: 1.5rem;
+}

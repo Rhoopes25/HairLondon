@@ -1,0 +1,12 @@
+.list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.65rem;
+  padding: var(--space-4) var(--space-5) var(--space-6);
+}
+
+.cta {
+  display: flex;
+  justify-content: center;
+  padding-bottom: var(--space-6);
+}

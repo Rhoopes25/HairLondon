@@ -1,0 +1,4 @@
+.back {
+  display: block;
+  margin: var(--space-3) auto 0;
+}

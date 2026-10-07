@@ -1,0 +1,17 @@
+.filters {
+  padding: var(--space-3) 0 0;
+}
+
+.dayRow {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  padding: 0.3rem var(--space-5) 0;
+}
+
+.list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.65rem;
+  padding: var(--space-3) var(--space-5) var(--space-6);
+}

@@ -1,0 +1,15 @@
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  padding: var(--space-4) var(--space-5) 0;
+}
+
+.preview {
+  align-self: flex-start;
+}
+
+.back {
+  display: block;
+  margin: var(--space-3) auto 0;
+}

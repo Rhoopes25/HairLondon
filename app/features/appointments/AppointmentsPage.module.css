@@ -1,0 +1,11 @@
+.list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.65rem;
+}
+
+.cta {
+  display: flex;
+  justify-content: center;
+  padding-bottom: var(--space-5);
+}
