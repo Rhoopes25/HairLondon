@@ -32,3 +32,21 @@
   font-weight: 500;
   color: var(--ink);
 }
+
+@media (min-width: 640px) {
+  .bar {
+    margin-inline: var(--space-5);
+    margin-bottom: var(--space-5);
+    border: 1px solid var(--gold-soft);
+    border-radius: var(--radius-lg);
+  }
+}
+
+/* Only where the two-column layout exists (md): below that the bar is just the last block. */
+@media (min-width: 900px) {
+  .sticky {
+    position: sticky;
+    top: calc(var(--header-height) + var(--space-3));
+    margin-inline: 0;
+  }
+}

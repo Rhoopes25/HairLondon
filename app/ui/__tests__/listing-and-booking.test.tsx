@@ -131,6 +131,23 @@ describe('PortfolioGrid', () => {
     expect(screen.getAllByRole('figure')).toHaveLength(2);
   });
 
+  it('lets the browser pick a size when a photo has several', () => {
+    render(
+      <PortfolioGrid
+        photos={[
+          {
+            src: '/images/work-1.jpg',
+            srcSet: '/images/work-1-640.jpg 640w, /images/work-1.jpg 900w',
+            alt: 'Platinum balayage',
+          },
+        ]}
+      />,
+    );
+    const img = screen.getByAltText('Platinum balayage');
+    expect(img).toHaveAttribute('srcset', '/images/work-1-640.jpg 640w, /images/work-1.jpg 900w');
+    expect(img).toHaveAttribute('sizes');
+  });
+
   it('makes photos buttons when they can be opened', async () => {
     const onSelect = vi.fn();
     render(<PortfolioGrid photos={photos} onSelect={onSelect} />);
@@ -206,6 +223,24 @@ describe('ConfirmBar', () => {
 });
 
 describe('Hero', () => {
+  it('loads the photo from a srcset when it has one', () => {
+    const { container } = renderWithRouter(
+      <Hero
+        imageUrl="/images/home.jpg"
+        imageSrcSet="/images/home-640.jpg 640w, /images/home.jpg 900w"
+        imageLabel="A stylist holding her shears"
+        title="Hair by London"
+        tagline="See their work."
+        ctaLabel="Find a stylist"
+        ctaTo="/stylists"
+      />,
+    );
+    const img = container.querySelector('img');
+    expect(img).toHaveAttribute('srcset', '/images/home-640.jpg 640w, /images/home.jpg 900w');
+    // The text is on the page, so the photo is decoration.
+    expect(img).toHaveAttribute('alt', '');
+  });
+
   it('leads with the name, what it is for, and one main action', () => {
     renderWithRouter(
       <Hero
@@ -244,5 +279,12 @@ describe('NavBar', () => {
     );
     expect(within(nav).getByRole('link', { name: 'Home' })).not.toHaveAttribute('aria-current');
     expect(screen.getByRole('link', { name: 'Hair by London, home' })).toHaveAttribute('href', '/');
+  });
+
+  it('shows the wordmark for desktop without changing the home link name', () => {
+    renderWithRouter(<NavBar homeTo="/" links={links} />);
+    // Visible text from sm up (CSS), hidden from assistive tech so the link is not announced twice.
+    expect(screen.getByText('Hair by London')).toHaveAttribute('aria-hidden', 'true');
+    expect(screen.getByRole('link', { name: 'Hair by London, home' })).toBeInTheDocument();
   });
 });

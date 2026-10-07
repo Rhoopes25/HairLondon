@@ -2,15 +2,19 @@
   position: sticky;
   top: 0;
   z-index: 20;
+  min-height: var(--header-height);
+  background: rgba(251, 247, 239, 0.92);
+  backdrop-filter: blur(6px);
+  border-bottom: 1px solid var(--gold-soft);
+}
+
+.inner {
   display: flex;
   align-items: center;
   justify-content: space-between;
   gap: var(--space-3);
   padding: 0.6rem var(--space-4);
-  min-height: 3.5rem;
-  background: rgba(251, 247, 239, 0.92);
-  backdrop-filter: blur(6px);
-  border-bottom: 1px solid var(--gold-soft);
+  min-height: var(--header-height);
 }
 
 .logo {
@@ -26,6 +30,11 @@
 .logo svg {
   width: 1.4rem;
   height: 1.4rem;
+  flex-shrink: 0;
+}
+
+.wordmark {
+  display: none;
 }
 
 .nav {
@@ -54,6 +63,42 @@
   text-decoration: underline;
   text-decoration-color: var(--gold);
   text-underline-offset: 6px;
+}
+
+@media (min-width: 640px) {
+  .logo {
+    width: auto;
+    margin-left: 0;
+    gap: 0.6rem;
+    padding-right: 0.5rem;
+    color: var(--ink);
+    text-decoration: none;
+  }
+
+  .logo svg {
+    color: var(--gold-deep);
+  }
+
+  .wordmark {
+    display: inline;
+    font-family: var(--font-display);
+    font-style: italic;
+    font-weight: 500;
+    font-size: 1.5rem;
+    line-height: 1;
+    white-space: nowrap;
+  }
+}
+
+@media (min-width: 900px) {
+  .nav {
+    gap: 2rem;
+  }
+
+  .active {
+    text-decoration-thickness: 2px;
+    text-underline-offset: 8px;
+  }
 }
 
 @media (max-width: 380px) {

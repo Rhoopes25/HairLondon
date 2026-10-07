@@ -41,3 +41,10 @@
   text-align: right;
   white-space: nowrap;
 }
+
+@media (min-width: 900px) {
+  .card {
+    padding: 1.1rem 1.4rem;
+    gap: var(--space-3);
+  }
+}

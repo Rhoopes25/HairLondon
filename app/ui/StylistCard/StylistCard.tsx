@@ -7,6 +7,7 @@ export interface StylistCardProps {
   to: string;
   name: string;
   photoUrl: string | null;
+  photoSrcSet?: string;
   studio: string;
   city: string;
   average: number | null;
@@ -20,6 +21,7 @@ export function StylistCard({
   to,
   name,
   photoUrl,
+  photoSrcSet,
   studio,
   city,
   average,
@@ -28,7 +30,7 @@ export function StylistCard({
 }: StylistCardProps) {
   return (
     <Link to={to} className={styles.card}>
-      <Avatar name={name} photoUrl={photoUrl} />
+      <Avatar name={name} photoUrl={photoUrl} photoSrcSet={photoSrcSet} />
       <span className={styles.body}>
         <span className={styles.name}>{name}</span>
         <span className={styles.studio}>

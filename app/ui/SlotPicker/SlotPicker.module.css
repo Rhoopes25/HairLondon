@@ -88,3 +88,21 @@
   background: var(--cream-deep);
   cursor: not-allowed;
 }
+
+@media (min-width: 640px) {
+  .times {
+    grid-template-columns: repeat(4, 1fr);
+  }
+}
+
+/* Desktop has the room to show every day and time at once instead of scrolling sideways. */
+@media (min-width: 900px) {
+  .days {
+    flex-wrap: wrap;
+    overflow-x: visible;
+  }
+
+  .times {
+    grid-template-columns: repeat(6, 1fr);
+  }
+}

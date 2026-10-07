@@ -32,3 +32,13 @@
   text-align: right;
   font-weight: 500;
 }
+
+/* A link in a row (the stylist's name): 44px to tap without making the row any taller. */
+.row dd a {
+  display: inline-block;
+  color: var(--gold-ink);
+  text-decoration-color: var(--gold);
+  text-underline-offset: 3px;
+  padding: 0.75rem 0;
+  margin: -0.75rem 0;
+}

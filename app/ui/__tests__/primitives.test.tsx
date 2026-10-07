@@ -6,14 +6,17 @@ import {
   Avatar,
   Button,
   Chip,
+  Container,
   EmptyNote,
   Icon,
   LinkButton,
+  Narrow,
   PageIntro,
   QuietLink,
   RatingLine,
   Recap,
   Section,
+  SplitLayout,
   Stars,
   TextButton,
 } from '..';
@@ -87,6 +90,21 @@ describe('Avatar', () => {
     expect(img).toHaveAttribute('src', '/images/home.jpg');
     expect(img).toHaveAttribute('alt', '');
   });
+
+  it('offers the smaller photo sizes only when it is given them', () => {
+    const { container, rerender } = render(<Avatar name="London" photoUrl="/images/home.jpg" />);
+    expect(container.querySelector('img')).not.toHaveAttribute('srcset');
+    rerender(
+      <Avatar
+        name="London"
+        photoUrl="/images/home.jpg"
+        photoSrcSet="/images/home-640.jpg 640w, /images/home.jpg 900w"
+      />,
+    );
+    const img = container.querySelector('img');
+    expect(img).toHaveAttribute('srcset', '/images/home-640.jpg 640w, /images/home.jpg 900w');
+    expect(img).toHaveAttribute('sizes');
+  });
 });
 
 describe('Stars and RatingLine', () => {
@@ -143,6 +161,39 @@ describe('layout pieces', () => {
       </Section>,
     );
     expect(screen.getByRole('heading', { level: 2, name: 'Choose a day' })).toBeInTheDocument();
+  });
+
+  it('Container and Narrow hold their content and take a class from the caller', () => {
+    render(
+      <Container className="page">
+        <Narrow className="column">
+          <p>inside</p>
+        </Narrow>
+      </Container>,
+    );
+    const column = screen.getByText('inside').parentElement;
+    expect(column).toHaveClass('column');
+    expect(column?.parentElement).toHaveClass('page');
+  });
+
+  it('Container can be the page main landmark', () => {
+    render(
+      <Container as="main">
+        <p>page</p>
+      </Container>,
+    );
+    expect(screen.getByRole('main')).toHaveTextContent('page');
+  });
+
+  it('SplitLayout puts the choices before the panel, so keyboard order matches reading order', () => {
+    render(
+      <SplitLayout aside={<button type="button">Continue</button>}>
+        <button type="button">Choose a time</button>
+      </SplitLayout>,
+    );
+    const [first, second] = screen.getAllByRole('button');
+    expect(first).toHaveTextContent('Choose a time');
+    expect(second).toHaveTextContent('Continue');
   });
 
   it('EmptyNote renders its message', () => {

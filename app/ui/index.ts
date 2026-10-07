@@ -12,7 +12,7 @@ export { Hero } from './Hero';
 export type { HeroProps } from './Hero';
 export { Icon } from './Icon';
 export type { IconName, IconProps } from './Icon';
-export { EmptyNote, PageIntro, Section } from './Layout';
+export { Container, EmptyNote, Narrow, PageIntro, Section, SplitLayout } from './Layout';
 export { ConfirmDialog, Modal, Sheet } from './Modal';
 export type { ConfirmDialogProps, ModalProps } from './Modal';
 export { HeaderBar, NavBar } from './NavBar';

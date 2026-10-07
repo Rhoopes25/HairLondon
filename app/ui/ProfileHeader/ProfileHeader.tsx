@@ -6,6 +6,7 @@ import styles from './ProfileHeader.module.css';
 export interface ProfileHeaderProps {
   name: string;
   photoUrl: string | null;
+  photoSrcSet?: string;
   studio: string;
   city: string;
   average: number | null;
@@ -21,6 +22,7 @@ export interface ProfileHeaderProps {
 export function ProfileHeader({
   name,
   photoUrl,
+  photoSrcSet,
   studio,
   city,
   average,
@@ -33,7 +35,7 @@ export function ProfileHeader({
     <section>
       <div className={styles.head}>
         <div className={styles.top}>
-          <Avatar name={name} photoUrl={photoUrl} size="lg" />
+          <Avatar name={name} photoUrl={photoUrl} photoSrcSet={photoSrcSet} size="lg" />
           <div className={styles.who}>
             <h1>{name}</h1>
             <p className={styles.studio}>

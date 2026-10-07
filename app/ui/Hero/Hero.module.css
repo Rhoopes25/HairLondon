@@ -10,9 +10,14 @@
   display: flex;
   align-items: flex-end;
   background-color: var(--photo-deep);
-  background-position: center;
-  background-size: cover;
-  background-repeat: no-repeat;
+}
+
+.photo {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
 }
 
 .hero::before {
@@ -26,6 +31,7 @@
 
 .overlay {
   position: relative;
+  z-index: 1;
   width: 100%;
   padding: var(--space-6) var(--space-5) 2.25rem;
   background: linear-gradient(
@@ -53,4 +59,75 @@
   margin: 0.35rem 0 1.1rem;
   font-size: 0.95rem;
   max-width: 28ch;
+}
+
+/* Desktop: text on the left, the portrait on the right, no overlay. */
+@media (min-width: 900px) {
+  .frame {
+    padding: var(--space-6) var(--space-4) 0;
+  }
+
+  .hero {
+    aspect-ratio: auto;
+    display: grid;
+    grid-template-columns: minmax(0, 1.1fr) minmax(0, 0.9fr);
+    align-items: center;
+    gap: 3.5rem;
+    overflow: visible;
+    background-color: transparent;
+  }
+
+  .hero::before {
+    display: none;
+  }
+
+  .photo {
+    position: static;
+    grid-column: 2;
+    grid-row: 1;
+    height: auto;
+    aspect-ratio: 4 / 5;
+    border-radius: var(--radius-xl);
+    box-shadow: var(--shadow-card);
+    background-color: var(--photo-deep);
+  }
+
+  .overlay {
+    grid-column: 1;
+    grid-row: 1;
+    padding: 0;
+    background: none;
+    color: var(--ink);
+    text-align: left;
+    align-items: flex-start;
+  }
+
+  .overlay h1 {
+    font-size: var(--fs-display-xl);
+  }
+
+  .overlay p {
+    margin: 0.75rem 0 1.75rem;
+    max-width: 30ch;
+    font-size: 1.15rem;
+    color: var(--ink-soft);
+  }
+
+  /* The white pill is for sitting on a photo; on cream it becomes the one filled action. */
+  .overlay a {
+    background: var(--gold-ink);
+    color: var(--white);
+    font-size: var(--fs-button);
+    padding: 0.95rem 2rem;
+  }
+
+  .overlay a:hover,
+  .overlay a:focus-visible {
+    background: var(--ink);
+    color: var(--white);
+  }
+
+  .overlay a:focus-visible {
+    outline-color: var(--gold-deep);
+  }
 }

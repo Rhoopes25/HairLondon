@@ -32,3 +32,16 @@
   border: 0;
   cursor: zoom-in;
 }
+
+@media (min-width: 640px) {
+  .grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+@media (min-width: 900px) {
+  .grid {
+    gap: var(--space-5);
+    padding-top: var(--space-5);
+  }
+}

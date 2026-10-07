@@ -54,3 +54,17 @@
   padding-top: var(--space-3);
   border-top: 1px solid var(--cream-deep);
 }
+
+@media (min-width: 1200px) {
+  .list {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    column-gap: 2.5rem;
+  }
+
+  /* Two columns: the first row of each starts without a rule. */
+  .review:nth-child(2) {
+    border-top: none;
+    padding-top: 0;
+  }
+}

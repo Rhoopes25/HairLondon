@@ -44,3 +44,33 @@
   border-bottom: 1px solid var(--gold-soft);
   margin: var(--space-4) var(--space-5) 0;
 }
+
+/* Desktop: avatar, then name and bio together, with the save button at the far right. */
+@media (min-width: 900px) {
+  .head {
+    display: grid;
+    grid-template-columns: auto minmax(0, 1fr) auto;
+    column-gap: var(--space-5);
+    align-items: center;
+    padding-top: var(--space-6);
+  }
+
+  /* The wrapper is only there for the phone layout; its children join the grid. */
+  .top {
+    display: contents;
+  }
+
+  .aside {
+    align-self: center;
+  }
+
+  .bio {
+    grid-column: 2 / 4;
+    max-width: 60ch;
+    font-size: var(--fs-label);
+  }
+
+  .tabRow {
+    margin-top: var(--space-5);
+  }
+}

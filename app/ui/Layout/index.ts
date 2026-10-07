@@ -1,1 +1,1 @@
-export { EmptyNote, PageIntro, Section } from './Layout';
+export { Container, EmptyNote, Narrow, PageIntro, Section, SplitLayout } from './Layout';
