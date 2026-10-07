@@ -17,6 +17,7 @@
     "format": "prettier --write .",
     "tokens": "tsx scripts/generate-tokens.ts",
     "images": "tsx scripts/optimize-images.ts",
+    "layout": "tsx scripts/layout-check.ts",
     "test": "vitest run",
     "test:watch": "vitest"
   },
@@ -40,6 +41,7 @@
     "eslint-plugin-react-hooks": "^7.1.1",
     "globals": "^17.13.0",
     "jsdom": "^29.1.1",
+    "playwright": "^1.63.0",
     "prettier": "^3.9.9",
     "sharp": "^0.35.5",
     "tsx": "^4.23.15",
