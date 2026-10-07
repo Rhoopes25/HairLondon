@@ -1,5 +1,6 @@
 /* GENERATED from hair-by-london-design-system/tokens.json. Do not edit by hand.
    Run `npm run tokens` after changing tokens.json. */
+/* Breakpoints (min-width, mobile first): sm 640px, md 900px, lg 1200px. Use these literally in @media. */
 :root {
   /* Color */
   --cream: #FBF7EF;
@@ -50,9 +51,20 @@
   --radius-round: 50%;
 
   /* Shadow */
-  --shadow-frame: 0 0 40px rgba(43, 36, 32, 0.06);
   --shadow-card: 0 8px 20px rgba(43, 36, 32, 0.1);
 
   /* Layout */
-  --app-width: 460px;
+  --container-max: 1200px;
+  --container-narrow: 640px;
+  --dialog-width: 520px;
+  --header-height: 3.5rem;
+  --gutter: 0;
+}
+
+@media (min-width: 900px) {
+  :root {
+    --gutter: 1.5rem;
+    --fs-display-lg: 2.25rem;
+    --fs-display-xl: 3.5rem;
+  }
 }
