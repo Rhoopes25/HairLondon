@@ -13,3 +13,33 @@
   display: block;
   margin: var(--space-3) auto 0;
 }
+
+/* One column on a phone: summary, form, then the action. On desktop the form is on the left and
+   the summary and action share a column on the right, in the same order a keyboard moves through. */
+@media (min-width: 900px) {
+  .layout {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 24rem;
+    grid-template-rows: auto 1fr;
+    grid-template-areas:
+      'form recap'
+      'form bar';
+    padding-right: var(--space-5);
+  }
+
+  .recap {
+    grid-area: recap;
+    padding-top: var(--space-4);
+  }
+
+  .form {
+    grid-area: form;
+    align-self: start;
+  }
+
+  /* Matches the margin the recap card already has, so the two cards line up. */
+  .bar {
+    grid-area: bar;
+    padding-inline: var(--space-5);
+  }
+}

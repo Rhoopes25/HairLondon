@@ -1,3 +1,4 @@
+/* A full-width band; its content is in the page container. */
 .footer {
   margin-top: auto;
   padding: 0.5rem var(--space-3) var(--space-3);
@@ -35,4 +36,19 @@
 .footer p {
   font-size: 0.72rem;
   color: var(--ink-soft);
+}
+
+@media (min-width: 900px) {
+  .footer {
+    padding: var(--space-2) 0;
+  }
+
+  /* Links on the left, copyright on the right, in line with the page content above. */
+  .inner {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding-inline: var(--space-4);
+    text-align: left;
+  }
 }

@@ -2,7 +2,7 @@ import { Link } from 'react-router';
 import { formatPriceRange } from '@src/domain/format/price';
 import { SERVICE_IDS } from '@src/domain/models/service';
 import { priceRange } from '@src/domain/pricing/totals';
-import { assetUrl } from '@app/config';
+import { assetUrl, photoSrcSet } from '@app/config';
 import { useDocumentTitle } from '@app/hooks/usePageBehavior';
 import { useServices, useStylists } from '@app/services';
 import { Hero, QuietLink, Section } from '@app/ui';
@@ -21,6 +21,7 @@ export function HomePage() {
     <>
       <Hero
         imageUrl={assetUrl('images/home.jpg')}
+        imageSrcSet={photoSrcSet('images/home.jpg')}
         imageLabel="A stylist holding her shears"
         title="Hair by London"
         tagline="See real client work and reviews, then book a time that fits your day."

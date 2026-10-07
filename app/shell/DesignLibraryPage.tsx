@@ -9,10 +9,12 @@ import {
   ChipRow,
   ConfirmBar,
   ConfirmDialog,
+  Container,
   EmptyNote,
   Icon,
   LinkButton,
   Modal,
+  Narrow,
   PageIntro,
   PortfolioGrid,
   QuietLink,
@@ -23,6 +25,7 @@ import {
   ServiceRow,
   Sheet,
   SlotPicker,
+  SplitLayout,
   StarInput,
   Stars,
   StylistCard,
@@ -200,7 +203,7 @@ export function DesignLibraryPage() {
         <Specimen name="PortfolioGrid">
           <PortfolioGrid
             photos={[
-              { src: assetUrl('images/work-1.png'), alt: 'Platinum balayage' },
+              { src: assetUrl('images/work-1.jpg'), alt: 'Platinum balayage' },
               { src: assetUrl('images/work-3.jpg'), alt: 'Ash blonde balayage' },
             ]}
           />
@@ -226,6 +229,20 @@ export function DesignLibraryPage() {
           <ConfirmBar summary="Haircut · Fri, Oct 16" total={{ value: '$65 · 1 hr' }}>
             <Button fullWidth>Continue</Button>
           </ConfirmBar>
+        </Specimen>
+
+        <Specimen name="Container, Narrow, SplitLayout">
+          <Container>
+            <p className={styles.box}>Container: the page column, up to 1200px, centered.</p>
+            <Narrow>
+              <p className={styles.box}>Narrow: forms and confirmations, up to 640px.</p>
+            </Narrow>
+            <SplitLayout aside={<p className={styles.box}>Panel (sticky on desktop)</p>}>
+              <p className={styles.box}>
+                SplitLayout: choices, with the panel beside them from 900px.
+              </p>
+            </SplitLayout>
+          </Container>
         </Specimen>
 
         <Specimen name="EmptyNote">

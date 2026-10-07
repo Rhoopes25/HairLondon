@@ -5,7 +5,7 @@ import { firstName } from '@src/domain/format/name';
 import { totalDuration, totalPrice } from '@src/domain/pricing/totals';
 import { useDocumentTitle, useFocusOnMount } from '@app/hooks/usePageBehavior';
 import { useServices } from '@app/services';
-import { Button, ConfirmBar, PageIntro, Recap, TextButton } from '@app/ui';
+import { Button, ConfirmBar, Narrow, PageIntro, Recap, TextButton } from '@app/ui';
 import { BookingHeader } from './BookingHeader';
 import { useBooking } from './BookingProvider';
 import { draftRecapRows } from './bookingRecap';
@@ -44,24 +44,29 @@ export function ReviewStep() {
   return (
     <>
       <BookingHeader confirmExit />
-      <PageIntro title="Check and confirm" titleRef={headingRef}>
-        Everything look right? You can still go back and change it.
-      </PageIntro>
-      <Recap
-        rows={draftRecapRows(draft, stylist, catalog, [
-          { label: 'Name', value: name },
-          { label: 'Phone', value: phone },
-        ])}
-      />
+      <Narrow>
+        <PageIntro title="Check and confirm" titleRef={headingRef}>
+          Everything look right? You can still go back and change it.
+        </PageIntro>
+        <Recap
+          rows={draftRecapRows(draft, stylist, catalog, [
+            { label: 'Name', value: name },
+            { label: 'Phone', value: phone },
+          ])}
+        />
 
-      <ConfirmBar>
-        <Button fullWidth onClick={confirm}>
-          Confirm booking
-        </Button>
-        <TextButton className={styles.back} onClick={() => navigate(`/book/${stylist.id}/details`)}>
-          Back
-        </TextButton>
-      </ConfirmBar>
+        <ConfirmBar>
+          <Button fullWidth onClick={confirm}>
+            Confirm booking
+          </Button>
+          <TextButton
+            className={styles.back}
+            onClick={() => navigate(`/book/${stylist.id}/details`)}
+          >
+            Back
+          </TextButton>
+        </ConfirmBar>
+      </Narrow>
     </>
   );
 }

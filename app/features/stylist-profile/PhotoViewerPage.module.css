@@ -36,3 +36,48 @@
 .cta {
   padding: var(--space-5) var(--space-5) 2.5rem;
 }
+
+/* Desktop: the photo on the left at a height that fits the window, and everything about it
+   (caption, previous and next, the booking action) stacked on the right. */
+@media (min-width: 900px) {
+  .viewer {
+    display: grid;
+    grid-template-columns: minmax(0, 30rem) minmax(0, 22rem);
+    grid-template-rows: auto auto auto 1fr;
+    column-gap: 3.5rem;
+    justify-content: center;
+    padding-top: var(--space-4);
+  }
+
+  /* The figure's children join the grid; it stays a figure for assistive technology. */
+  .figure {
+    display: contents;
+  }
+
+  .frame {
+    grid-column: 1;
+    grid-row: 1 / span 4;
+    width: min(100%, calc((100dvh - 16rem) * 0.8));
+  }
+
+  .figure figcaption {
+    grid-column: 2;
+    grid-row: 1;
+    align-self: end;
+    margin-top: 0;
+    text-align: left;
+    font-size: var(--fs-body);
+  }
+
+  .pager {
+    grid-column: 2;
+    grid-row: 2;
+    padding: var(--space-4) 0 0;
+  }
+
+  .cta {
+    grid-column: 2;
+    grid-row: 3;
+    padding: var(--space-5) 0 0;
+  }
+}

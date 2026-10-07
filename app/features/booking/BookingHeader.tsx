@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router';
 import { firstName } from '@src/domain/format/name';
-import { assetUrl } from '@app/config';
+import { assetUrl, photoSrcSet } from '@app/config';
 import { Avatar, ConfirmDialog, HeaderBar, Icon } from '@app/ui';
 import { useBooking } from './BookingProvider';
 import styles from './BookingHeader.module.css';
@@ -35,6 +35,7 @@ export function BookingHeader({ confirmExit }: { confirmExit: boolean }) {
           <Avatar
             name={stylist.name}
             photoUrl={stylist.photo ? assetUrl(stylist.photo) : null}
+            photoSrcSet={stylist.photo ? photoSrcSet(stylist.photo) : undefined}
             size="sm"
           />
           <span>

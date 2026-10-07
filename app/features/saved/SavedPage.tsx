@@ -1,6 +1,6 @@
 import { averageRating } from '@src/domain/format/rating';
 import { startingPrice } from '@src/domain/pricing/totals';
-import { assetUrl } from '@app/config';
+import { assetUrl, photoSrcSet } from '@app/config';
 import { useDocumentTitle } from '@app/hooks/usePageBehavior';
 import { useSavedIds, useStylists } from '@app/services';
 import { EmptyNote, LinkButton, PageIntro, StylistCard } from '@app/ui';
@@ -39,6 +39,7 @@ export function SavedPage() {
                 to={`/stylists/${stylist.id}`}
                 name={stylist.name}
                 photoUrl={stylist.photo ? assetUrl(stylist.photo) : null}
+                photoSrcSet={stylist.photo ? photoSrcSet(stylist.photo) : undefined}
                 studio={stylist.studio}
                 city={stylist.city}
                 average={averageRating(stylist.reviews)}

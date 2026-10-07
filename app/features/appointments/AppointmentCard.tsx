@@ -2,7 +2,7 @@ import { Link } from 'react-router';
 import type { Appointment, AppointmentPhase } from '@src/domain/models/appointment';
 import { useServices, useStylist } from '@app/services';
 import { Avatar, Icon } from '@app/ui';
-import { assetUrl } from '@app/config';
+import { assetUrl, photoSrcSet } from '@app/config';
 import { servicesText, whenText } from './appointment-view';
 import styles from './AppointmentCard.module.css';
 
@@ -26,7 +26,11 @@ export function AppointmentCard({
 
   return (
     <Link to={`/appointments/${appointment.id}`} className={styles.card}>
-      <Avatar name={name} photoUrl={stylist?.photo ? assetUrl(stylist.photo) : null} />
+      <Avatar
+        name={name}
+        photoUrl={stylist?.photo ? assetUrl(stylist.photo) : null}
+        photoSrcSet={stylist?.photo ? photoSrcSet(stylist.photo) : undefined}
+      />
       <span className={styles.body}>
         <span className={styles.who}>
           {servicesText(appointment, catalog)} with {name}

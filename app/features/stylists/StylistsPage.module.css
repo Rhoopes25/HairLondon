@@ -15,3 +15,22 @@
   gap: 0.65rem;
   padding: var(--space-3) var(--space-5) var(--space-6);
 }
+
+@media (min-width: 900px) {
+  .list {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: var(--space-3);
+  }
+
+  /* The empty-state note spans the whole grid instead of sitting in one cell. */
+  .list > p {
+    grid-column: 1 / -1;
+  }
+}
+
+@media (min-width: 1200px) {
+  .list {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}

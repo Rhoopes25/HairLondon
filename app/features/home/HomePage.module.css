@@ -36,3 +36,15 @@
   color: var(--ink-soft);
   padding: var(--space-5) var(--space-5) var(--space-6);
 }
+
+@media (min-width: 640px) {
+  .shortcuts {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
+@media (min-width: 1200px) {
+  .shortcuts {
+    grid-template-columns: repeat(6, minmax(0, 1fr));
+  }
+}

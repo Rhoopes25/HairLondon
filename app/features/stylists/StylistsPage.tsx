@@ -6,7 +6,7 @@ import type { ServiceId } from '@src/domain/models/service';
 import type { Weekday } from '@src/domain/models/time';
 import { startingPrice } from '@src/domain/pricing/totals';
 import { filterStylists, parseWeekday, WEEKDAY_NAMES } from '@src/domain/stylists/filter';
-import { assetUrl } from '@app/config';
+import { assetUrl, photoSrcSet } from '@app/config';
 import { useDocumentTitle } from '@app/hooks/usePageBehavior';
 import { useServices, useStylists } from '@app/services';
 import { Button, Chip, ChipRow, EmptyNote, PageIntro, StylistCard, TextButton } from '@app/ui';
@@ -83,6 +83,7 @@ export function StylistsPage() {
                 to={`/stylists/${stylist.id}${service ? `?service=${service}` : ''}`}
                 name={stylist.name}
                 photoUrl={stylist.photo ? assetUrl(stylist.photo) : null}
+                photoSrcSet={stylist.photo ? photoSrcSet(stylist.photo) : undefined}
                 studio={stylist.studio}
                 city={stylist.city}
                 average={averageRating(stylist.reviews)}

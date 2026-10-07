@@ -43,3 +43,18 @@
   gap: var(--space-3);
   padding: var(--space-6) var(--space-5) 2.5rem;
 }
+
+@media (min-width: 900px) {
+  .facts {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: var(--space-3);
+    padding-top: var(--space-5);
+  }
+
+  .cta {
+    width: 100%;
+    max-width: 28rem;
+    margin-inline: auto;
+  }
+}

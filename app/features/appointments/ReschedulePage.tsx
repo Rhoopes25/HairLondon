@@ -7,7 +7,7 @@ import { formatRange } from '@src/domain/format/time';
 import { SlotSelector } from '@app/features/scheduling';
 import { useDocumentTitle } from '@app/hooks/usePageBehavior';
 import { useServices } from '@app/services';
-import { BackLink, Button, ConfirmBar, EmptyNote, PageIntro } from '@app/ui';
+import { BackLink, Button, ConfirmBar, EmptyNote, PageIntro, SplitLayout } from '@app/ui';
 import { servicesText, whenText } from './appointment-view';
 import { useAppointmentPage } from './useAppointmentPage';
 
@@ -42,32 +42,36 @@ export function ReschedulePage() {
         {servicesText(appointment, catalog)} with {stylist.name}. Now {whenText(appointment)}.
       </PageIntro>
 
-      <SlotSelector
-        stylist={stylist}
-        serviceIds={appointment.serviceIds}
-        date={date}
-        start={start}
-        ignoreAppointmentId={appointment.id}
-        onSelectDate={(next) => {
-          setDate(next);
-          setStart(null);
-        }}
-        onSelectStart={setStart}
-      />
-
-      <ConfirmBar summary={summary}>
-        <Button
-          fullWidth
-          disabled={!chosen}
-          onClick={() => {
-            if (!chosen) return;
-            appointments.reschedule(appointment.id, date, start);
-            navigate(`/appointments/${appointment.id}`);
+      <SplitLayout
+        aside={
+          <ConfirmBar sticky summary={summary}>
+            <Button
+              fullWidth
+              disabled={!chosen}
+              onClick={() => {
+                if (!chosen) return;
+                appointments.reschedule(appointment.id, date, start);
+                navigate(`/appointments/${appointment.id}`);
+              }}
+            >
+              Confirm new time
+            </Button>
+          </ConfirmBar>
+        }
+      >
+        <SlotSelector
+          stylist={stylist}
+          serviceIds={appointment.serviceIds}
+          date={date}
+          start={start}
+          ignoreAppointmentId={appointment.id}
+          onSelectDate={(next) => {
+            setDate(next);
+            setStart(null);
           }}
-        >
-          Confirm new time
-        </Button>
-      </ConfirmBar>
+          onSelectStart={setStart}
+        />
+      </SplitLayout>
     </>
   );
 }

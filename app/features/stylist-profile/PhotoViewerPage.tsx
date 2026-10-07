@@ -1,11 +1,14 @@
 import { useEffect, useState } from 'react';
 import { Navigate, useNavigate, useParams } from 'react-router';
 import { firstName } from '@src/domain/format/name';
-import { assetUrl } from '@app/config';
+import { assetUrl, photoSrcSet } from '@app/config';
 import { useDocumentTitle } from '@app/hooks/usePageBehavior';
 import { useStylist } from '@app/services';
 import { BackLink, LinkButton } from '@app/ui';
 import styles from './PhotoViewerPage.module.css';
+
+/** The photo is the whole column on a phone and about 30rem on desktop. */
+const PHOTO_SIZES = '(min-width: 900px) 30rem, 100vw';
 
 /** One photo of her work, large, with next and previous. Left and right arrow keys work too. */
 export function PhotoViewerPage() {
@@ -49,45 +52,49 @@ export function PhotoViewerPage() {
       <h1 className="visually-hidden">
         {stylist.name}’s work, photo {index + 1} of {photos.length}
       </h1>
-      <figure className={styles.figure}>
-        <div className={styles.frame}>
-          {failedSrc === photo.src ? null : (
-            <img
-              src={assetUrl(photo.src)}
-              alt={photo.alt}
-              onError={() => setFailedSrc(photo.src)}
-            />
-          )}
+      <div className={styles.viewer}>
+        <figure className={styles.figure}>
+          <div className={styles.frame}>
+            {failedSrc === photo.src ? null : (
+              <img
+                src={assetUrl(photo.src)}
+                srcSet={photoSrcSet(photo.src)}
+                sizes={PHOTO_SIZES}
+                alt={photo.alt}
+                onError={() => setFailedSrc(photo.src)}
+              />
+            )}
+          </div>
+          <figcaption>{photo.alt}</figcaption>
+        </figure>
+
+        <nav className={styles.pager} aria-label="Photos">
+          <LinkButton
+            to={`/stylists/${stylist.id}/photos/${prev}`}
+            replace
+            variant="outline"
+            size="sm"
+          >
+            Previous
+          </LinkButton>
+          <span aria-live="polite">
+            {index + 1} of {photos.length}
+          </span>
+          <LinkButton
+            to={`/stylists/${stylist.id}/photos/${next}`}
+            replace
+            variant="outline"
+            size="sm"
+          >
+            Next
+          </LinkButton>
+        </nav>
+
+        <div className={styles.cta}>
+          <LinkButton to={`/book/${stylist.id}`} fullWidth>
+            Book with {firstName(stylist.name)}
+          </LinkButton>
         </div>
-        <figcaption>{photo.alt}</figcaption>
-      </figure>
-
-      <nav className={styles.pager} aria-label="Photos">
-        <LinkButton
-          to={`/stylists/${stylist.id}/photos/${prev}`}
-          replace
-          variant="outline"
-          size="sm"
-        >
-          Previous
-        </LinkButton>
-        <span aria-live="polite">
-          {index + 1} of {photos.length}
-        </span>
-        <LinkButton
-          to={`/stylists/${stylist.id}/photos/${next}`}
-          replace
-          variant="outline"
-          size="sm"
-        >
-          Next
-        </LinkButton>
-      </nav>
-
-      <div className={styles.cta}>
-        <LinkButton to={`/book/${stylist.id}`} fullWidth>
-          Book with {firstName(stylist.name)}
-        </LinkButton>
       </div>
     </>
   );

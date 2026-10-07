@@ -49,7 +49,7 @@ export function MainLayout() {
 /** Booking: no main navigation, so attention stays on the task. The booking header has its own exit. */
 export function FocusLayout() {
   return (
-    <Frame>
+    <Frame contained={false}>
       <Outlet />
     </Frame>
   );

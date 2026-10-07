@@ -1,11 +1,9 @@
+/* The page fills the window. Only the content is limited to the container (see Container). */
 .frame {
-  width: 100%;
-  max-width: var(--app-width);
-  min-height: 100vh;
+  min-height: 100dvh;
   display: flex;
   flex-direction: column;
   background: var(--cream);
-  box-shadow: var(--shadow-frame);
 }
 
 .main {

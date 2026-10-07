@@ -1,6 +1,6 @@
 import { useNotice } from '@app/features/prototype-notice';
 import { useDocumentTitle } from '@app/hooks/usePageBehavior';
-import { LinkButton, PageIntro, Section, TextButton } from '@app/ui';
+import { LinkButton, Narrow, PageIntro, Section, TextButton } from '@app/ui';
 import styles from './HelpPage.module.css';
 
 const STEPS = [
@@ -33,7 +33,7 @@ export function HelpPage() {
   useDocumentTitle('How booking works');
 
   return (
-    <>
+    <Narrow>
       <PageIntro title="How booking works">Three steps, no account needed.</PageIntro>
 
       <Section title="The short version">
@@ -60,6 +60,6 @@ export function HelpPage() {
           <TextButton onClick={open}>Read the early-prototype note again</TextButton>
         </p>
       </Section>
-    </>
+    </Narrow>
   );
 }

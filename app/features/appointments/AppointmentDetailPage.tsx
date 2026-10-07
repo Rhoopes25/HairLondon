@@ -8,6 +8,7 @@ import {
   ConfirmDialog,
   EmptyNote,
   LinkButton,
+  Narrow,
   PageIntro,
   Recap,
   TextButton,
@@ -44,7 +45,7 @@ export function AppointmentDetailPage() {
   const bookAgain = `/book/${appointment.stylistId}?service=${appointment.serviceIds[0] ?? ''}`;
 
   return (
-    <>
+    <Narrow>
       <BackLink to="/appointments">My appointments</BackLink>
       <PageIntro title={HEADINGS[phase]} />
       <Recap
@@ -116,6 +117,6 @@ export function AppointmentDetailPage() {
           navigate('/appointments');
         }}
       />
-    </>
+    </Narrow>
   );
 }

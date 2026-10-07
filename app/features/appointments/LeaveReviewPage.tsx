@@ -9,6 +9,7 @@ import {
   Button,
   ConfirmBar,
   EmptyNote,
+  Narrow,
   PageIntro,
   StarInput,
   TextAreaField,
@@ -67,7 +68,7 @@ export function LeaveReviewPage() {
   }
 
   return (
-    <>
+    <Narrow>
       <BackLink to={`/appointments/${appointment.id}`}>Back to appointment</BackLink>
       <PageIntro title={`Review ${stylist.name}`}>
         {servicesText(appointment, catalog)}, {whenText(appointment)}.
@@ -94,6 +95,6 @@ export function LeaveReviewPage() {
           Post review
         </Button>
       </ConfirmBar>
-    </>
+    </Narrow>
   );
 }

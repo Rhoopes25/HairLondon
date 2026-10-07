@@ -5,7 +5,7 @@ import { firstName } from '@src/domain/format/name';
 import { formatDuration } from '@src/domain/format/duration';
 import { SERVICE_IDS } from '@src/domain/models/service';
 import type { ServiceId } from '@src/domain/models/service';
-import { assetUrl } from '@app/config';
+import { assetUrl, photoSrcSet } from '@app/config';
 import { useDocumentTitle } from '@app/hooks/usePageBehavior';
 import { useServices, useStylist } from '@app/services';
 import {
@@ -57,6 +57,7 @@ export function StylistProfilePage() {
       <ProfileHeader
         name={stylist.name}
         photoUrl={stylist.photo ? assetUrl(stylist.photo) : null}
+        photoSrcSet={stylist.photo ? photoSrcSet(stylist.photo) : undefined}
         studio={stylist.studio}
         city={stylist.city}
         average={averageRating(stylist.reviews)}
@@ -84,6 +85,7 @@ export function StylistProfilePage() {
               <PortfolioGrid
                 photos={stylist.portfolio.map((photo) => ({
                   src: assetUrl(photo.src),
+                  srcSet: photoSrcSet(photo.src),
                   alt: photo.alt,
                 }))}
                 onSelect={(index) => navigate(`${base}/photos/${index}`)}

@@ -7,7 +7,7 @@ import { validateDetails } from '@src/domain/booking/validate-details';
 import { firstName } from '@src/domain/format/name';
 import { useDocumentTitle, useFocusOnMount } from '@app/hooks/usePageBehavior';
 import { useServices } from '@app/services';
-import { Button, ConfirmBar, PageIntro, Recap, TextButton, TextField } from '@app/ui';
+import { Button, ConfirmBar, Container, PageIntro, Recap, TextButton, TextField } from '@app/ui';
 import { BookingHeader } from './BookingHeader';
 import { useBooking } from './BookingProvider';
 import { draftRecapRows } from './bookingRecap';
@@ -44,54 +44,63 @@ export function DetailsStep() {
   return (
     <>
       <BookingHeader confirmExit />
-      <PageIntro title="Your details" titleRef={headingRef} />
-      <Recap rows={draftRecapRows(draft, stylist, catalog)} />
+      <Container>
+        <PageIntro title="Your details" titleRef={headingRef} />
 
-      <form id="details-form" className={styles.form} onSubmit={onSubmit} noValidate>
-        <TextField
-          label="Name"
-          name="name"
-          autoComplete="name"
-          required
-          value={details.name}
-          onChange={(event) => setDetails({ name: event.target.value })}
-          error={errors.name}
-          inputRef={nameRef}
+        <div className={styles.layout}>
+          <div className={styles.recap}>
+            <Recap rows={draftRecapRows(draft, stylist, catalog)} />
+          </div>
+
+          <form id="details-form" className={styles.form} onSubmit={onSubmit} noValidate>
+            <TextField
+              label="Name"
+              name="name"
+              autoComplete="name"
+              required
+              value={details.name}
+              onChange={(event) => setDetails({ name: event.target.value })}
+              error={errors.name}
+              inputRef={nameRef}
+            />
+            <TextField
+              label="Phone"
+              name="phone"
+              type="tel"
+              inputMode="tel"
+              autoComplete="tel"
+              required
+              value={details.phone}
+              onChange={(event) => setDetails({ phone: event.target.value })}
+              hint="For a reminder text the day before."
+              error={errors.phone}
+              inputRef={phoneRef}
+            />
+            <TextButton className={styles.preview} onClick={() => setPreviewing(true)}>
+              See a sample reminder
+            </TextButton>
+          </form>
+
+          <div className={styles.bar}>
+            <ConfirmBar sticky>
+              <Button type="submit" form="details-form" fullWidth>
+                Continue
+              </Button>
+              <TextButton className={styles.back} onClick={() => navigate(`/book/${stylist.id}`)}>
+                Back
+              </TextButton>
+            </ConfirmBar>
+          </div>
+        </div>
+
+        <ReminderPreviewSheet
+          open={previewing}
+          onClose={() => setPreviewing(false)}
+          draft={draft}
+          stylist={stylist}
+          clientName={details.name}
         />
-        <TextField
-          label="Phone"
-          name="phone"
-          type="tel"
-          inputMode="tel"
-          autoComplete="tel"
-          required
-          value={details.phone}
-          onChange={(event) => setDetails({ phone: event.target.value })}
-          hint="For a reminder text the day before."
-          error={errors.phone}
-          inputRef={phoneRef}
-        />
-        <TextButton className={styles.preview} onClick={() => setPreviewing(true)}>
-          See a sample reminder
-        </TextButton>
-      </form>
-
-      <ConfirmBar>
-        <Button type="submit" form="details-form" fullWidth>
-          Continue
-        </Button>
-        <TextButton className={styles.back} onClick={() => navigate(`/book/${stylist.id}`)}>
-          Back
-        </TextButton>
-      </ConfirmBar>
-
-      <ReminderPreviewSheet
-        open={previewing}
-        onClose={() => setPreviewing(false)}
-        draft={draft}
-        stylist={stylist}
-        clientName={details.name}
-      />
+      </Container>
     </>
   );
 }
