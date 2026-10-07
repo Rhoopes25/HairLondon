@@ -4,8 +4,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Stylists | Hair by London</title>
-    <meta name="description" content="Browse stylists near you by service, see their work, and book.">
+    <title>Find a stylist | Hair by London</title>
+    <meta name="description" content="Pick what you want done and when, then see which stylists can fit you in.">
     <link rel="stylesheet" href="style.css">
 </head>
 
@@ -23,15 +23,36 @@
 
         <main>
             <section class="page-intro">
-                <h1 id="stylists-title">Find a stylist</h1>
-                <p id="stylists-lead">Browse their work and reviews, then book a time that fits your day.</p>
+                <h1>Find a stylist</h1>
+                <p>Pick what you want done and when. We'll show who can fit you in.</p>
             </section>
 
-            <section class="filter-section" aria-label="Filter by service" id="filter-section">
-                <div class="chip-scroll" id="filter-chips"></div>
+            <section class="filter-group" aria-labelledby="f-services">
+                <h2 id="f-services">What do you need?</h2>
+                <p class="filter-hint">Pick as many as you like.</p>
+                <div class="chip-wrap" id="service-chips"></div>
+                <p class="estimate-line" id="estimate-line" hidden></p>
             </section>
 
-            <section class="stylist-list" id="stylist-list" aria-live="polite"></section>
+            <section class="filter-group" aria-labelledby="f-day">
+                <h2 id="f-day">Which day?</h2>
+                <div class="chip-scroll chip-scroll--days" id="day-chips"></div>
+            </section>
+
+            <section class="filter-group" aria-labelledby="f-time">
+                <h2 id="f-time">What time?</h2>
+                <div class="chip-wrap" id="time-chips"></div>
+            </section>
+
+            <div class="filter-clear">
+                <button type="button" class="text-btn text-btn--inline" id="clear-btn" hidden>Clear filters</button>
+            </div>
+
+            <div class="results-bar">
+                <p id="results-count" aria-live="polite"></p>
+            </div>
+
+            <section class="stylist-list" id="stylist-list" aria-label="Stylists"></section>
         </main>
 
         <footer class="site-footer">
@@ -53,94 +74,250 @@
     <script src="data.js"></script>
     <script>
         const params = new URLSearchParams(location.search);
-        const selectedServices = parseServiceIds(params.get('services'));
-        let activeService = SERVICES[params.get('service')] ? params.get('service') : 'all';
 
-        const chipsWrap = document.getElementById('filter-chips');
-        const filterSection = document.getElementById('filter-section');
+        // Old links used ?service=haircut (one service). Still accept them.
+        const filters = {
+            services: parseServiceIds(params.get('services') || params.get('service')),
+            day: params.get('day') && parseDateKey(params.get('day')) ? params.get('day') : null,
+            time: TIMES_OF_DAY[params.get('time')] ? params.get('time') : null
+        };
+
+        const serviceChips = document.getElementById('service-chips');
+        const dayChips = document.getElementById('day-chips');
+        const timeChips = document.getElementById('time-chips');
         const list = document.getElementById('stylist-list');
-        const fromServices = selectedServices.length > 0;
+        const countLine = document.getElementById('results-count');
+        const estimateLine = document.getElementById('estimate-line');
+        const clearBtn = document.getElementById('clear-btn');
 
-        if (fromServices) {
-            filterSection.hidden = true;
-            const names = selectedServices.map(id => SERVICES[id].name);
-            document.getElementById('stylists-title').textContent = 'Choose a stylist';
-            document.getElementById('stylists-lead').innerHTML =
-                'Stylists who offer ' + names.join(' + ') +
-                '. <a href="services.html?' + servicesQuery(selectedServices) + '">Change services</a>';
+        // Days anyone works, skipping days no one is in
+        const days = upcomingDays().filter(d => STYLISTS.some(s => s.workDays.includes(d.getDay()))).slice(0, 14);
+        if (filters.day && !days.some(d => dateKey(d) === filters.day)) filters.day = null;
+
+        /* ---------- Chips ---------- */
+
+        function chip(label, selected, onClick, extraClass, ariaLabel) {
+            const b = document.createElement('button');
+            b.type = 'button';
+            b.className = (extraClass || 'filter-chip') + (selected ? ' selected' : '');
+            b.innerHTML = label;
+            b.setAttribute('aria-pressed', selected);
+            if (ariaLabel) b.setAttribute('aria-label', ariaLabel);
+            b.addEventListener('click', onClick);
+            return b;
         }
 
         function renderChips() {
-            if (fromServices) return;
-            chipsWrap.innerHTML = '';
-            const options = [['all', 'All services'], ...Object.entries(SERVICES).map(([id, s]) => [id, s.name])];
-            options.forEach(([id, label]) => {
-                const b = document.createElement('button');
-                b.type = 'button';
-                b.className = 'filter-chip' + (id === activeService ? ' selected' : '');
-                b.textContent = label;
-                b.setAttribute('aria-pressed', id === activeService);
-                b.addEventListener('click', () => {
-                    activeService = id;
-                    const url = id === 'all' ? 'stylists.html' : 'stylists.html?service=' + id;
-                    history.replaceState(null, '', url);
-                    renderChips();
-                    renderList();
-                });
-                chipsWrap.appendChild(b);
+            serviceChips.innerHTML = '';
+            Object.entries(SERVICES).forEach(([id, svc]) => {
+                const on = filters.services.includes(id);
+                serviceChips.appendChild(chip(svc.name, on, () => {
+                    // Keep the order of the service list, not the order tapped
+                    filters.services = on ?
+                        filters.services.filter(x => x !== id) :
+                        Object.keys(SERVICES).filter(x => x === id || filters.services.includes(x));
+                    update();
+                }));
             });
-            const sel = chipsWrap.querySelector('.selected');
-            if (sel) sel.scrollIntoView({ block: 'nearest', inline: 'center' });
+
+            dayChips.innerHTML = '';
+            dayChips.appendChild(chip('<span>Any</span><span class="day-num">day</span>', !filters.day, () => {
+                filters.day = null;
+                update();
+            }, 'day-chip day-chip--any', 'Any day'));
+            days.forEach(d => {
+                const key = dateKey(d);
+                const on = filters.day === key;
+                dayChips.appendChild(chip(
+                    '<span>' + WEEKDAYS[d.getDay()] + '</span><span class="day-num">' + d.getDate() + '</span><span class="day-month">' + MONTHS[d.getMonth()] + '</span>',
+                    on, () => {
+                        filters.day = on ? null : key;
+                        update();
+                    }, 'day-chip', formatDay(d)));
+            });
+
+            timeChips.innerHTML = '';
+            timeChips.appendChild(chip('Any time', !filters.time, () => {
+                filters.time = null;
+                update();
+            }));
+            Object.entries(TIMES_OF_DAY).forEach(([key, t]) => {
+                const on = filters.time === key;
+                timeChips.appendChild(chip(t.label, on, () => {
+                    filters.time = on ? null : key;
+                    update();
+                }));
+            });
+        }
+
+        /* ---------- Results ---------- */
+
+        function searchDays() {
+            return filters.day ? [parseDateKey(filters.day)] : upcomingDays();
+        }
+
+        // How long to look for: her services added up, or an hour if she hasn't picked any
+        function searchDuration() {
+            return filters.services.length ? durationFor(filters.services) : 60;
+        }
+
+        function findMatches(useTime) {
+            const duration = searchDuration();
+            const daysToCheck = useTime ? searchDays() : upcomingDays();
+            const tod = useTime ? filters.time : null;
+            return stylistsOffering(filters.services)
+                .map(s => ({ stylist: s, slots: openSlots(s, duration, daysToCheck, tod, 3) }))
+                .filter(m => m.slots.length);
+        }
+
+        function slotLabel(slot) {
+            const today = todayAtMidnight();
+            const tomorrow = new Date(today);
+            tomorrow.setDate(today.getDate() + 1);
+            const key = dateKey(slot.date);
+            const day = key === dateKey(today) ? 'Today' :
+                key === dateKey(tomorrow) ? 'Tomorrow' : WEEKDAYS[slot.date.getDay()] + ' ' + slot.date.getDate();
+            return day + ', ' + formatTime(slot.start);
+        }
+
+        function cardHTML(m, slotsLabel) {
+            const s = m.stylist;
+            const ids = filters.services;
+            const svcQ = ids.length ? '&' + servicesQuery(ids) : '';
+            // Card opens the profile, carrying her services and picked day
+            const base = 'stylist.html?id=' + s.id + svcQ + (filters.day ? '&day=' + filters.day : '');
+            // A time goes straight to booking with services, day, and time filled in
+            const bookBase = 'booking.html?stylist=' + s.id + svcQ + '&from=search';
+
+            const price = ids.length ?
+                '<span class="card-price">' + priceText(priceFor(s, ids)) + '</span>' +
+                '<span class="card-price-note">about ' + formatDuration(durationFor(ids)) + '</span>' :
+                '<span class="card-price-note">from</span><span class="card-price">' + priceText(startingPrice(s)) + '</span>';
+
+            const thumbs = s.portfolio.slice(0, 3).map(p =>
+                '<span class="card-thumb"><img src="' + p.src + '" alt="" loading="lazy" onerror="this.parentNode.remove()"></span>').join('');
+
+            const slots = m.slots.map(slot =>
+                '<a class="slot-chip" href="' + bookBase + '&date=' + dateKey(slot.date) + '&start=' + slot.start + '"' +
+                ' aria-label="Book ' + escapeHTML(s.name) + ', ' + formatDay(slot.date) + ' at ' + formatTime(slot.start) + '">' +
+                slotLabel(slot) + '</a>').join('');
+
+            return '<article class="stylist-card stylist-card--rich">' +
+                '<div class="card-top">' +
+                avatarHTML(s) +
+                '<div class="stylist-card-body">' +
+                '<a class="stylist-card-name card-link" href="' + base + '">' + escapeHTML(s.name) + '</a>' +
+                '<span class="stylist-card-studio">' + escapeHTML(s.studio) + ', ' + escapeHTML(s.city) + '</span>' +
+                '<span class="stylist-card-meta rating-line">' + ratingHTML(s) + '</span>' +
+                '</div>' +
+                '<div class="card-price-wrap">' + price + '</div>' +
+                '</div>' +
+                (thumbs ? '<div class="card-thumbs" aria-hidden="true">' + thumbs + '</div>' : '') +
+                '<div class="card-slots"><span class="card-slots-label">' + (slotsLabel || 'Next open') + '</span>' +
+                '<div class="slot-row">' + slots + '</div></div>' +
+                '</article>';
+        }
+
+        function whenText() {
+            const parts = [];
+            if (filters.day) parts.push(formatDay(parseDateKey(filters.day)));
+            if (filters.time) parts.push('in the ' + TIMES_OF_DAY[filters.time].label.toLowerCase());
+            return parts.join(' ');
         }
 
         function renderList() {
-            const matches = fromServices ?
-                stylistsOffering(selectedServices) :
-                STYLISTS.filter(s => activeService === 'all' || s.services[activeService] != null);
+            const offering = stylistsOffering(filters.services);
+            let matches = findMatches(true);
+            const timed = filters.day || filters.time;
+
+            if (timed) {
+                matches.sort((a, b) => (a.slots[0].date - b.slots[0].date) || (a.slots[0].start - b.slots[0].start));
+            }
+
             list.innerHTML = '';
 
-            if (!matches.length) {
-                list.innerHTML = fromServices ?
-                    '<p class="empty-note">No stylists offer all of those services. <a href="services.html?' +
-                    servicesQuery(selectedServices) + '">Try a different mix</a>.</p>' :
-                    '<p class="empty-note">No stylists offer that service yet. Try another one.</p>';
+            if (!offering.length) {
+                countLine.textContent = 'No stylists yet';
+                list.innerHTML = '<p class="empty-note">Nobody offers ' + filters.services.map(id => SERVICES[id].name).join(' + ') +
+                    ' together yet. Try removing one service.</p>';
                 return;
             }
 
-            matches.forEach(s => {
-                let priceText;
-                let extra = '';
-                if (fromServices) {
-                    const total = selectedServices.reduce((sum, id) => sum + s.services[id], 0);
-                    priceText = '$' + total;
-                    extra = '&' + servicesQuery(selectedServices);
-                } else if (activeService === 'all') {
-                    priceText = 'From $' + startingPrice(s);
-                } else {
-                    priceText = SERVICES[activeService].name + ' $' + s.services[activeService];
-                    extra = '&service=' + activeService;
-                }
-                const link = 'stylist.html?id=' + s.id + extra;
+            if (!matches.length && timed) {
+                // Don't dead-end: say clearly why, then show other times
+                const others = findMatches(false);
+                countLine.textContent = 'No exact matches';
+                list.innerHTML =
+                    '<div class="no-match" role="status">' +
+                    '<p class="no-match-title">No openings ' + whenText() + '</p>' +
+                    '<p class="no-match-text">Nobody has a long enough opening then. ' +
+                    'Here are the soonest times these stylists do have.</p>' +
+                    '</div>' +
+                    '<p class="alt-label">Other times</p>' +
+                    others.map(m => cardHTML(m, 'Other open times')).join('');
+                return;
+            }
 
-                const card = document.createElement('a');
-                card.className = 'stylist-card';
-                card.href = link;
-                card.innerHTML =
-                    avatarHTML(s) +
-                    '<span class="stylist-card-body">' +
-                    '<span class="stylist-card-name">' + escapeHTML(s.name) + '</span>' +
-                    '<span class="stylist-card-studio">' + escapeHTML(s.studio) + ', ' + escapeHTML(s.city) + '</span>' +
-                    '<span class="stylist-card-meta rating-line">' +
-                    ratingHTML(s) +
-                    '</span>' +
-                    '</span>' +
-                    '<span class="stylist-card-price">' + priceText + '</span>';
-                list.appendChild(card);
-            });
+            const n = matches.length;
+            countLine.textContent = n + (n === 1 ? ' stylist' : ' stylists') +
+                (filters.services.length || timed ? ' can fit you in' : '');
+            list.innerHTML = matches.map(m => cardHTML(m)).join('');
         }
 
-        renderChips();
-        renderList();
+        /* ---------- Keep everything in sync ---------- */
+
+        function currentUrl() {
+            const q = new URLSearchParams();
+            if (filters.services.length) q.set('services', filters.services.join(','));
+            if (filters.day) q.set('day', filters.day);
+            if (filters.time) q.set('time', filters.time);
+            const qs = q.toString();
+            return 'stylists.html' + (qs ? '?' + qs : '');
+        }
+
+        function update() {
+            const url = currentUrl();
+            history.replaceState(null, '', url);
+            rememberSearch(url);
+
+            if (filters.services.length) {
+                estimateLine.hidden = false;
+                estimateLine.textContent = (filters.services.length > 1 ? 'Together these take about ' : 'Takes about ') +
+                    formatDuration(durationFor(filters.services)) + '.';
+            } else {
+                estimateLine.hidden = true;
+            }
+
+            // "Clear filters (3)" sits under the filters and only shows when something is picked
+            const activeCount = filters.services.length + (filters.day ? 1 : 0) + (filters.time ? 1 : 0);
+            clearBtn.hidden = !activeCount;
+            clearBtn.textContent = 'Clear filters (' + activeCount + ')';
+            const focusedLabel = document.activeElement && document.activeElement.closest('.filter-group') ?
+                document.activeElement.getAttribute('aria-label') || document.activeElement.textContent : null;
+            const focusedGroup = document.activeElement && document.activeElement.parentNode;
+
+            renderChips();
+            renderList();
+
+            // Re-rendering the chips drops focus, so put it back for keyboard users
+            if (focusedLabel && focusedGroup) {
+                const again = [...focusedGroup.children].find(b =>
+                    (b.getAttribute('aria-label') || b.textContent) === focusedLabel);
+                if (again) again.focus({ preventScroll: true });
+            }
+        }
+
+        clearBtn.addEventListener('click', () => {
+            filters.services = [];
+            filters.day = null;
+            filters.time = null;
+            update();
+        });
+
+        update();
+
+        const sel = dayChips.querySelector('.selected');
+        if (sel && filters.day) sel.scrollIntoView({ block: 'nearest', inline: 'center' });
     </script>
 </body>
 

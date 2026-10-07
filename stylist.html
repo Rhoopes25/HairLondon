@@ -17,11 +17,15 @@
             </a>
             <nav class="header-nav" aria-label="Main">
                 <a href="index.html" class="header-nav-link">Home</a>
-                <a href="stylists.html" class="header-nav-link active" aria-current="page">Stylists</a>
+                <a href="stylists.html" class="header-nav-link active" id="nav-stylists">Stylists</a>
             </nav>
         </header>
 
         <main id="profile-main">
+            <a href="stylists.html" class="back-link" id="back-link">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><polyline points="15 6 9 12 15 18"/></svg>
+                Back to stylists
+            </a>
             <section class="profile">
                 <div class="profile-top">
                     <span id="profile-avatar"></span>
@@ -48,6 +52,7 @@
             </section>
 
             <section class="tab-panel" role="tabpanel" id="panel-services" aria-labelledby="tab-services" hidden>
+                <p class="price-note">Prices are starting points. Longer or thicker hair can cost more, and times are estimates.</p>
                 <div class="service-rows" id="service-rows"></div>
             </section>
 
@@ -61,8 +66,18 @@
                 </div>
             </section>
 
-            <div class="portfolio-cta">
+            <div class="portfolio-cta" id="plain-cta">
                 <a href="#" id="bottom-book">Book Now</a>
+            </div>
+
+            <!-- Shows when she came from a search with services picked -->
+            <div class="book-bar" id="book-bar" hidden>
+                <div class="book-bar-info">
+                    <span class="book-bar-services" id="bar-services"></span>
+                    <span class="book-bar-meta" id="bar-meta"></span>
+                    <span class="book-bar-time" id="bar-time" hidden></span>
+                </div>
+                <a href="#" class="book-bar-btn" id="bar-book">Book</a>
             </div>
         </main>
 
@@ -91,17 +106,36 @@
             throw new Error('Unknown stylist');
         }
 
-        const selectedServices = parseServiceIds(params.get('services'));
-        const singleService = SERVICES[params.get('service')] ? params.get('service') : null;
-        if (singleService && !selectedServices.includes(singleService)) selectedServices.push(singleService);
+        // Only keep services this stylist actually offers
+        const selectedServices = parseServiceIds(params.get('services') || params.get('service'))
+            .filter(id => stylist.services[id] != null);
+
+        // A time she tapped on the Stylists page, if it's still open
+        let heldDate = parseDateKey(params.get('date'));
+        let heldStart = Number(params.get('start'));
+        const heldDuration = Math.max(durationFor(selectedServices), STEP);
+        if (!heldDate || !Number.isFinite(heldStart) || !isStartAvailable(stylist, heldDate, heldStart, heldDuration)) {
+            heldDate = null;
+            heldStart = null;
+        }
 
         function bookingHref(extraId) {
             const ids = selectedServices.slice();
             if (extraId && !ids.includes(extraId)) ids.push(extraId);
             let url = 'booking.html?stylist=' + stylist.id;
             if (ids.length) url += '&' + servicesQuery(ids);
+            if (heldDate && !extraId) url += '&date=' + dateKey(heldDate) + '&start=' + heldStart;
+            else if (pickedDay) url += '&date=' + dateKey(pickedDay);
             return url;
         }
+
+        // A day she picked in the Stylists filters (if this stylist works that day)
+        const pickedDay = parseDateKey(params.get('day'));
+
+        // Back to the same search she came from
+        const searchUrl = lastSearchUrl();
+        document.getElementById('back-link').href = searchUrl;
+        document.getElementById('nav-stylists').href = searchUrl;
 
         const bookUrl = bookingHref();
         document.title = stylist.name + ' | Hair by London';
@@ -116,6 +150,23 @@
         const bottomBook = document.getElementById('bottom-book');
         bottomBook.href = bookUrl;
         bottomBook.textContent = 'Book with ' + stylist.name.split(' ')[0];
+
+        // Sticky bar: her services, starting price, estimated time, and held time
+        if (selectedServices.length) {
+            document.getElementById('plain-cta').hidden = true;
+            document.getElementById('book-bar').hidden = false;
+            document.getElementById('bar-services').textContent = selectedServices.map(id => SERVICES[id].name).join(' + ');
+            document.getElementById('bar-meta').textContent =
+                priceText(priceFor(stylist, selectedServices)) + ' \u00b7 about ' + formatDuration(durationFor(selectedServices));
+            if (heldDate) {
+                const t = document.getElementById('bar-time');
+                t.hidden = false;
+                t.textContent = formatDay(heldDate) + ' at ' + formatTime(heldStart);
+            }
+            const barBook = document.getElementById('bar-book');
+            barBook.href = bookUrl;
+            barBook.textContent = 'Book with ' + stylist.name.split(' ')[0];
+        }
 
         // Portfolio
         const grid = document.getElementById('work-grid');
@@ -140,7 +191,7 @@
                 '<span class="service-name">' + svc.name + '</span>' +
                 '<span class="service-desc">' + svc.description + '</span>' +
                 '</span>' +
-                '<span class="service-meta">' + formatDuration(svc.duration) + ' \u00b7 $' + price + '</span>' +
+                '<span class="service-meta">' + formatDuration(svc.duration) + ' \u00b7 ' + priceText(price) + '</span>' +
                 '<svg class="service-row-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><polyline points="9 6 15 12 9 18"/></svg>' +
                 '</a>');
         });
@@ -173,8 +224,8 @@
                 if (e.key === 'ArrowLeft') selectTab(tabs[(i - 1 + tabs.length) % tabs.length], true);
             });
         });
-        // Lead with the work, unless there are no photos yet or she came from a service filter
-        selectTab(params.get('service') || params.get('services') || !stylist.portfolio.length ? tabs[1] : tabs[0]);
+        // Lead with the work (that's what builds trust). Reviews first if there are no photos yet.
+        selectTab(stylist.portfolio.length ? tabs[0] : tabs[2]);
     </script>
 </body>
 

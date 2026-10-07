@@ -5,7 +5,10 @@
    ========================================================== */
 
 // Every service the site offers. Stylists pick which ones they do
-// and set their own price. Duration is in minutes.
+// and set their own STARTING price (shown as "$65+", since longer or
+// thicker hair can cost more). Duration is an estimate in minutes.
+// Pick more than one and the times add up, so a haircut + highlights
+// shows as one longer appointment.
 const SERVICES = {
     'haircut': {
         name: 'Haircut',
@@ -170,6 +173,21 @@ function startingPrice(stylist) {
     return Math.min(...Object.values(stylist.services));
 }
 
+// Prices are starting points, so they always show with a plus: "$65+"
+function priceText(amount) {
+    return '$' + amount + '+';
+}
+
+// Starting price for a set of services with one stylist
+function priceFor(stylist, ids) {
+    return ids.reduce((sum, id) => sum + stylist.services[id], 0);
+}
+
+// Estimated length of an appointment with all these services
+function durationFor(ids) {
+    return ids.reduce((sum, id) => sum + SERVICES[id].duration, 0);
+}
+
 // Lowest and highest price for a service across all stylists who offer it
 function priceRange(serviceId) {
     const prices = STYLISTS.map(s => s.services[serviceId]).filter(p => p != null);
@@ -209,6 +227,130 @@ function ratingHTML(stylist) {
     const count = stylist.reviews.length;
     return '<span class="stars" role="img" aria-label="' + rating + ' out of 5 stars">' + starsHTML(rating) + '</span>' +
         '<span>' + rating + ' \u00b7 ' + count + (count === 1 ? ' review' : ' reviews') + '</span>';
+}
+
+/* ---------- Dates and times ---------- */
+
+// Salon hours in minutes from midnight. Slots start every 30 min.
+const OPEN = 9 * 60;
+const CLOSE = 19 * 60;
+const STEP = 30;
+const DAYS_AHEAD = 21;
+
+// Time-of-day filter on the Stylists page (by start time)
+const TIMES_OF_DAY = {
+    morning: { label: 'Morning', from: OPEN, to: 12 * 60 },
+    afternoon: { label: 'Afternoon', from: 12 * 60, to: 16 * 60 },
+    evening: { label: 'Evening', from: 16 * 60, to: CLOSE }
+};
+
+const WEEKDAYS = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+const MONTHS = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+
+function formatTime(mins, withPeriod = true) {
+    const h24 = Math.floor(mins / 60);
+    const m = mins % 60;
+    const h12 = h24 % 12 || 12;
+    const period = h24 < 12 ? 'AM' : 'PM';
+    return h12 + ':' + String(m).padStart(2, '0') + (withPeriod ? ' ' + period : '');
+}
+
+// "1:00 to 2:30 PM", or "11:00 AM to 12:30 PM" when it crosses noon
+function formatRange(start, end) {
+    const samePeriod = (start < 720) === (end < 720);
+    return formatTime(start, !samePeriod) + ' to ' + formatTime(end);
+}
+
+function formatDay(date) {
+    return WEEKDAYS[date.getDay()] + ', ' + MONTHS[date.getMonth()] + ' ' + date.getDate();
+}
+
+// "2026-10-14", used in links and as a lookup key
+function dateKey(date) {
+    const p = n => String(n).padStart(2, '0');
+    return date.getFullYear() + '-' + p(date.getMonth() + 1) + '-' + p(date.getDate());
+}
+
+function parseDateKey(key) {
+    if (!/^\d{4}-\d{2}-\d{2}$/.test(key || '')) return null;
+    const [y, m, d] = key.split('-').map(Number);
+    const date = new Date(y, m - 1, d);
+    return isNaN(date) ? null : date;
+}
+
+function todayAtMidnight() {
+    const d = new Date();
+    d.setHours(0, 0, 0, 0);
+    return d;
+}
+
+// The next DAYS_AHEAD days, starting today
+function upcomingDays() {
+    const today = todayAtMidnight();
+    const days = [];
+    for (let i = 0; i < DAYS_AHEAD; i++) {
+        const d = new Date(today);
+        d.setDate(today.getDate() + i);
+        days.push(d);
+    }
+    return days;
+}
+
+/* ---------- Sample availability ----------
+   Until there's a real calendar, each stylist gets a steady,
+   made-up set of booked half hours per day. The same day always
+   shows the same openings, on every page. */
+
+function hash(str) {
+    let h = 2166136261;
+    for (let i = 0; i < str.length; i++) {
+        h ^= str.charCodeAt(i);
+        h = Math.imul(h, 16777619);
+    }
+    return h >>> 0;
+}
+
+function isBlockBooked(stylist, date, mins) {
+    return hash(stylist.id + dateKey(date) + mins) % 100 < 10;
+}
+
+// Can this stylist fit an appointment of this length starting here?
+function isStartAvailable(stylist, date, start, duration) {
+    if (!stylist.workDays.includes(date.getDay())) return false;
+    if (start + duration > CLOSE) return false;
+    const now = new Date();
+    if (dateKey(date) === dateKey(now) && start <= now.getHours() * 60 + now.getMinutes() + 60) return false;
+    for (let t = start; t < start + duration; t += STEP) {
+        if (isBlockBooked(stylist, date, t)) return false;
+    }
+    return true;
+}
+
+// Open start times for a stylist, soonest first.
+// days: list of dates to check. tod: a TIMES_OF_DAY key or null.
+function openSlots(stylist, duration, days, tod, limit) {
+    const range = TIMES_OF_DAY[tod] || { from: OPEN, to: CLOSE };
+    const slots = [];
+    for (const date of days) {
+        for (let start = range.from; start < range.to; start += STEP) {
+            if (isStartAvailable(stylist, date, start, duration)) {
+                slots.push({ date, start });
+                if (limit && slots.length >= limit) return slots;
+            }
+        }
+    }
+    return slots;
+}
+
+/* ---------- Remembering the last search ----------
+   So "Back to stylists" returns her to the same filters. */
+
+function rememberSearch(url) {
+    try { sessionStorage.setItem('hbl-search', url); } catch (e) {}
+}
+
+function lastSearchUrl() {
+    try { return sessionStorage.getItem('hbl-search') || 'stylists.html'; } catch (e) { return 'stylists.html'; }
 }
 
 function escapeHTML(str) {

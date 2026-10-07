@@ -27,7 +27,15 @@
                 </section>
 
                 <section class="booking-section">
-                    <h2>Choose your services</h2>
+                    <h2>Your services</h2>
+                    <!-- When she already picked services, show them as one line -->
+                    <div class="service-summary" id="service-summary" hidden>
+                        <div>
+                            <span class="service-summary-names" id="summary-names"></span>
+                            <span class="service-summary-meta" id="summary-meta"></span>
+                        </div>
+                        <button type="button" class="text-btn text-btn--inline" id="change-services" aria-expanded="false" aria-controls="service-list">Change</button>
+                    </div>
                     <div class="service-list" id="service-list"></div>
                 </section>
 
@@ -49,9 +57,10 @@
                         <span id="summary-line">Select services, day &amp; time</span>
                     </div>
                     <div class="confirm-summary" style="border-bottom: none; padding-bottom: 0; margin-bottom: 1.1rem;">
-                        <span class="confirm-total-label">Total</span>
+                        <span class="confirm-total-label">Estimated total</span>
                         <strong id="summary-price">&mdash;</strong>
                     </div>
+                    <p class="price-note price-note--bar" id="price-note"></p>
                     <button type="button" class="confirm-btn" id="continue-btn" disabled>Continue</button>
                 </div>
             </div>
@@ -81,7 +90,6 @@
 
                 <div class="confirm-bar">
                     <button type="submit" form="details-form" class="confirm-btn">Confirm booking</button>
-                    <button type="button" class="text-btn" id="back-btn">Back</button>
                 </div>
             </div>
 
@@ -129,79 +137,18 @@
         const firstName = stylist.name.split(' ')[0];
         document.title = 'Book with ' + firstName + ' | Hair by London';
 
-        // Salon hours in minutes from midnight. Slots start every 30 min.
-        const OPEN = 9 * 60;
-        const CLOSE = 18 * 60;
-        const STEP = 30;
-        const DAYS_AHEAD = 21;
-
         const state = {
-            services: [], // service ids, in the order they were picked
+            services: [], // service ids, in list order
             date: null,   // Date at midnight
             start: null   // minutes from midnight
         };
 
-        /* ---------- Formatting ---------- */
-
-        const WEEKDAYS = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
-        const MONTHS = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
-
-        function formatTime(mins, withPeriod = true) {
-            const h24 = Math.floor(mins / 60);
-            const m = mins % 60;
-            const h12 = h24 % 12 || 12;
-            const period = h24 < 12 ? 'AM' : 'PM';
-            return h12 + ':' + String(m).padStart(2, '0') + (withPeriod ? ' ' + period : '');
-        }
-
-        function formatRange(start, end) {
-            // "1:00 to 2:30 PM", or "11:00 AM to 12:30 PM" when it crosses noon
-            const samePeriod = (start < 720) === (end < 720);
-            return formatTime(start, !samePeriod) + ' to ' + formatTime(end);
-        }
-
-        function formatDay(date) {
-            return WEEKDAYS[date.getDay()] + ', ' + MONTHS[date.getMonth()] + ' ' + date.getDate();
-        }
-
-        function dateKey(date) {
-            return date.getFullYear() + '-' + (date.getMonth() + 1) + '-' + date.getDate();
-        }
-
         function totalDuration() {
-            return state.services.reduce((sum, id) => sum + SERVICES[id].duration, 0);
+            return durationFor(state.services);
         }
 
         function totalPrice() {
-            return state.services.reduce((sum, id) => sum + stylist.services[id], 0);
-        }
-
-        /* ---------- Sample availability ----------
-           Until there's a real calendar, each stylist gets a steady,
-           made-up set of booked half hours per day. The same day always
-           shows the same openings. */
-
-        function hash(str) {
-            let h = 2166136261;
-            for (let i = 0; i < str.length; i++) {
-                h ^= str.charCodeAt(i);
-                h = Math.imul(h, 16777619);
-            }
-            return h >>> 0;
-        }
-
-        function isBlockBooked(date, mins) {
-            return hash(stylist.id + dateKey(date) + mins) % 100 < 20;
-        }
-
-        function isStartAvailable(date, start, duration) {
-            if (start + duration > CLOSE) return false;
-            const now = new Date();
-            if (dateKey(date) === dateKey(now) && start <= now.getHours() * 60 + now.getMinutes() + 60) return false;
-            for (let t = start; t < start + duration; t += STEP) {
-                if (isBlockBooked(date, t)) return false;
-            }
-            return true;
+            return priceFor(stylist, state.services);
         }
 
         /* ---------- Header ---------- */
@@ -209,15 +156,22 @@
         document.getElementById('booking-with').innerHTML =
             avatarHTML(stylist, 'sm') + '<span>Booking with <strong>' + escapeHTML(firstName) + '</strong></span>';
 
-        const exitBtn = document.getElementById('exit-btn');
-        const incomingServices = parseServiceIds(params.get('services'));
-        const singlePreset = params.get('service');
-        if (singlePreset && SERVICES[singlePreset] && !incomingServices.includes(singlePreset)) {
-            incomingServices.push(singlePreset);
-        }
+        const incomingServices = parseServiceIds(params.get('services') || params.get('service'))
+            .filter(id => stylist.services[id] != null);
 
-        exitBtn.href = 'stylist.html?id=' + stylist.id + (incomingServices.length ? '&' + servicesQuery(incomingServices) : '');
+        // X goes back to the profile she came from
+        const exitBtn = document.getElementById('exit-btn');
+        // X goes back to wherever she came from: the search list or the profile
+        exitBtn.href = params.get('from') === 'search' ?
+            lastSearchUrl() :
+            'stylist.html?id=' + stylist.id + (incomingServices.length ? '&' + servicesQuery(incomingServices) : '');
         exitBtn.addEventListener('click', e => {
+            // On the details step, this button goes back to day and time instead of leaving
+            if (!document.getElementById('view-details').hidden) {
+                e.preventDefault();
+                history.back();
+                return;
+            }
             const started = state.services.length || state.date;
             const done = !document.getElementById('view-done').hidden;
             if (started && !done && !confirm('Leave booking? Your choices won\u2019t be saved.')) {
@@ -225,9 +179,14 @@
             }
         });
 
-        /* ---------- Services ---------- */
+        /* ---------- Services ----------
+           If she already picked services on the Stylists page, show them as
+           one line with a Change button instead of the whole list again. */
 
         const serviceList = document.getElementById('service-list');
+        const serviceSummary = document.getElementById('service-summary');
+        const changeBtn = document.getElementById('change-services');
+
         Object.entries(stylist.services).forEach(([id, price]) => {
             const svc = SERVICES[id];
             serviceList.insertAdjacentHTML('beforeend',
@@ -238,38 +197,70 @@
                 '<span class="service-name">' + svc.name + '</span>' +
                 '<span class="service-desc">' + svc.description + '</span>' +
                 '</span>' +
-                '<span class="service-meta">' + formatDuration(svc.duration) + ' \u00b7 $' + price + '</span>' +
+                '<span class="service-meta">' + formatDuration(svc.duration) + ' \u00b7 ' + priceText(price) + '</span>' +
                 '</label>');
         });
 
+        const serviceOrder = Object.keys(stylist.services);
+
         serviceList.querySelectorAll('input').forEach(input => {
             input.addEventListener('change', () => {
-                if (input.checked) state.services.push(input.value);
-                else state.services = state.services.filter(id => id !== input.value);
+                const picked = new Set(state.services);
+                if (input.checked) picked.add(input.value);
+                else picked.delete(input.value);
+                state.services = serviceOrder.filter(id => picked.has(id));
                 if (state.date) renderTimes();
                 updateSummary();
             });
         });
 
         incomingServices.forEach(id => {
-            if (stylist.services[id] == null) return;
             const input = serviceList.querySelector('input[value="' + id + '"]');
-            if (!input || input.checked) return;
-            input.checked = true;
-            state.services.push(id);
+            if (input) input.checked = true;
+        });
+        state.services = serviceOrder.filter(id => incomingServices.includes(id));
+
+        function renderServiceSummary() {
+            document.getElementById('summary-names').textContent = state.services.map(id => SERVICES[id].name).join(' + ');
+            document.getElementById('summary-meta').textContent =
+                priceText(totalPrice()) + ' \u00b7 about ' + formatDuration(totalDuration());
+        }
+
+        if (state.services.length) {
+            serviceSummary.hidden = false;
+            serviceList.hidden = true;
+            renderServiceSummary();
+        }
+
+        changeBtn.addEventListener('click', () => {
+            const opening = serviceList.hidden;
+            serviceList.hidden = !opening;
+            changeBtn.textContent = opening ? 'Done' : 'Change';
+            changeBtn.setAttribute('aria-expanded', opening);
+            if (!opening && !state.services.length) {
+                // Nothing picked, so keep the list open
+                serviceList.hidden = false;
+                changeBtn.textContent = 'Done';
+                changeBtn.setAttribute('aria-expanded', 'true');
+            }
+            renderServiceSummary();
         });
 
         /* ---------- Days ---------- */
 
         const dayScroll = document.getElementById('day-scroll');
-        const today = new Date();
-        today.setHours(0, 0, 0, 0);
+        const dayChips = [];
 
-        for (let i = 0; i < DAYS_AHEAD; i++) {
-            const date = new Date(today);
-            date.setDate(today.getDate() + i);
-            if (!stylist.workDays.includes(date.getDay())) continue;
+        function selectDay(date) {
+            dayChips.forEach(({ chip, date: d }) => {
+                const on = date && dateKey(d) === dateKey(date);
+                chip.classList.toggle('selected', on);
+                chip.setAttribute('aria-pressed', on);
+            });
+            state.date = date;
+        }
 
+        upcomingDays().filter(d => stylist.workDays.includes(d.getDay())).forEach(date => {
             const chip = document.createElement('button');
             chip.type = 'button';
             chip.className = 'day-chip';
@@ -281,23 +272,14 @@
 
             chip.addEventListener('click', () => {
                 const wasSelected = chip.classList.contains('selected');
-                dayScroll.querySelectorAll('.day-chip').forEach(c => {
-                    c.classList.remove('selected');
-                    c.setAttribute('aria-pressed', 'false');
-                });
                 state.start = null;
-                if (wasSelected) {
-                    state.date = null;
-                } else {
-                    chip.classList.add('selected');
-                    chip.setAttribute('aria-pressed', 'true');
-                    state.date = date;
-                }
+                selectDay(wasSelected ? null : date);
                 renderTimes();
                 updateSummary();
             });
+            dayChips.push({ chip, date });
             dayScroll.appendChild(chip);
-        }
+        });
 
         /* ---------- Times ---------- */
 
@@ -312,13 +294,13 @@
             }
 
             const duration = Math.max(totalDuration(), STEP);
-            if (state.start != null && !isStartAvailable(state.date, state.start, duration)) {
+            if (state.start != null && !isStartAvailable(stylist, state.date, state.start, duration)) {
                 state.start = null; // services changed and the old time no longer fits
             }
 
             let openCount = 0;
             for (let start = OPEN; start < CLOSE; start += STEP) {
-                const open = isStartAvailable(state.date, start, duration);
+                const open = isStartAvailable(stylist, state.date, start, duration);
                 if (open) openCount++;
 
                 const slot = document.createElement('button');
@@ -342,10 +324,27 @@
             }
         }
 
+        // A time she tapped on the Stylists page comes in already picked
+        // A day she picked comes in selected too, even without a time
+        const heldDate = parseDateKey(params.get('date'));
+        const heldStart = params.get('start') == null ? NaN : Number(params.get('start'));
+        if (heldDate && stylist.workDays.includes(heldDate.getDay()) &&
+            dayChips.some(c => dateKey(c.date) === dateKey(heldDate))) {
+            selectDay(heldDate);
+            if (Number.isFinite(heldStart) &&
+                isStartAvailable(stylist, heldDate, heldStart, Math.max(totalDuration(), STEP))) {
+                state.start = heldStart;
+            }
+            renderTimes();
+            const sel = dayScroll.querySelector('.selected');
+            if (sel) sel.scrollIntoView({ block: 'nearest', inline: 'center' });
+        }
+
         /* ---------- Summary ---------- */
 
         const summaryLine = document.getElementById('summary-line');
         const summaryPrice = document.getElementById('summary-price');
+        const priceNote = document.getElementById('price-note');
         const continueBtn = document.getElementById('continue-btn');
 
         function whenText() {
@@ -365,11 +364,14 @@
             summaryLine.textContent = parts.length ? parts.join(' \u00b7 ') : 'Select services, day & time';
 
             const total = totalPrice();
-            summaryPrice.textContent = total ? '$' + total + ' \u00b7 ' + formatDuration(totalDuration()) : '\u2014';
+            summaryPrice.textContent = total ? priceText(total) + ' \u00b7 about ' + formatDuration(totalDuration()) : '\u2014';
+            priceNote.textContent = total ?
+                'Starting price. Longer or thicker hair can cost more, and ' + firstName + ' will confirm it with you.' : '';
+            priceNote.hidden = !total;
 
             if (state.start != null && state.services.length) {
                 timeNote.hidden = false;
-                timeNote.textContent = 'You\u2019ll be done by ' + formatTime(state.start + totalDuration()) + '.';
+                timeNote.textContent = 'You\u2019ll be done by about ' + formatTime(state.start + totalDuration()) + '.';
             } else if (state.date && !state.services.length) {
                 timeNote.hidden = false;
                 timeNote.textContent = 'Pick a service to see when you\u2019ll be done.';
@@ -388,18 +390,36 @@
             done: document.getElementById('view-done')
         };
 
+        const X_ICON = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><line x1="6" y1="6" x2="18" y2="18"/><line x1="18" y1="6" x2="6" y2="18"/></svg>';
+        const BACK_ICON = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><polyline points="15 6 9 12 15 18"/></svg>';
+
         function showView(name, focusId) {
             Object.entries(views).forEach(([k, el]) => el.hidden = k !== name);
             window.scrollTo(0, 0);
             if (focusId) document.getElementById(focusId).focus();
+
+            // Back arrow on the details step, X everywhere else
+            const onDetails = name === 'details';
+            exitBtn.innerHTML = onDetails ? BACK_ICON : X_ICON;
+            exitBtn.setAttribute('aria-label', onDetails ? 'Back to day and time' : 'Exit booking');
         }
+
+        // Each step gets its own history entry, so swiping back on a phone
+        // goes back one step instead of leaving the booking.
+        history.replaceState({ step: 'choose' }, '');
+        window.addEventListener('popstate', e => {
+            const step = e.state && e.state.step;
+            if (!views.done.hidden) return; // already booked: let back leave normally
+            if (step === 'details' && state.start != null) showView('details', 'details-title');
+            else showView('choose');
+        });
 
         function recapHTML(extraRows = []) {
             const rows = [
                 ['Stylist', escapeHTML(stylist.name) + ', ' + escapeHTML(stylist.studio)],
                 ['Services', state.services.map(id => SERVICES[id].name).join(' + ')],
                 ['When', whenText()],
-                ['Total', '$' + totalPrice()],
+                ['Estimated total', priceText(totalPrice()) + ', about ' + formatDuration(totalDuration())],
                 ...extraRows
             ];
             return rows.map(([k, v]) => '<div class="recap-row"><span>' + k + '</span><span>' + v + '</span></div>').join('');
@@ -407,10 +427,10 @@
 
         continueBtn.addEventListener('click', () => {
             document.getElementById('details-recap').innerHTML = recapHTML();
+            history.pushState({ step: 'details' }, '');
             showView('details', 'details-title');
         });
 
-        document.getElementById('back-btn').addEventListener('click', () => showView('choose'));
 
         /* ---------- Details form ---------- */
 
