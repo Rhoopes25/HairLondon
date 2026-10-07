@@ -1,6 +1,6 @@
 # Hair by London
 
-A mobile-first hair stylist booking prototype for IS 551. See a stylist's real work and reviews, then book a time that fits your day. It is an **early prototype**: the stylists and reviews are samples, nothing is sent, and your appointments live only in your browser.
+A mobile-first, responsive (phone to desktop) hair stylist booking prototype for IS 551. See a stylist's real work and reviews, then book a time that fits your day. It is an **early prototype**: the stylists and reviews are samples, nothing is sent, and your appointments live only in your browser.
 
 **Live:** `https://rhoopes25.github.io/HairLondon/` (once GitHub Pages is enabled; see `docs/deployment.md`)
 
@@ -14,6 +14,7 @@ npm run dev          # http://localhost:5173
 npm test             # unit, integration, and accessibility tests
 npm run lint
 npm run build:pages  # the GitHub Pages build
+npm run layout       # screenshots and layout checks at 4 widths (after `npm run build`)
 ```
 
 ## Where things are

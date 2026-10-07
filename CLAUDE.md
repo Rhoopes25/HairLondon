@@ -29,7 +29,7 @@ The refactor from static HTML/CSS/JS to React + TypeScript is built (branch `ref
 - **Frontend:** `app/`. Everything React: UI, features, routing, browser adapters.
 - **Backend-shaped logic:** `src/`. Domain rules, repositories, seed data. Written as if it ran on a server (no React, no DOM), though today it is bundled into the client and persists to `localStorage`.
 - **Design system spec:** `hair-by-london-design-system/` (`tokens.json`, per-component READMEs and previews). It is the source of truth for look and component behavior; `app/ui` is its React implementation, and `app/ui/tokens/tokens.css` is **generated** from `tokens.json` (`npm run tokens`).
-- **Photos:** originals in `assets/originals/`; the web-sized copies in `app/public/images/` are generated (`npm run images`). Never commit a multi-megabyte photo to `app/public`.
+- **Photos:** originals in `assets/originals/`; the web-sized copies in `app/public/images/` are generated (`npm run images`) at three widths (`name-640.jpg`, `name.jpg` at 900px, `name-1160.jpg`). Use `photoSrcSet()` from `app/config.ts` with `srcSet`/`sizes` so each screen downloads the right one. Never commit a multi-megabyte photo to `app/public`.
 - Tooling (`package.json`, `tsconfig*.json`, `vite.config.ts`, `vitest.config.ts`, ESLint config), `scripts/`, `deploy/`, and `.github/` live at the repo root.
 
 ## Commands
@@ -46,10 +46,11 @@ npm run build:pages    # GitHub Pages build (base /HairLondon/, hash routing)
 npm run build:browser  # clean-URL build, to prove the host can be switched
 npm run preview        # serve the last build
 npm run tokens         # regenerate tokens.css from tokens.json
-npm run images         # regenerate web-sized photos from assets/originals
+npm run images         # regenerate web-sized photos (640, 900, 1160px) from assets/originals
+npm run layout         # Playwright screenshots + layout checks at 4 widths (needs `npm run build` first)
 ```
 
-Before calling work done: `typecheck`, `lint`, `test` pass. UI work also needs to be looked at in a browser, ideally on a phone; the automated checks do not judge how it looks.
+Before calling work done: `typecheck`, `lint`, `test` pass. UI work also needs to be looked at in a browser, ideally on a phone; the automated checks do not judge how it looks. `npm run layout` opens every route and overlay at 360, 768, 1280 and 1920px (or `-- --widths=899,900`), saves screenshots to the git-ignored `.layout-shots/`, and fails on sideways scroll, tap targets under 44px (900px and below) and content wider than the container. It needs a one-time `npx playwright install chromium` and is not part of `npm test` or CI. jsdom cannot test CSS, so look at the screenshots.
 
 ## Architecture
 
@@ -130,7 +131,8 @@ Follow `hair-by-london-design-system/README.md`. The non-negotiables:
 - **One action color family.** Filled buttons and small text use `gold-ink` (white on it is 6.3:1). `gold-deep` is for icons, stars, borders and the focus ring only (3.6:1). `scripts/contrast.test.ts` enforces this. Never rely on color alone: unavailable slots get a strike-through.
 - **Real controls.** Day chips, time slots, filters, and tabs are `<button>` with `aria-pressed` / `aria-selected` / `disabled`. Clickable `div`s are a bug. Keep the 2px `gold-deep` focus ring. Touch targets are at least 44px.
 - Times always show AM/PM. Metadata is one quiet line (`Haircut · $65`).
-- One centered column, max `460px`. Design at 390px first.
+- **Mobile first, responsive up to a full website.** Write the phone layout (design at 390px) as the base and add `min-width` queries on top. The only breakpoints are `sm` 640px, `md` 900px and `lg` 1200px, held in `tokens.json` (`responsive.breakpoints`); a test fails on any other `@media` width. Phone: one column. `sm`: two- and three-column grids, sheets become centered dialogs, the wordmark appears. `md`: desktop compositions (two-column booking with a sticky summary, split hero). `lg`: three-column grids, content at its maximum.
+- **Page width.** The header, prototype strip and footer are full-width bands; page content sits in `Container` (centered, `--container-max` 1200px, desktop gutters) and single-purpose screens (forms, recaps, help, confirmations) in `Narrow` (`--container-narrow` 640px). Two-column pages use `SplitLayout`. Components keep their own side padding (`space-5`); do not add another. Never set a fixed pixel width on a page.
 - Reuse before building: if a pattern appears twice, it becomes a `ui/` component with a preview and a test. Update the design-system README/`tokens.json` when a token or component changes.
 
 ### Prototype requirements (these ship in the product, not just in docs)

@@ -4,7 +4,7 @@ Status: **built.** Phases 0 to 7 are implemented on branch `refactor`; see "As b
 
 ## As built (read this first)
 
-**Done and verified** (typecheck, lint, 269 tests across `src`, tooling, and `app`, all passing; production builds for `pages` and `browser` modes; real-Chrome checks listed in `docs/usability-audit.md`):
+**Done and verified** (typecheck, lint, 283 tests across `src`, tooling, and `app`, all passing; production builds for `pages` and `browser` modes; real-Chrome checks listed in `docs/usability-audit.md`):
 
 - Phase 0: Vite + React 19 + TypeScript 6, root tooling, `app/config.ts`, router factory with both modes, `deploy/` host files, CI and Pages workflows, `docs/deployment.md`.
 - Phase 1: tokens generated from `tokens.json` with a drift test; 22 families of UI components in `app/ui`; the hidden `/#/design-library` page.
@@ -14,6 +14,8 @@ Status: **built.** Phases 0 to 7 are implemented on branch `refactor`; see "As b
 - Phase 5: all inventory screens, plus `AppointmentAwareAvailability` (booked slots become unavailable; cancel and reschedule free them).
 - Phase 6: `docs/usability-audit.md`, axe tests on every screen, contrast tests on the tokens.
 - Phase 7: legacy pages deleted, photos right-sized (9.3 MB to 0.91 MB), `docs/submission-notes.md` drafted.
+
+**Responsive pass (after Phase 7):** the 460px column was replaced by a mobile-first responsive layout up to a full-width website: `sm` 640, `md` 900, `lg` 1200 breakpoints and layout tokens in `tokens.json`; `Container`, `Narrow` and `SplitLayout` in `app/ui/Layout`; a full-width header with a wordmark, footer and strip; centered dialogs from `sm`; a split hero, grids, a two-column booking flow with a sticky summary, and a side-by-side photo viewer at `md`; photos at 640/900/1160px with `photoSrcSet()`. Differences from the written plan: the large photo variant is 1160px (the originals are only ~1170px wide, so 1280 would be an enlargement); `shadow-frame` and `app-width` were removed because nothing uses them. `npm run layout` (Playwright) is the way to look at it; it is not part of CI. Total tests now: 283.
 
 **Not done, or not verifiable from here:**
 

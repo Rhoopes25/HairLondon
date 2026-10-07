@@ -33,6 +33,22 @@ The principles below are the ones the project's own documents name (signifiers, 
 | **Minimalism, and staying on the core** | The core is portfolio, reviews, and booking. Everything else is support for those: appointments (change/cancel/review, which closes the trust loop), saved stylists, help. No marketplace pressure (no "spots left", countdowns, deals) | see `docs/submission-notes.md` |
 | **Accessibility** | Landmarks, one `h1` per screen, labelled fields, focus ring, focus trapped in overlays and returned on close, 44px tap targets, reduced-motion respected, page titles per screen | `ui/*`, `shell/layout` |
 
+## Responsive layout (phone to desktop)
+
+The app was a 460px column on every screen. It is now responsive: three breakpoints (`sm` 640, `md` 900, `lg` 1200), a full-width header, footer and prototype strip, a centered 1200px content container, and a desktop composition for each screen (split hero, grids, two-column booking with a sticky summary, side-by-side photo viewer).
+
+Checked with `npm run layout` (Playwright, Chromium), which opens 28 scenarios (21 page states, including every booking step, and 7 overlays that need clicking open) at 360, 768, 1280 and 1920px, and again at 320, 639, 640, 899, 900, 1199, 1200 and 2560px (336 screenshots in all). Every combination passes:
+
+- no horizontal scroll;
+- every interactive element at least 44px tall at 900px and below (a radio or checkbox inside a label counts as the label; links inside running text are exempt, per WCAG 2.5.8);
+- page content no wider than 1200px and centered at 1280px and above.
+
+Also checked by script: the booking summary stays in view under the header while the page scrolls (Continue stayed at the same screen position from scrollY 300 to the end), keyboard order on the two-column booking page follows reading order (services, days, then the panel), the Pages build serves every `srcset` variant under `/HairLondon/`, and the existing axe tests still report zero violations. Screenshots were reviewed by eye for home (360 and 1280px), and, mostly at 1280px, the stylist list, profile, photo viewer, booking, appointment, reschedule, help and the day-filter dialog, plus booking at 320, 768, 900 and 1920px. A "before" set from the old code (`npm run layout -- --out=.layout-shots/before`) showed the 460px column with empty space on both sides.
+
+Found and fixed along the way: the stylist name link in the appointment recap was default blue and 20px tall (now `gold-ink`, 44px hit area); the design library image used a `.png` that no longer exists.
+
+Not covered by this check: a real phone or tablet (touch feel, iOS Safari), landscape orientation, browser zoom set from the browser menu (reflow was checked by width, not by zoom), and a human opinion of how it looks. Not every overlay and empty state was looked at by eye at every width; the script proves they render without overflow.
+
 ## Findings fixed during this audit
 
 | Finding | How it was found | Fix |
@@ -50,7 +66,7 @@ The principles below are the ones the project's own documents name (signifiers, 
 ## Not checked: be honest about these when you submit
 
 1. **No human tested it.** Nothing here replaces the five-second test and the nap-time walkthrough from your README. Do them with at least three people, and note the results.
-2. **No screenshot review.** The browser tool could not capture the screen in this environment, so the visual design (spacing, hierarchy, how the photos crop) was verified by measurement and by tests, **not by eye**. Open every screen on a phone and look.
+2. **Limited screenshot review.** The in-browser tool could not capture the screen, so the original design was verified by measurement. The responsive pass added Playwright screenshots (see above) and the main screens were looked at, but not every screen at every width, and not on a real device. Open every screen on a phone and on a desktop and look.
 3. **No screen reader pass** (VoiceOver, TalkBack, NVDA). axe catches a lot but not everything, such as whether the reading order makes sense.
 4. **It may read as high-fidelity.** By team decision there is no rough-looking theme. The notice and the label carry the "early prototype" message. If graders say it looks finished, see `docs/refactor-plan.md` section 3.6 for the cheap fix.
 5. **Real devices** (iOS Safari especially, for `localStorage` in private mode and the `.ics` download).

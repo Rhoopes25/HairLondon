@@ -40,6 +40,10 @@ The rubric asks for roughly 20 to 30+ screens, and overlays count. Counted from 
 
 That is **25 distinct screens, or 29 counting empty states**. The hidden design-library page (`/#/design-library`) is not counted.
 
+## Desktop and mobile
+
+The design is mobile first, since the person we are designing for is on her phone at nap time, and it is responsive up to a full website: on a laptop or monitor the same screens become a full-width layout with a wide header, a split home screen, grids of stylists and photos, and a two-column booking screen with a summary that stays in view. Nothing about the flow changes between sizes.
+
 ## Design library and reuse
 
 The design library is the design system in `hair-by-london-design-system/`, implemented as 22 families of React components in `app/ui` (buttons, tabs, slot picker, modal, and so on) with design tokens generated from `tokens.json` (a test fails if the two drift apart). Every screen is assembled from them: for example the same day-and-time picker serves booking and rescheduling, and the same recap serves details, review, and confirmation. All components are on one page at `/#/design-library` for anyone who wants to see them together.

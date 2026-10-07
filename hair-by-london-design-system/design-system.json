@@ -10,5 +10,5 @@
   "assetGroups": {},
   "blobs": {},
   "docs": { "readme": "project/README.md", "sections": [] },
-  "lastChange": { "by": "Claude", "at": "2026-09-30T19:00:00Z", "via": "claude.ai chat", "note": "Rebuilt tokens and components from the real style.css; added Hero; removed the unbuilt bottom tab bar; flagged contrast gaps; gold-ink and ProfileHeader are additions." }
+  "lastChange": { "by": "Claude", "at": "2026-09-30T19:00:00Z", "via": "claude.ai chat", "note": "Responsive layout: container, narrow, dialog and header-height layout tokens, three breakpoints, responsive display type (2026-10). Earlier: rebuilt tokens and components from the real style.css; added Hero; removed the unbuilt bottom tab bar; flagged contrast gaps; gold-ink and ProfileHeader are additions." }
 }
