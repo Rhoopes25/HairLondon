@@ -876,6 +876,11 @@ button.tab {
     padding: var(--space-5) 0;
 }
 
+.page-intro a,
+.empty-note a {
+    color: var(--gold-ink);
+}
+
 
 /* ---------- Avatars ---------- */
 

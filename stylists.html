@@ -23,11 +23,11 @@
 
         <main>
             <section class="page-intro">
-                <h1>Find a stylist</h1>
-                <p>Browse their work and reviews, then book a time that fits your day.</p>
+                <h1 id="stylists-title">Find a stylist</h1>
+                <p id="stylists-lead">Browse their work and reviews, then book a time that fits your day.</p>
             </section>
 
-            <section class="filter-section" aria-label="Filter by service">
+            <section class="filter-section" aria-label="Filter by service" id="filter-section">
                 <div class="chip-scroll" id="filter-chips"></div>
             </section>
 
@@ -53,12 +53,25 @@
     <script src="data.js"></script>
     <script>
         const params = new URLSearchParams(location.search);
+        const selectedServices = parseServiceIds(params.get('services'));
         let activeService = SERVICES[params.get('service')] ? params.get('service') : 'all';
 
         const chipsWrap = document.getElementById('filter-chips');
+        const filterSection = document.getElementById('filter-section');
         const list = document.getElementById('stylist-list');
+        const fromServices = selectedServices.length > 0;
+
+        if (fromServices) {
+            filterSection.hidden = true;
+            const names = selectedServices.map(id => SERVICES[id].name);
+            document.getElementById('stylists-title').textContent = 'Choose a stylist';
+            document.getElementById('stylists-lead').innerHTML =
+                'Stylists who offer ' + names.join(' + ') +
+                '. <a href="services.html?' + servicesQuery(selectedServices) + '">Change services</a>';
+        }
 
         function renderChips() {
+            if (fromServices) return;
             chipsWrap.innerHTML = '';
             const options = [['all', 'All services'], ...Object.entries(SERVICES).map(([id, s]) => [id, s.name])];
             options.forEach(([id, label]) => {
@@ -81,19 +94,33 @@
         }
 
         function renderList() {
-            const matches = STYLISTS.filter(s => activeService === 'all' || s.services[activeService] != null);
+            const matches = fromServices ?
+                stylistsOffering(selectedServices) :
+                STYLISTS.filter(s => activeService === 'all' || s.services[activeService] != null);
             list.innerHTML = '';
 
             if (!matches.length) {
-                list.innerHTML = '<p class="empty-note">No stylists offer that service yet. Try another one.</p>';
+                list.innerHTML = fromServices ?
+                    '<p class="empty-note">No stylists offer all of those services. <a href="services.html?' +
+                    servicesQuery(selectedServices) + '">Try a different mix</a>.</p>' :
+                    '<p class="empty-note">No stylists offer that service yet. Try another one.</p>';
                 return;
             }
 
             matches.forEach(s => {
-                const priceText = activeService === 'all' ?
-                    'From $' + startingPrice(s) :
-                    SERVICES[activeService].name + ' $' + s.services[activeService];
-                const link = 'stylist.html?id=' + s.id + (activeService !== 'all' ? '&service=' + activeService : '');
+                let priceText;
+                let extra = '';
+                if (fromServices) {
+                    const total = selectedServices.reduce((sum, id) => sum + s.services[id], 0);
+                    priceText = '$' + total;
+                    extra = '&' + servicesQuery(selectedServices);
+                } else if (activeService === 'all') {
+                    priceText = 'From $' + startingPrice(s);
+                } else {
+                    priceText = SERVICES[activeService].name + ' $' + s.services[activeService];
+                    extra = '&service=' + activeService;
+                }
+                const link = 'stylist.html?id=' + s.id + extra;
 
                 const card = document.createElement('a');
                 card.className = 'stylist-card';

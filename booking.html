@@ -210,7 +210,13 @@
             avatarHTML(stylist, 'sm') + '<span>Booking with <strong>' + escapeHTML(firstName) + '</strong></span>';
 
         const exitBtn = document.getElementById('exit-btn');
-        exitBtn.href = 'stylist.html?id=' + stylist.id;
+        const incomingServices = parseServiceIds(params.get('services'));
+        const singlePreset = params.get('service');
+        if (singlePreset && SERVICES[singlePreset] && !incomingServices.includes(singlePreset)) {
+            incomingServices.push(singlePreset);
+        }
+
+        exitBtn.href = 'stylist.html?id=' + stylist.id + (incomingServices.length ? '&' + servicesQuery(incomingServices) : '');
         exitBtn.addEventListener('click', e => {
             const started = state.services.length || state.date;
             const done = !document.getElementById('view-done').hidden;
@@ -245,12 +251,13 @@
             });
         });
 
-        const preset = params.get('service');
-        if (preset && stylist.services[preset] != null) {
-            const input = serviceList.querySelector('input[value="' + preset + '"]');
+        incomingServices.forEach(id => {
+            if (stylist.services[id] == null) return;
+            const input = serviceList.querySelector('input[value="' + id + '"]');
+            if (!input || input.checked) return;
             input.checked = true;
-            state.services.push(preset);
-        }
+            state.services.push(id);
+        });
 
         /* ---------- Days ---------- */
 
