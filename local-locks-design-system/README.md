@@ -31,7 +31,7 @@ The happy path, and the one loud thing on each screen:
 | Screen | The one loud thing | Everything else |
 | --- | --- | --- |
 | Home | "Find a stylist" button | Logo, two nav links |
-| Stylists | Step 1 service chips, then Step 2 filled time chips on each card | Day and time filters, marked optional and smaller |
+| Stylists | Numbered Step 1 (services) and Step 2 (tap a time on a card) | Day and time filters, marked optional and smaller |
 | Profile | "Book with London" in the sticky BookBar | Tabs, back link |
 | Book: day and time | Sticky "Continue" | Change services, price note |
 | Book: details | Sticky "Confirm booking" | Recap card |

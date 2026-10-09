@@ -4,7 +4,7 @@ One stylist in the Stylists results: who they are, a peek at their work, the pri
 
 A `white` card, `radius-md`, 1.5px `cream-deep` border. Top row: the Avatar (photo circle, or `gold` gradient initials when there's no photo), name in Cormorant Garamond, studio and city in `ink-soft`, and the rating line. Price sits at the right: her total ("$185+" with "about 3 hr 30 min") once services are picked, otherwise "from $45+". Then up to three 1:1 portfolio thumbs, then "Next open" and up to three SlotChips.
 
-**SlotChip** is the loudest thing on the screen on purpose: a filled `gold-ink` pill, white text at 0.85rem weight 600, labeled "Today, 2:00 PM" / "Tomorrow, 9:30 AM" / "Sat 10, 1:00 PM". Tapping one goes straight to Book with the stylist, services, day, and time filled in.
+**SlotChip** is a `cream` pill with a 1.5px `gold-soft` border and `gold-ink` text at 0.78rem (border turns `gold-deep` on hover), labeled "Today, 2:00 PM" / "Tomorrow, 9:30 AM" / "Sat 10, 1:00 PM". Tapping one goes straight to Book with the stylist, services, day, and time filled in.
 
 - The name link stretches over the whole card, so a tap anywhere opens the profile. SlotChips sit above it and keep their own tap.
 - Each SlotChip carries a full `aria-label` ("Book London, Sat, Oct 10 at 1:00 PM").

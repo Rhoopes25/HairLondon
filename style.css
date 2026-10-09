@@ -1849,22 +1849,6 @@ button.day-chip {
     color: var(--ink);
 }
 
-/* Tapping a time is the main action on this screen */
-.slot-chip {
-    font-size: 0.85rem;
-    font-weight: 600;
-    color: var(--white);
-    background: var(--gold-ink);
-    border-color: var(--gold-ink);
-    padding: 0.5rem 0.95rem;
-}
-
-.slot-chip:hover,
-.slot-chip:focus-visible {
-    background: var(--ink);
-    border-color: var(--ink);
-}
-
 /* ---------- Profile: one Book bar, always there ---------- */
 
 .book-bar-btn {
