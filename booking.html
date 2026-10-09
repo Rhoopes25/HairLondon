@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Book | Hair by London</title>
+    <title>Book | Local Locks</title>
     <meta name="description" content="Choose a service and pick a time that works for you.">
     <link rel="stylesheet" href="style.css">
 </head>
@@ -16,7 +16,9 @@
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><line x1="6" y1="6" x2="18" y2="18"/><line x1="18" y1="6" x2="6" y2="18"/></svg>
             </a>
             <span class="booking-with" id="booking-with"></span>
-            <span class="header-spacer" aria-hidden="true"></span>
+            <a href="index.html" class="header-home" id="home-btn" aria-label="Local Locks, home">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><circle cx="6" cy="6" r="3"/><circle cx="6" cy="18" r="3"/><line x1="20" y1="4" x2="8.12" y2="15.88"/><line x1="14.47" y1="14.48" x2="20" y2="20"/><line x1="8.12" y1="8.12" x2="12" y2="12"/></svg>
+            </a>
         </header>
 
         <main>
@@ -52,11 +54,11 @@
                     <p class="time-note" id="time-note" hidden></p>
                 </section>
 
-                <div class="confirm-bar">
+                <div class="confirm-bar confirm-bar--sticky">
                     <div class="confirm-summary">
                         <span id="summary-line">Select services, day &amp; time</span>
                     </div>
-                    <div class="confirm-summary" style="border-bottom: none; padding-bottom: 0; margin-bottom: 1.1rem;">
+                    <div class="confirm-summary confirm-summary--total">
                         <span class="confirm-total-label">Estimated total</span>
                         <strong id="summary-price">&mdash;</strong>
                     </div>
@@ -88,7 +90,7 @@
                     </form>
                 </section>
 
-                <div class="confirm-bar">
+                <div class="confirm-bar confirm-bar--sticky">
                     <button type="submit" form="details-form" class="confirm-btn">Confirm booking</button>
                 </div>
             </div>
@@ -111,18 +113,7 @@
         </main>
 
         <footer class="site-footer">
-            <div class="social-links">
-                <a href="#" aria-label="Instagram">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.2" cy="6.8" r="1"/></svg>
-                </a>
-                <a href="#" aria-label="Facebook">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M15 3h-2a4 4 0 0 0-4 4v3H7v4h2v7h4v-7h2.5l.5-4H13V7a1 1 0 0 1 1-1h2z"/></svg>
-                </a>
-                <a href="#" aria-label="TikTok">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M14 3v11.5a3.5 3.5 0 1 1-3.5-3.5c.36 0 .7.05 1 .15V7.7a7 7 0 1 0 6 6.93V9.5a6 6 0 0 0 3-1V5.5a5 5 0 0 1-3.5-2.5H14z"/></svg>
-                </a>
-            </div>
-            <p>&copy; 2026 Hair by London</p>
+            <p>&copy; 2026 Local Locks</p>
         </footer>
     </div>
 
@@ -135,7 +126,7 @@
             throw new Error('Unknown stylist');
         }
         const firstName = stylist.name.split(' ')[0];
-        document.title = 'Book with ' + firstName + ' | Hair by London';
+        document.title = 'Book with ' + firstName + ' | Local Locks';
 
         const state = {
             services: [], // service ids, in list order
@@ -165,6 +156,15 @@
         exitBtn.href = params.get('from') === 'search' ?
             lastSearchUrl() :
             'stylist.html?id=' + stylist.id + (incomingServices.length ? '&' + servicesQuery(incomingServices) : '');
+        // Home link in the header asks first too, so she doesn't lose her picks by accident
+        document.getElementById('home-btn').addEventListener('click', e => {
+            const started = state.services.length || state.date;
+            const done = !document.getElementById('view-done').hidden;
+            if (started && !done && !confirm('Leave booking? Your choices won’t be saved.')) {
+                e.preventDefault();
+            }
+        });
+
         exitBtn.addEventListener('click', e => {
             // On the details step, this button goes back to day and time instead of leaving
             if (!document.getElementById('view-details').hidden) {
@@ -273,6 +273,7 @@
             chip.addEventListener('click', () => {
                 const wasSelected = chip.classList.contains('selected');
                 state.start = null;
+                bumpedTime = null;
                 selectDay(wasSelected ? null : date);
                 renderTimes();
                 updateSummary();
@@ -285,6 +286,7 @@
 
         const timeGrid = document.getElementById('time-grid');
         const timeNote = document.getElementById('time-note');
+        let bumpedTime = null; // a time she picked that stopped fitting after a service change
 
         function renderTimes() {
             timeGrid.innerHTML = '';
@@ -295,7 +297,9 @@
 
             const duration = Math.max(totalDuration(), STEP);
             if (state.start != null && !isStartAvailable(stylist, state.date, state.start, duration)) {
-                state.start = null; // services changed and the old time no longer fits
+                // Services changed and the old time no longer fits. Say so instead of clearing it quietly.
+                bumpedTime = state.start;
+                state.start = null;
             }
 
             let openCount = 0;
@@ -311,6 +315,7 @@
                 slot.setAttribute('aria-pressed', start === state.start);
 
                 slot.addEventListener('click', () => {
+                    bumpedTime = null;
                     state.start = state.start === start ? null : start;
                     renderTimes();
                     updateSummary();
@@ -369,7 +374,11 @@
                 'Starting price. Longer or thicker hair can cost more, and ' + firstName + ' will confirm it with you.' : '';
             priceNote.hidden = !total;
 
-            if (state.start != null && state.services.length) {
+            timeNote.classList.toggle('time-note--warn', bumpedTime != null && state.start == null);
+            if (bumpedTime != null && state.start == null) {
+                timeNote.hidden = false;
+                timeNote.textContent = formatTime(bumpedTime) + ' doesn’t leave enough time for everything you picked. Choose another time.';
+            } else if (state.start != null && state.services.length) {
                 timeNote.hidden = false;
                 timeNote.textContent = 'You\u2019ll be done by about ' + formatTime(state.start + totalDuration()) + '.';
             } else if (state.date && !state.services.length) {
@@ -484,9 +493,9 @@
             const ics = [
                 'BEGIN:VCALENDAR',
                 'VERSION:2.0',
-                'PRODID:-//Hair by London//Booking//EN',
+                'PRODID:-//Local Locks//Booking//EN',
                 'BEGIN:VEVENT',
-                'UID:' + Date.now() + '@hairbylondon',
+                'UID:' + Date.now() + '@locallocks',
                 'DTSTAMP:' + new Date().toISOString().replace(/[-:]/g, '').split('.')[0] + 'Z',
                 'DTSTART:' + icsStamp(state.date, state.start),
                 'DTEND:' + icsStamp(state.date, state.start + totalDuration()),
@@ -508,6 +517,7 @@
 
         updateSummary();
     </script>
+    <script src="prototype-notice.js"></script>
 </body>
 
 </html>

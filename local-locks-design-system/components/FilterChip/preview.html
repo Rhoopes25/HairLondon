@@ -1,0 +1,19 @@
+<!-- @dsCard group="Search" height=330 subtitle="Step labels, service chips (many), time chips (one), optional tag" -->
+<!doctype html><html><head><meta charset="utf-8"><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500&amp;family=Jost:wght@300;400;500;600&amp;display=swap">
+<style>
+body{margin:0;padding:20px 1.5rem;background:var(--cream);color:var(--ink);font-family:var(--font-sans);line-height:1.6;max-width:460px}
+h2{font-family:var(--font-display);font-size:1.15rem;font-weight:600;margin:0 0 .7rem}
+h2.opt{font-size:1rem;color:var(--ink-soft);margin-top:1.2rem}
+.num{display:inline-flex;align-items:center;justify-content:center;width:1.6rem;height:1.6rem;margin-right:.45rem;border-radius:50%;background:var(--ink);color:var(--white);font-family:var(--font-sans);font-size:.85rem;font-weight:600;vertical-align:.1em}
+.tag{font-family:var(--font-sans);font-size:.75rem;font-weight:400;margin-left:.3rem}
+.wrap{display:flex;flex-wrap:wrap;gap:.5rem}
+.c{font-family:var(--font-sans);font-size:.85rem;padding:.5rem 1rem;border-radius:var(--radius-pill);border:1.5px solid var(--cream-deep);background:var(--white);color:var(--ink)}
+.c.on{background:var(--gold-ink);border-color:var(--gold-ink);color:var(--white)}
+.est{font-size:.85rem;color:var(--gold-ink);margin:.75rem 0 0}
+</style></head><body>
+<h2><span class="num">1</span>What do you need?</h2>
+<div class="wrap"><button class="c on" aria-pressed="true">Haircut</button><button class="c">Color</button><button class="c on" aria-pressed="true">Highlights</button><button class="c">Blowout</button></div>
+<p class="est">Together these take about 3 hr 30 min.</p>
+<h2 class="opt">What time? <span class="tag">optional</span></h2>
+<div class="wrap"><button class="c on">Any time</button><button class="c">Morning</button><button class="c">Afternoon</button><button class="c">Evening</button></div>
+</body></html>

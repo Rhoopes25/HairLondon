@@ -60,9 +60,9 @@ const STYLISTS = [{
             'deep-conditioning': 35
         },
         portfolio: [
-            { src: 'work-2.png', alt: 'Glossy jet black hair in long, soft layers' },
-            { src: 'work-1.png', alt: 'Icy platinum balayage on long, loose waves' },
-            { src: 'work-4.png', alt: 'Bronde waves blended from root to ends, seen from the back' },
+            { src: 'work-2.jpg', alt: 'Glossy jet black hair in long, soft layers' },
+            { src: 'work-1.jpg', alt: 'Icy platinum balayage on long, loose waves' },
+            { src: 'work-4.jpg', alt: 'Bronde waves blended from root to ends, seen from the back' },
             { src: 'work-6.jpg', alt: 'Soft golden brown hair with long face-framing layers' },
             { src: 'work-3.jpg', alt: 'Ash blonde balayage with curtain bangs' },
             { src: 'work-5.jpg', alt: 'Creamy blonde highlights on long waves, seen from the back' }
@@ -79,7 +79,7 @@ const STYLISTS = [{
         studio: 'Juniper Hair Studio',
         city: 'Orem',
         photo: null,
-        bio: 'Color specialist. Rich brunettes, glossy reds, and gray coverage that looks natural.',
+        bio: 'Color specialist. Rich brunettes, soft pastels, and gray coverage that looks natural.',
         workDays: [1, 3, 4, 5, 6],
         services: {
             'haircut': 55,
@@ -88,7 +88,10 @@ const STYLISTS = [{
             'root-touch-up': 75,
             'blowout': 40
         },
-        portfolio: [],
+        portfolio: [
+            { src: 'sadie-1.jpg', alt: 'Deep brunette with soft caramel highlights, curled into loose waves' },
+            { src: 'sadie-2.jpg', alt: 'Long lavender waves with a soft, deeper root' }
+        ],
         reviews: [
             { name: 'Hannah W.', stars: 5, text: 'She matched my old color perfectly and explained everything she was doing.' },
             { name: 'Jess P.', stars: 5, text: 'Evening appointments saved me. In and out before bedtime.' }
@@ -108,7 +111,10 @@ const STYLISTS = [{
             'blowout': 35,
             'deep-conditioning': 30
         },
-        portfolio: [],
+        portfolio: [
+            { src: 'kai-1.jpg', alt: 'Straight, blunt-cut blonde lob, seen from the back' },
+            { src: 'kai-2.jpg', alt: 'Copper and brunette bob with a hidden blonde underlayer' }
+        ],
         reviews: [
             { name: 'Aubrey L.', stars: 5, text: 'Best bob I have ever had. Grows out without looking messy.' },
             { name: 'Nina R.', stars: 4, text: 'Quick, friendly, and really listened.' }
@@ -129,7 +135,10 @@ const STYLISTS = [{
             'root-touch-up': 85,
             'deep-conditioning': 40
         },
-        portfolio: [],
+        portfolio: [
+            { src: 'brooke-1.jpg', alt: 'Long caramel and honey highlights with soft curled ends, seen from the back' },
+            { src: 'brooke-2.jpg', alt: 'Dark root melting into ash blonde balayage on loose waves' }
+        ],
         reviews: [
             { name: 'Claire M.', stars: 5, text: 'Went four months between appointments and it still looked intentional.' },
             { name: 'Tess H.', stars: 5, text: 'Calm salon, great music, and she never rushed me.' }

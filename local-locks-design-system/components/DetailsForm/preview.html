@@ -1,0 +1,16 @@
+<!-- @dsCard group="Booking" height=420 subtitle="Recap card, field with hint, field with error" -->
+<!doctype html><html><head><meta charset="utf-8"><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500&amp;family=Jost:wght@300;400;500;600&amp;display=swap">
+<style>
+body{margin:0;padding:20px 1.5rem;background:var(--cream);color:var(--ink);font-family:var(--font-sans);line-height:1.5;max-width:460px}
+.recap{background:var(--white);border:1px solid var(--gold-soft);border-radius:var(--radius-lg);padding:.4rem 1.2rem;margin-bottom:1.2rem}
+.r{display:flex;justify-content:space-between;gap:1rem;padding:.6rem 0;border-top:1px solid var(--cream-deep);font-size:.85rem}.r:first-child{border-top:0}.r span:first-child{color:var(--ink-soft)}
+.f{display:flex;flex-direction:column;gap:.3rem;margin-bottom:1rem}
+label{font-size:.85rem;font-weight:500}
+input{font:inherit;font-size:16px;padding:.75rem .9rem;background:var(--white);border:1.5px solid var(--cream-deep);border-radius:var(--radius-md)}
+input[aria-invalid=true]{border-color:#B3261E}
+.h{font-size:.78rem;color:var(--ink-soft)}.e{font-size:.78rem;color:#B3261E}
+</style></head><body>
+<div class="recap"><div class="r"><span>Stylist</span><span>London, Hair by London</span></div><div class="r"><span>Services</span><span>Haircut</span></div><div class="r"><span>When</span><span>Sat, Oct 10, 9:00 to 10:00 AM</span></div><div class="r"><span>Estimated total</span><span>$65+, about 1 hr</span></div></div>
+<div class="f"><label>Name</label><input value="Maren"></div>
+<div class="f"><label>Phone</label><input aria-invalid="true" value="801 555"><span class="h">For a reminder text the day before.</span><span class="e">Enter a 10-digit phone number.</span></div>
+</body></html>
