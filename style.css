@@ -1743,14 +1743,55 @@ button.day-chip {
     outline-offset: 2px;
 }
 
-/* ---------- Home: say what it is ---------- */
+/* ---------- Home: photo on top, name and button below on cream ----------
+   No text sits on the photo, so nothing clashes with it. */
+
+.hero--photo {
+    aspect-ratio: 4 / 4.3;
+    border-radius: var(--radius-xl);
+}
+
+.hero--photo::before {
+    display: none;
+}
+
+.hero-text {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    padding: 1.6rem 1rem 2rem;
+}
+
+.hero-text h1 {
+    font-family: var(--font-display);
+    font-style: italic;
+    font-weight: 600;
+    font-size: 3rem;
+    line-height: 1.15;
+    color: var(--ink);
+    margin-bottom: 0.15rem;
+}
 
 .hero-tagline {
     font-size: 1rem;
-    line-height: 1.45;
-    margin: -0.4rem 0 1.4rem;
-    max-width: 26ch;
-    color: rgba(255, 255, 255, 0.95);
+    color: var(--ink-soft);
+    margin-bottom: 1.3rem;
+}
+
+.hero-cta--filled {
+    background: var(--gold-ink);
+    color: var(--white);
+}
+
+.hero-cta--filled:hover,
+.hero-cta--filled:focus-visible {
+    background: var(--ink);
+    color: var(--white);
+}
+
+.hero-cta--filled:focus-visible {
+    outline-color: var(--gold-deep);
 }
 
 /* ---------- Stylists: numbered steps, times are the loud thing ---------- */

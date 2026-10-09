@@ -16,7 +16,7 @@ Fundamental Value: Calm. She can book without the usual anxiety of gambling on a
 
 ## 2. The Screens
 
-Home: Its job is to show what the site is for right away: a photo, the name "Local Locks," which says "hair, near me" at a glance, one line saying what it does ("See real work from stylists near you, then book a time that fits your day"), and one "Find a stylist" button. The only other element is a small top nav. This answers the question: can someone tell what this is for in one glance, before reading anything?
+Home: Its job is to show what the site is for right away: a photo of a stylist holding her shears on top, then the name "Local Locks," a short line ("Local stylists you can trust."), and one "Find a stylist" button underneath on a plain background. The text sits below the photo instead of on top of it so nothing clashes. The only other element is a small top nav. This answers the question: can someone tell what this is for in one glance, before reading anything?
 
 Stylists: Its job is to get her from "I need a haircut" to a stylist who can actually fit her in. Step 1 is picking what she needs. Day and time are optional and visually quieter. Step 2 is the results: each stylist card shows their rating, a few photos of their work, the price for what she picked, and their next open times as big filled buttons she can tap to book right away. This answers the question: can she find someone trustworthy with a time that works, fast?
 
@@ -44,14 +44,14 @@ Persona: "When during your day would you actually have a few free minutes to loo
 Prediction: Nap time, or sometime after the kids are in bed. This tests whether the site is simple and clear enough for her to move through it quickly and stress-free in a short window.
 
 Capability (5-second test): "I'm going to show you this for five seconds, then hide it. What do you think this is for?"
-Prediction: "I think this is a site where you can find a stylist and book a haircut." This tests whether the photo of the woman with scissors, the name, the one-line tagline, and the "Find a stylist" button communicate the site's purpose instantly.
+Prediction: "I think this is a site where you can find a stylist and book a haircut." This tests whether the photo of the woman with scissors, the name, the short tagline, and the "Find a stylist" button communicate the site's purpose instantly.
 
 ## 5. Design Justification and First Read
 
 Opening the live site fresh:
 
 Does the landing screen signal the primary capability and fundamental value at first glance, before reading?
-Yes. The photo, the name, the one-line tagline, and the "Find a stylist" button are the main content on the screen.
+Yes. The photo, the name, the short tagline, and the "Find a stylist" button are the main content on the screen.
 
 Does every element on the landing screen earn its place, or does anything compete with the primary job?
 No, nothing competes. The social media icons were removed, so the only other thing on the screen is a small nav with Home and Stylists.

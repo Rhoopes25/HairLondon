@@ -1,10 +1,10 @@
 # Hero
 
-The landing screen's single statement: a photo, the name, one line on what this is, and one button, readable in a glance.
+The landing screen: a photo on top, then the name, one short line, and one button below it on plain cream. Readable in a glance.
 
-A 4:5 photo fills the width of the 460px column. A warm glow sits over it and an ink scrim (72% at the bottom to transparent) carries the text. The name is `display-xl`: Cormorant Garamond, italic, 2.5rem, white, centered. Under it, the tagline at 1rem: "See real work from stylists near you, then book a time that fits your day." Then the white hero pill, "Find a stylist" (0.85rem, weight 500), the only button on the screen.
+The photo (`home.jpg`, a stylist holding her shears) fills the 460px column at roughly 4:4.3 with `radius-xl` corners, no overlay and no text on it. Below, centered on `cream`: the name in Cormorant Garamond italic, 3rem, weight 600, `ink`; the tagline "Local stylists you can trust." at 1rem in `ink-soft`; then the filled hero pill, "Find a stylist" (0.85rem, weight 500, `gold-ink` with white text, `ink` on hover), the only button on the screen.
 
-- The name does most of the work: "Local Locks" says hair, near you, so it reads as a place to find a stylist, not one salon. The tagline backs that up for the 5-second test. (The site used to be called "Hair by London," which read like a single stylist's salon; London is now one of the stylists.)
-- Only the name, tagline, button, and header belong on this screen. No footer links, no extra claims.
-- White text on the photo must stay above 4.5:1 through the scrim; strengthen the scrim rather than darkening the photo.
-- The section has an `aria-label` describing the photo ("A stylist holding her shears").
+- Text lives under the photo, not on it, so nothing clashes with the picture and contrast is never a problem.
+- The photo is what says "hair" in the 5-second test. The name ("Local Locks") says near you, and the tagline adds trust, the core value.
+- Only the photo, name, tagline, button, and header belong on this screen. No footer links, no extra claims.
+- The photo has `role="img"` and an `aria-label` ("A stylist holding her shears").
