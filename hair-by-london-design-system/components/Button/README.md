@@ -1,10 +1,10 @@
 # Button
 
-The one place an action is named: a pill in `gold-deep` for most screens, white on a photo, and a small one for the header.
+The one place an action is named. One filled button per screen, so the happy path is never in question.
 
-**Filled** is a full-width pill, `gold-deep` with `white` text, 0.95rem at weight 500, letter-spacing 0.02em, 0.95rem padding; on hover or focus it turns `ink`. It closes My Work ("Book Now") and Book ("Continue"). **Hero** is a white pill with `ink` text at 0.85rem that lifts 1px on hover and fills `gold-soft`; it sits on the landing photo only. **Header Book** is a small `gold-deep` pill (0.8rem) for the sticky header. **Disabled** is added: `cream-deep` fill with `ink-soft` text, so a not-yet-ready Continue is visibly different (style.css sets the disabled attribute but no style).
+**Filled** is a full-width pill in `gold-ink` (white on it is 6.3:1, passes AA) with `white` text at 1.05rem weight 600 and 0.95rem padding; on hover or focus it turns `ink`. It's Continue and Confirm booking on Book, and the "Book with London" pill in the BookBar. **Disabled** is `cream-deep` with `ink-soft` text, so a not-ready Continue looks different from a ready one. **Hero** is a white pill with `ink` text at 1.05rem weight 600 with a drop shadow; it sits on the landing photo only ("Find a stylist"). **Outline** is a `gold-ink` bordered pill for secondary actions like "Add to calendar".
 
-- Use one filled button per screen. The focus ring is 2px `gold-deep` with a 2px offset.
-- Contrast: white on `gold-deep` is 3.6:1. Where the label must pass AA, use the added `gold-ink` fill (6.3:1) in place of `gold-deep`.
-- Labels are plain verbs with no urgency: "Book Now", "Continue".
-- The consumer provides the label and click handler and explains a disabled state in nearby text.
+- The old small header Book pill is retired; the BookBar replaced it.
+- The focus ring is 2px `gold-deep` with a 2px offset.
+- Labels are plain verbs with no urgency: "Find a stylist", "Book with London", "Continue", "Confirm booking". Never "Hurry" or "Grab".
+- A disabled button explains itself in nearby text ("Select services, day & time").

@@ -1694,3 +1694,209 @@ button.day-chip {
     font-weight: 500;
     color: var(--ink-soft);
 }
+
+
+/* ==========================================================
+   Lo-fi prototype pass
+   Per Prof. Twyman: a "this is a prototype" bar only at the start,
+   and a visual hierarchy so stark that the happy path is the only
+   obvious way to go. One loud action per screen, everything else quiet.
+   ========================================================== */
+
+/* ---------- Prototype notice (first screen of a visit only) ---------- */
+
+.proto-notice {
+    position: relative;
+    z-index: 30;
+    padding: var(--space-3) var(--space-5);
+    background: var(--ink);
+    color: var(--white);
+}
+
+.proto-notice-title {
+    font-weight: 600;
+    font-size: 0.95rem;
+}
+
+.proto-notice-text {
+    margin-top: 0.2rem;
+    font-size: 0.82rem;
+    line-height: 1.5;
+    color: rgba(255, 255, 255, 0.85);
+}
+
+.proto-notice-btn {
+    margin-top: 0.7rem;
+    font-family: var(--font-sans);
+    font-size: 0.85rem;
+    font-weight: 500;
+    color: var(--ink);
+    background: var(--white);
+    border: 0;
+    border-radius: var(--radius-pill);
+    padding: 0.5rem 1.3rem;
+    cursor: pointer;
+}
+
+.proto-notice-btn:focus-visible {
+    outline: 2px solid var(--gold);
+    outline-offset: 2px;
+}
+
+/* ---------- Home: say what it is, one big button ---------- */
+
+.hero-tagline {
+    font-size: 1rem;
+    line-height: 1.45;
+    margin: -0.4rem 0 1.4rem;
+    max-width: 26ch;
+    color: rgba(255, 255, 255, 0.95);
+}
+
+.hero-cta {
+    font-size: 1.05rem;
+    font-weight: 600;
+    padding: 1rem 2.4rem;
+    box-shadow: 0 6px 18px rgba(0, 0, 0, 0.25);
+}
+
+/* ---------- Stylists: numbered steps, times are the loud thing ---------- */
+
+.step-num {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 1.6rem;
+    height: 1.6rem;
+    margin-right: 0.45rem;
+    border-radius: var(--radius-round);
+    background: var(--ink);
+    color: var(--white);
+    font-family: var(--font-sans);
+    font-size: 0.85rem;
+    font-weight: 600;
+    vertical-align: 0.1em;
+}
+
+/* Day and time filters are optional, so they sit back */
+.filter-group--optional h2 {
+    font-size: 1rem;
+    color: var(--ink-soft);
+}
+
+.optional-tag {
+    font-family: var(--font-sans);
+    font-size: 0.75rem;
+    font-weight: 400;
+    color: var(--ink-soft);
+    margin-left: 0.3rem;
+}
+
+.results-heading {
+    padding: var(--space-5) var(--space-5) 0;
+}
+
+.results-heading h2 {
+    font-family: var(--font-display);
+    font-size: 1.15rem;
+    font-weight: 600;
+    line-height: 1.3;
+}
+
+.results-heading + .results-bar {
+    margin-top: 0.4rem;
+    padding-top: 0;
+    border-top: 0;
+}
+
+.card-slots-label {
+    font-size: 0.8rem;
+    font-weight: 600;
+    color: var(--ink);
+}
+
+/* Tapping a time is the main action on this screen */
+.slot-chip {
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: var(--white);
+    background: var(--gold-ink);
+    border-color: var(--gold-ink);
+    padding: 0.5rem 0.95rem;
+}
+
+.slot-chip:hover,
+.slot-chip:focus-visible {
+    background: var(--ink);
+    border-color: var(--ink);
+}
+
+/* ---------- Profile: one Book bar, always there ---------- */
+
+.book-bar-btn {
+    font-size: 1rem;
+    font-weight: 600;
+    padding: 0.85rem 1.5rem;
+}
+
+/* ---------- Booking: Continue stays in reach ---------- */
+
+.confirm-bar--sticky {
+    position: sticky;
+    bottom: 0;
+    z-index: 10;
+    padding: var(--space-3) var(--space-5) calc(var(--space-3) + env(safe-area-inset-bottom, 0px));
+    box-shadow: 0 -6px 20px rgba(43, 36, 32, 0.08);
+}
+
+.confirm-bar--sticky .confirm-summary {
+    margin-bottom: 0.4rem;
+    padding-bottom: 0.4rem;
+}
+
+.confirm-bar--sticky .confirm-summary--total {
+    border-bottom: 0;
+    padding-bottom: 0;
+    margin-bottom: 0.4rem;
+}
+
+.confirm-bar--sticky .price-note--bar {
+    margin: 0 0 0.7rem;
+    font-size: 0.72rem;
+}
+
+.confirm-btn {
+    font-size: 1.05rem;
+    font-weight: 600;
+}
+
+.header-home {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 2.4rem;
+    height: 2.4rem;
+    margin-right: -0.5rem;
+    border-radius: var(--radius-round);
+    color: var(--gold-deep);
+}
+
+.header-home svg {
+    width: 1.3rem;
+    height: 1.3rem;
+}
+
+.header-home:hover {
+    background: var(--cream-deep);
+}
+
+.time-note--warn {
+    color: var(--gold-ink);
+    font-weight: 500;
+}
+
+/* ---------- Footer: quiet, nothing to click ---------- */
+
+.site-footer {
+    padding: var(--space-3) var(--space-3);
+}

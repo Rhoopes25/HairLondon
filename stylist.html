@@ -43,7 +43,6 @@
                         <button type="button" class="tab" role="tab" id="tab-services" aria-controls="panel-services">Services</button>
                         <button type="button" class="tab" role="tab" id="tab-reviews" aria-controls="panel-reviews">Reviews</button>
                     </div>
-                    <a class="book-btn" id="header-book" href="#">Book</a>
                 </div>
             </section>
 
@@ -66,12 +65,8 @@
                 </div>
             </section>
 
-            <div class="portfolio-cta" id="plain-cta">
-                <a href="#" id="bottom-book">Book Now</a>
-            </div>
-
-            <!-- Shows when she came from a search with services picked -->
-            <div class="book-bar" id="book-bar" hidden>
+            <!-- The one Book action on this screen. Always in reach. -->
+            <div class="book-bar" id="book-bar">
                 <div class="book-bar-info">
                     <span class="book-bar-services" id="bar-services"></span>
                     <span class="book-bar-meta" id="bar-meta"></span>
@@ -82,17 +77,6 @@
         </main>
 
         <footer class="site-footer">
-            <div class="social-links">
-                <a href="#" aria-label="Instagram">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.2" cy="6.8" r="1"/></svg>
-                </a>
-                <a href="#" aria-label="Facebook">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M15 3h-2a4 4 0 0 0-4 4v3H7v4h2v7h4v-7h2.5l.5-4H13V7a1 1 0 0 1 1-1h2z"/></svg>
-                </a>
-                <a href="#" aria-label="TikTok">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M14 3v11.5a3.5 3.5 0 1 1-3.5-3.5c.36 0 .7.05 1 .15V7.7a7 7 0 1 0 6 6.93V9.5a6 6 0 0 0 3-1V5.5a5 5 0 0 1-3.5-2.5H14z"/></svg>
-                </a>
-            </div>
             <p>&copy; 2026 Hair by London</p>
         </footer>
     </div>
@@ -146,15 +130,9 @@
         document.getElementById('profile-studio').textContent = stylist.studio + ', ' + stylist.city;
         document.getElementById('profile-rating').innerHTML = ratingHTML(stylist);
         document.getElementById('profile-bio').textContent = stylist.bio;
-        document.getElementById('header-book').href = bookUrl;
-        const bottomBook = document.getElementById('bottom-book');
-        bottomBook.href = bookUrl;
-        bottomBook.textContent = 'Book with ' + stylist.name.split(' ')[0];
-
-        // Sticky bar: her services, starting price, estimated time, and held time
+        // Sticky bar: her services, starting price, estimated time, and held time.
+        // With nothing picked yet, it shows the starting price and she picks services next.
         if (selectedServices.length) {
-            document.getElementById('plain-cta').hidden = true;
-            document.getElementById('book-bar').hidden = false;
             document.getElementById('bar-services').textContent = selectedServices.map(id => SERVICES[id].name).join(' + ');
             document.getElementById('bar-meta').textContent =
                 priceText(priceFor(stylist, selectedServices)) + ' \u00b7 about ' + formatDuration(durationFor(selectedServices));
@@ -163,10 +141,13 @@
                 t.hidden = false;
                 t.textContent = formatDay(heldDate) + ' at ' + formatTime(heldStart);
             }
-            const barBook = document.getElementById('bar-book');
-            barBook.href = bookUrl;
-            barBook.textContent = 'Book with ' + stylist.name.split(' ')[0];
+        } else {
+            document.getElementById('bar-services').textContent = 'Services from ' + priceText(startingPrice(stylist));
+            document.getElementById('bar-meta').textContent = 'Pick services, a day, and a time next';
         }
+        const barBook = document.getElementById('bar-book');
+        barBook.href = bookUrl;
+        barBook.textContent = 'Book with ' + stylist.name.split(' ')[0];
 
         // Portfolio
         const grid = document.getElementById('work-grid');
@@ -227,6 +208,7 @@
         // Lead with the work (that's what builds trust). Reviews first if there are no photos yet.
         selectTab(stylist.portfolio.length ? tabs[0] : tabs[2]);
     </script>
+    <script src="prototype-notice.js"></script>
 </body>
 
 </html>

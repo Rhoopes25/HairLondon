@@ -60,9 +60,9 @@ const STYLISTS = [{
             'deep-conditioning': 35
         },
         portfolio: [
-            { src: 'work-2.png', alt: 'Glossy jet black hair in long, soft layers' },
-            { src: 'work-1.png', alt: 'Icy platinum balayage on long, loose waves' },
-            { src: 'work-4.png', alt: 'Bronde waves blended from root to ends, seen from the back' },
+            { src: 'work-2.jpg', alt: 'Glossy jet black hair in long, soft layers' },
+            { src: 'work-1.jpg', alt: 'Icy platinum balayage on long, loose waves' },
+            { src: 'work-4.jpg', alt: 'Bronde waves blended from root to ends, seen from the back' },
             { src: 'work-6.jpg', alt: 'Soft golden brown hair with long face-framing layers' },
             { src: 'work-3.jpg', alt: 'Ash blonde balayage with curtain bangs' },
             { src: 'work-5.jpg', alt: 'Creamy blonde highlights on long waves, seen from the back' }

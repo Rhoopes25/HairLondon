@@ -1,7 +1,10 @@
 {
   "v": 3,
   "layout": "files",
-  "createdOnFiles": { "v": 1, "at": "2026-09-30T18:00:00Z" },
+  "createdOnFiles": {
+    "v": 1,
+    "at": "2026-09-30T18:00:00Z"
+  },
   "title": "Hair by London",
   "namespace": "HairLondon",
   "libraries": [],
@@ -9,6 +12,14 @@
   "groups": [],
   "assetGroups": {},
   "blobs": {},
-  "docs": { "readme": "project/README.md", "sections": [] },
-  "lastChange": { "by": "Claude", "at": "2026-09-30T19:00:00Z", "via": "claude.ai chat", "note": "Rebuilt tokens and components from the real style.css; added Hero; removed the unbuilt bottom tab bar; flagged contrast gaps; gold-ink and ProfileHeader are additions." }
+  "docs": {
+    "readme": "project/README.md",
+    "sections": []
+  },
+  "lastChange": {
+    "by": "Claude",
+    "at": "2026-10-09T18:30:00Z",
+    "via": "claude.ai chat",
+    "note": "Matched the library to the multi-stylist site and the lo-fi pass: added PrototypeNotice, FilterChip, StylistCard, BookBar, DetailsForm, Confirmation; updated NavBar, Hero, ProfileHeader, ConfirmBar, SlotPicker, Button, PortfolioGrid, ServiceOption."
+  }
 }

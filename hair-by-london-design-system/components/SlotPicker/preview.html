@@ -12,14 +12,15 @@ h2{font:600 1.15rem/1.6 var(--font-display);margin:0 0 .9rem}
 .slot[aria-pressed="true"]{border-color:var(--gold-deep);background:var(--gold-soft);font-weight:500}
 .slot:disabled{color:var(--unavailable);background:var(--cream-deep);border-color:var(--cream-deep);text-decoration:line-through;cursor:not-allowed}
 .day:focus-visible,.slot:focus-visible{outline:2px solid var(--gold-deep);outline-offset:2px}
+.mo{display:block;font-size:.65rem}
 </style></head><body>
 <h2>Choose a day</h2>
 <div class="days" role="group" aria-label="Day">
-  <button class="day" aria-pressed="false">Tue<span class="n">14</span></button>
-  <button class="day" aria-pressed="false">Wed<span class="n">15</span></button>
-  <button class="day" aria-pressed="true">Thu<span class="n">16</span></button>
-  <button class="day" aria-pressed="false">Fri<span class="n">17</span></button>
-  <button class="day" aria-pressed="false">Sat<span class="n">18</span></button>
+  <button class="day" aria-pressed="false">Tue<span class="n">14</span><span class="mo">Oct</span></button>
+  <button class="day" aria-pressed="false">Wed<span class="n">15</span><span class="mo">Oct</span></button>
+  <button class="day" aria-pressed="true">Thu<span class="n">16</span><span class="mo">Oct</span></button>
+  <button class="day" aria-pressed="false">Fri<span class="n">17</span><span class="mo">Oct</span></button>
+  <button class="day" aria-pressed="false">Sat<span class="n">18</span><span class="mo">Oct</span></button>
 </div>
 <h2>Choose a time</h2>
 <div class="grid" role="group" aria-label="Time">
