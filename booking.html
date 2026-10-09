@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Book | Hair by London</title>
+    <title>Book | Local Locks</title>
     <meta name="description" content="Choose a service and pick a time that works for you.">
     <link rel="stylesheet" href="style.css">
 </head>
@@ -16,7 +16,7 @@
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><line x1="6" y1="6" x2="18" y2="18"/><line x1="18" y1="6" x2="6" y2="18"/></svg>
             </a>
             <span class="booking-with" id="booking-with"></span>
-            <a href="index.html" class="header-home" id="home-btn" aria-label="Hair by London, home">
+            <a href="index.html" class="header-home" id="home-btn" aria-label="Local Locks, home">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><circle cx="6" cy="6" r="3"/><circle cx="6" cy="18" r="3"/><line x1="20" y1="4" x2="8.12" y2="15.88"/><line x1="14.47" y1="14.48" x2="20" y2="20"/><line x1="8.12" y1="8.12" x2="12" y2="12"/></svg>
             </a>
         </header>
@@ -113,7 +113,7 @@
         </main>
 
         <footer class="site-footer">
-            <p>&copy; 2026 Hair by London</p>
+            <p>&copy; 2026 Local Locks</p>
         </footer>
     </div>
 
@@ -126,7 +126,7 @@
             throw new Error('Unknown stylist');
         }
         const firstName = stylist.name.split(' ')[0];
-        document.title = 'Book with ' + firstName + ' | Hair by London';
+        document.title = 'Book with ' + firstName + ' | Local Locks';
 
         const state = {
             services: [], // service ids, in list order
@@ -493,9 +493,9 @@
             const ics = [
                 'BEGIN:VCALENDAR',
                 'VERSION:2.0',
-                'PRODID:-//Hair by London//Booking//EN',
+                'PRODID:-//Local Locks//Booking//EN',
                 'BEGIN:VEVENT',
-                'UID:' + Date.now() + '@hairbylondon',
+                'UID:' + Date.now() + '@locallocks',
                 'DTSTAMP:' + new Date().toISOString().replace(/[-:]/g, '').split('.')[0] + 'Z',
                 'DTSTART:' + icsStamp(state.date, state.start),
                 'DTEND:' + icsStamp(state.date, state.start + totalDuration()),

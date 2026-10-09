@@ -1,4 +1,4 @@
-# Hair by London
+# Local Locks
 
 Low-fidelity prototype for IS 551. Find a stylist you trust, see their real work, and book a hair appointment in a few minutes.
 
@@ -16,7 +16,7 @@ Fundamental Value: Calm. She can book without the usual anxiety of gambling on a
 
 ## 2. The Screens
 
-Home: Its job is to show what the site is for right away: a photo, the name "Hair by London," one line saying what it does ("See real work from local stylists, then book a time that fits your day"), and one big "Find a stylist" button. The only other element is a small top nav. This answers the question: can someone tell what this is for in one glance, before reading anything?
+Home: Its job is to show what the site is for right away: a photo, the name "Local Locks," which says "hair, near me" at a glance, one line saying what it does ("See real work from stylists near you, then book a time that fits your day"), and one "Find a stylist" button. The only other element is a small top nav. This answers the question: can someone tell what this is for in one glance, before reading anything?
 
 Stylists: Its job is to get her from "I need a haircut" to a stylist who can actually fit her in. Step 1 is picking what she needs. Day and time are optional and visually quieter. Step 2 is the results: each stylist card shows their rating, a few photos of their work, the price for what she picked, and their next open times as big filled buttons she can tap to book right away. This answers the question: can she find someone trustworthy with a time that works, fast?
 
@@ -51,7 +51,7 @@ Prediction: "I think this is a site where you can find a stylist and book a hair
 Opening the live site fresh:
 
 Does the landing screen signal the primary capability and fundamental value at first glance, before reading?
-Yes. The photo, the name, the one-line tagline, and the big "Find a stylist" button are the main content on the screen.
+Yes. The photo, the name, the one-line tagline, and the "Find a stylist" button are the main content on the screen.
 
 Does every element on the landing screen earn its place, or does anything compete with the primary job?
 No, nothing competes. The social media icons were removed, so the only other thing on the screen is a small nav with Home and Stylists.
@@ -71,7 +71,7 @@ The first version of the site relied on a small home link in the header text for
 
 ## 6. Design Library
 
-All the components (prototype notice, nav, hero, filter chips, stylist card, profile header, book bar, service rows, day and time picker, confirm bar, details form, confirmation, buttons) are documented with previews in [`hair-by-london-design-system/`](hair-by-london-design-system/README.md). Colors, type, spacing, and radii come from the tokens at the top of `style.css`, and the same pieces are reused across screens (the day chip on Stylists and Book, the avatar and rating line on cards, profiles, and the booking header, the recap card on details and confirmation).
+All the components (prototype notice, nav, hero, filter chips, stylist card, profile header, book bar, service rows, day and time picker, confirm bar, details form, confirmation, buttons) are documented with previews in [`local-locks-design-system/`](local-locks-design-system/README.md). Colors, type, spacing, and radii come from the tokens at the top of `style.css`, and the same pieces are reused across screens (the day chip on Stylists and Book, the avatar and rating line on cards, profiles, and the booking header, the recap card on details and confirmation).
 
 ## Files
 

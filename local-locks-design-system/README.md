@@ -1,4 +1,4 @@
-# Hair by London
+# Local Locks
 
 A calm booking design system for a small set of local stylists. A busy mom picks what she needs, sees who can fit her in, looks at their real work, and books a time, all in a nap-time window.
 
@@ -82,7 +82,7 @@ Reuse is the rule: the day chip is the same on Stylists and Book, the Avatar and
 
 ## What we take from Vagaro, and how it changes
 
-| Vagaro pattern | In Hair by London | Component |
+| Vagaro pattern | In Local Locks | Component |
 | --- | --- | --- |
 | Search by service, date, and time | Three filter groups, with day and time marked optional | FilterChip |
 | Results list with next open times | Each card shows up to three open times as the main tap | StylistCard |
