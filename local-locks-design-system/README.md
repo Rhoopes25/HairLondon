@@ -109,5 +109,5 @@ Line icons on a 24px grid, stroke 1.6, `currentColor`, no fills: scissors (logo 
 ## Open items
 
 1. Replace the sample reviews and made-up availability with real data before launch.
-2. Three of the four sample stylists have no photos yet; add their work.
+2. Sadie, Kai, and Brooke have two portfolio photos each (free stock for the prototype); add more, and real headshots for their avatars, before launch.
 3. After the first round of lo-fi testing, decide which of the warm visual styling to keep.
