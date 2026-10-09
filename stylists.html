@@ -187,8 +187,17 @@
                 '<span class="card-price-note">about ' + formatDuration(durationFor(ids)) + '</span>' :
                 '<span class="card-price-note">from</span><span class="card-price">' + priceText(startingPrice(s)) + '</span>';
 
-            const thumbs = s.portfolio.slice(0, 3).map(p =>
-                '<span class="card-thumb"><img src="' + p.src + '" alt="" loading="lazy" onerror="this.parentNode.remove()"></span>').join('');
+            // Up to three photos. The third spot is always a "See all work" link to the
+            // profile: laid over the third photo, or as its own tile if there are fewer.
+            const firstName = s.name.split(' ')[0];
+            const seeAll = '<a class="see-all" href="' + base + '" aria-label="See all of ' + escapeHTML(firstName) +
+                '’s work, services, and reviews"><span>See all<br>work →</span></a>';
+            const shown = s.portfolio.slice(0, 3);
+            const thumbs = shown.map((p, i) =>
+                '<span class="card-thumb' + (i === 2 ? ' card-thumb--more' : '') + '">' +
+                '<img src="' + p.src + '" alt="" loading="lazy" onerror="this.remove()">' +
+                (i === 2 ? seeAll : '') + '</span>').join('') +
+                (shown.length < 3 ? '<span class="card-thumb card-thumb--more card-thumb--empty">' + seeAll + '</span>' : '');
 
             const slots = m.slots.map(slot =>
                 '<a class="slot-chip" href="' + bookBase + '&date=' + dateKey(slot.date) + '&start=' + slot.start + '"' +
@@ -205,7 +214,7 @@
                 '</div>' +
                 '<div class="card-price-wrap">' + price + '</div>' +
                 '</div>' +
-                (thumbs ? '<div class="card-thumbs" aria-hidden="true">' + thumbs + '</div>' : '') +
+                '<div class="card-thumbs">' + thumbs + '</div>' +
                 '<div class="card-slots"><span class="card-slots-label">' + (slotsLabel || 'Next open') + '</span>' +
                 '<div class="slot-row">' + slots + '</div></div>' +
                 '</article>';
