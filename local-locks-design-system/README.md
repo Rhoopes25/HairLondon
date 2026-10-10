@@ -26,12 +26,13 @@ This is a low-fidelity prototype for concept testing. Low fidelity here doesn't 
 - **A prototype notice, only at the start.** The PrototypeNotice bar tells testers it isn't meant to look polished and we're testing the idea, not the visuals. It shows on the first screen of a visit and never again, so it isn't a distraction later.
 - **No ancillary stuff.** No social links, no extra pages, no promos. Anything that isn't the unique value (trust, then an easy booking) is left out.
 
-The happy path, and the one loud thing on each screen:
+The happy path, and the one loud thing on each screen (the code for each component is in `app/ui`, and all of them are on `/#/design-library`):
 
 | Screen | The one loud thing | Everything else |
 | --- | --- | --- |
-| Home | "Find a stylist" button | Logo, two nav links |
-| Stylists | Numbered Step 1 (services) and Step 2 (tap a time on a card) | Day and time filters, marked optional and smaller |
+| Home | "Book Now" and "Explore Stylists" buttons | Logo, the nav links |
+| Book | Numbered Step 1 (services) and Step 2 (tap a time on a card) | Day and time filters, marked optional and smaller |
+| Stylists | The cards, each with her next open times | "View profile" |
 | Profile | "Book with London" in the sticky BookBar | Tabs, back link |
 | Book: day and time | Sticky "Continue" | Change services, price note |
 | Book: details | Sticky "Confirm booking" | Recap card |

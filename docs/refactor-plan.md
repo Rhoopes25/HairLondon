@@ -7,7 +7,7 @@ Status: **built.** Phases 0 to 7 are implemented on branch `refactor`; see "As b
 **Done and verified** (typecheck, lint, 283 tests across `src`, tooling, and `app`, all passing; production builds for `pages` and `browser` modes; real-Chrome checks listed in `docs/usability-audit.md`):
 
 - Phase 0: Vite + React 19 + TypeScript 6, root tooling, `app/config.ts`, router factory with both modes, `deploy/` host files, CI and Pages workflows, `docs/deployment.md`.
-- Phase 1: tokens generated from `tokens.json` with a drift test; 22 families of UI components in `app/ui`; the hidden `/#/design-library` page.
+- Phase 1: tokens generated from `tokens.json` with a drift test; 25 families of UI components in `app/ui`; the hidden `/#/design-library` page.
 - Phase 2: typed domain and data layers in `src/`, with golden tests against the legacy availability hash.
 - Phase 3: shell, layouts, route-based code splitting, the early-prototype notice and strip.
 - Phase 4: every legacy behavior in the section 7 parity checklist, each covered by an integration test.
@@ -25,7 +25,8 @@ Status: **built.** Phases 0 to 7 are implemented on branch `refactor`; see "As b
 
 **Where the build differs from the plan above:**
 
-- Screens: 18 pages, 7 overlays, and 4 empty states, not the 26 in the inventory. The "About the studio" page, the day filter, and the review step were built; "Reminder text preview" and "Add to calendar" are overlays.
+- Screens: 19 pages, 6 overlays, and 5 empty states (see `docs/submission-notes.md`). The "About the studio" page and the review step were built; "Reminder text preview" and "Add to calendar" are overlays. The day-of-week filter sheet was removed when the teammates' Book page replaced it with a search by service, day, and time of day.
+- **Reconciled with `main` (branch `Review_Main`).** The teammates kept building the static site after this plan was written. Their changes are in: see "What came from the teammates" in `docs/submission-notes.md`. Where the plan above disagrees with the app, the app wins.
 - Pattern table (3.3): **Factory (function) test builders** were not built (tests use the seed data and small inline objects) and **Import on Interaction** was not built (the photo viewer is a lazy route). **Prefetch** is done in `MainLayout`, not from the profile page. `SlotPicker` is a composed pair, not a context-based compound; `Tabs` is.
 - The booking wizard's state machine lives in `src/domain/booking/booking-state.ts` (pure, tested in Node), not in `app/`.
 - Repositories are concrete classes; the only interface in `src/data` is `StorageAdapter`.

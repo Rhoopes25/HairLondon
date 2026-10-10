@@ -27,10 +27,16 @@ Only `app/config.ts` may read `import.meta.env` (lint enforces this).
 
 ## One-time GitHub Pages setup
 
-1. The repository must be **public** (Pages on a free account requires it).
-2. A repository admin (the repo is owned by `Rhoopes25`) opens **Settings -> Pages** and sets **Source** to **GitHub Actions**.
-3. Pushing to `main` runs `Deploy to GitHub Pages`. You can also run it by hand from the Actions tab (`workflow_dispatch`), which is how to deploy from the `refactor` branch before it is merged: choose the branch in the "Run workflow" menu.
-4. Verify the live URL in a private window and on a phone. Open a deep link such as `.../HairLondon/#/stylists/london` in a fresh tab and refresh.
+**Current state (checked 2026-10-10):** `https://rhoopes25.github.io/HairLondon/` is live, but it serves the teammates' *static* site from the `main` branch. Pages is set to "Deploy from a branch" (`main`, `/`), not to GitHub Actions. Until the steps below are done, the public URL does **not** show this React app.
+
+Recommended order, done well before the deadline (expect a few minutes where the site is down or stale):
+
+1. The repository must be **public** (it is).
+2. A repository admin (the repo is owned by `Rhoopes25`) opens **Settings -> Pages** and sets **Source** to **GitHub Actions**. From this moment the old static site is no longer served.
+3. Merge `Review_Main` into `main` with a pull request (CI runs on it). The merge triggers `Deploy to GitHub Pages`, which builds with `npm run build:pages` and publishes. Watch the **Actions** tab until it is green.
+4. Verify the live URL in a private window and on a phone: the first visit must show the "This is just a prototype" modal, the page title should say Local Locks, and Home should show "Book Now" and "Explore Stylists". Open a deep link such as `.../HairLondon/#/stylists/london` in a fresh tab and refresh.
+
+Do not merge to `main` while Pages is still on "Deploy from a branch": that mode would publish the repository root, which no longer has an `index.html`. A manual run (`workflow_dispatch`) only works for workflows that exist on the default branch, so it cannot deploy `Review_Main` before the merge. To preview first, run `npm run build:pages` and serve `dist/` under `/HairLondon/`.
 
 ## Switching hosts
 

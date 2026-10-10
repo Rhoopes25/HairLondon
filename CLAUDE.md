@@ -4,7 +4,7 @@ Guidance for Claude Code (and humans) working in this repo. Keep this file curre
 
 ## What this is
 
-**Hair by London**: a mobile-first hair stylist booking app. It is the group midterm for IS 551 (a low-fidelity, public, working prototype graded against a rubric, summarized below).
+**Local Locks** (renamed from Hair by London by the team; "Hair by London" is now only London's own studio name in the seed data): a mobile-first hair stylist booking app. It is the group midterm for IS 551 (a low-fidelity, public, working prototype graded against a rubric, summarized below).
 
 - **Persona:** a mom of three young kids who gets a short window (nap time) to think about herself. She will not book a stylist she does not trust.
 - **Core capability:** view a stylist's portfolio and reviews, then book an available time that works for her.
@@ -81,9 +81,11 @@ Import rules (enforced by lint and tsconfig):
 - Inside `src/`: `data` may import `domain`; `domain` imports nothing else.
 - Inside `app/`: `ui` may import `@src/domain` formatters and types only (not `services`, `features`, `shell`, or `@src/data`). `features` may import `ui`, `services`, `@src/domain`, `@src/data`. **A feature never imports another feature's internals**; it uses that feature's `index.ts` public API (`@app/features/booking`), or a page composes the two. `shell` wires everything together; nothing imports from `shell`.
 
-Each feature folder is flat: `*Page.tsx` or `*Step.tsx` screens, their components and `.module.css` files, and `index.ts` (the public API; only what other code may use). Features: `home`, `stylists`, `stylist-profile`, `booking`, `appointments`, `scheduling` (the shared day-and-time picker), `saved`, `prototype-notice`, `help`.
+Each feature folder is flat: `*Page.tsx` or `*Step.tsx` screens, their components and `.module.css` files, and `index.ts` (the public API; only what other code may use). Features: `home`, `book-search` (the Book page: search by services, day, and time of day), `stylists`, `stylist-profile`, `booking`, `appointments`, `scheduling` (the shared day-and-time picker and the open-time chips), `saved`, `prototype-notice`, `help`.
 
 Components get data through hooks; hooks get it from repositories supplied by Context (`app/services`, wired in `app/shell`). Components never read `localStorage` or seed data directly. Repositories take a `StorageAdapter`; the shell supplies `LocalStorageAdapter` (tests use the in-memory one). That is the seam where a real backend would later plug in.
+
+What she has chosen travels in the URL, built and read in one place (`app/lib/links.ts`): `?services=haircut,color`, `?date=2026-10-08&start=540` (a time held for her), and `?back=` (where the X or back link returns to; only paths inside the app are honored). Nothing else carries state between the Book page, a profile, and booking.
 
 Routes live in `app/shell/routes.tsx`, one lazy import per screen. Add a screen there and to the inventory in `docs/submission-notes.md`.
 
@@ -130,19 +132,21 @@ Follow `local-locks-design-system/README.md`. The non-negotiables:
 - **Calm voice.** Plain, first-person-from-the-stylist copy. One verb per screen. **No pressure devices**: no "spots left", countdowns, discount badges, "hurry". Availability is simply open or unavailable.
 - **One action color family.** Filled buttons and small text use `gold-ink` (white on it is 6.3:1). `gold-deep` is for icons, stars, borders and the focus ring only (3.6:1). `scripts/contrast.test.ts` enforces this. Never rely on color alone: unavailable slots get a strike-through.
 - **Real controls.** Day chips, time slots, filters, and tabs are `<button>` with `aria-pressed` / `aria-selected` / `disabled`. Clickable `div`s are a bug. Keep the 2px `gold-deep` focus ring. Touch targets are at least 44px.
-- Times always show AM/PM. Metadata is one quiet line (`Haircut · $65`).
+- Times always show AM/PM. Metadata is one quiet line (`Haircut · $65+`).
+- **Prices are starting prices** and always carry a plus (`$65+`, via `formatStartingPrice`), because longer or thicker hair can cost more. Totals say "Estimated total". Durations add up when she picks more than one service, and only times with room for all of it show as open. The salon is open 9 AM to 7 PM.
 - **Mobile first, responsive up to a full website.** Write the phone layout (design at 390px) as the base and add `min-width` queries on top. The only breakpoints are `sm` 640px, `md` 900px and `lg` 1200px, held in `tokens.json` (`responsive.breakpoints`); a test fails on any other `@media` width. Phone: one column. `sm`: two- and three-column grids, sheets become centered dialogs, the wordmark appears. `md`: desktop compositions (two-column booking with a sticky summary, split hero). `lg`: three-column grids, content at its maximum.
 - **Page width.** The header, prototype strip and footer are full-width bands; page content sits in `Container` (centered, `--container-max` 1200px, desktop gutters) and single-purpose screens (forms, recaps, help, confirmations) in `Narrow` (`--container-narrow` 640px). Two-column pages use `SplitLayout`. Components keep their own side padding (`space-5`); do not add another. Never set a fixed pixel width on a page.
 - Reuse before building: if a pattern appears twice, it becomes a `ui/` component with a preview and a test. Update the design-system README/`tokens.json` when a token or component changes.
 
 ### Prototype requirements (these ship in the product, not just in docs)
 
-- A first-visit **modal** states in plain English that this is an early, unfinished prototype and gives the user a concrete **goal** (e.g. "Book a haircut with a stylist you trust"). It must be dismissible and re-openable from the footer, and a small "Early prototype" label stays visible on every screen.
+- A first-visit **modal** states in plain English that this is an early, unfinished prototype ("it isn't supposed to look polished, we're testing the idea, not the visual design") and gives the user a concrete **goal** ("Find a stylist whose work you trust, then book a time that fits your day"). It must be dismissible and re-openable from the footer, and a small "Early prototype" label stays visible on every screen.
 - **Low fidelity:** we deliberately do **not** build a separate lo-fi theme. Use the existing design tokens and the real photos as they are. The early-stage message is carried by the notice modal and the "Early prototype" label. Do not add roughness effects. Rationale and accepted risk: `docs/refactor-plan.md` section 3.6.
 - **Overlays (modals, sheets) count as screens.** Every overlay in the inventory must be a distinct, designed, reachable state.
-- Navigation is **non-linear**: every top-level place is in the persistent nav, and booking can start from Home, the stylist list, a stylist's Services tab, a portfolio photo, the About page, or "Book again". Never force a single path. Any onboarding is skippable.
+- Navigation is **non-linear**: every top-level place is in the persistent nav, and booking can start from Home ("Book Now"), a time chip on the Book page or the Stylists page, a stylist's Book bar or Services tab, a portfolio photo, the About page, or "Book again". Never force a single path. Any onboarding is skippable.
 - `/#/design-library` shows every component on one page. It is deliberately not linked from the app; keep it working when components change.
-- The entry screen's first and most prominent signifier is the core capability (find a stylist you trust and book). Secondary functions are visibly secondary.
+- The entry screen's first and most prominent signifier is the core capability (local stylists you can trust, and "Book Now"). Secondary functions are visibly secondary. The team deliberately keeps Home to the photo, the name, one line, and two buttons.
+- **Teammates' content is canonical.** The team built the static site on `main` in parallel with the React rebuild; `Review_Main` merged the two. When a teammate's page and the React app disagree on content, copy, or behavior, the teammate's version won, unless the rubric requires otherwise (the notice stays a modal).
 - Persistence is `localStorage` only. No servers, no real payments, no real SMS. Fake only what cannot be built client-side, and say so in the UI.
 
 ## Deployment
@@ -152,7 +156,7 @@ Current host: GitHub Pages (`https://rhoopes25.github.io/HairLondon/`), hash rou
 - Never hard-code a base path, host, or router mode. Use `assetUrl()` for public assets and the router `basename`.
 - Only `app/config.ts` reads `import.meta.env` (`VITE_BASE`, `VITE_ROUTER_MODE`, `VITE_API_URL`).
 - Host-specific files live in `deploy/<target>/` and are applied by `scripts/postbuild.ts` (`DEPLOY_TARGET`). `.github/workflows/ci.yml` is host-neutral and each host's deploy workflow reuses it, then runs its own build script (the base path is baked in at build time). Steps for switching hosts are in `docs/deployment.md`.
-- Pages must be enabled by a repo admin (the repo is owned by `Rhoopes25`); the first deploy has **not** been verified on the live host.
+- As of 2026-10-10 the live URL serves the teammates' old static site from `main` (Pages source is "Deploy from a branch"). It will not show this app until a repo admin switches the source to GitHub Actions and `Review_Main` is merged to `main`; order and warnings are in `docs/deployment.md`. The React deploy has **not** been verified on the live host.
 
 ## Git workflow
 
