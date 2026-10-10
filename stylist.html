@@ -12,12 +12,16 @@
 <body>
     <div class="app-frame">
         <header class="site-header site-header--split">
-            <a href="index.html" class="logo" aria-label="Local Locks, home">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><circle cx="6" cy="6" r="3"/><circle cx="6" cy="18" r="3"/><line x1="20" y1="4" x2="8.12" y2="15.88"/><line x1="14.47" y1="14.48" x2="20" y2="20"/><line x1="8.12" y1="8.12" x2="12" y2="12"/></svg>
-            </a>
-            <nav class="header-nav" aria-label="Main">
+            <div class="header-brand">
                 <a href="index.html" class="header-nav-link">Home</a>
-                <a href="stylists.html" class="header-nav-link active" id="nav-stylists">Stylists</a>
+                <a href="index.html" class="logo" aria-label="Local Locks, home">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><circle cx="6" cy="6" r="3"/><circle cx="6" cy="18" r="3"/><line x1="20" y1="4" x2="8.12" y2="15.88"/><line x1="14.47" y1="14.48" x2="20" y2="20"/><line x1="8.12" y1="8.12" x2="12" y2="12"/></svg>
+                </a>
+            </div>
+            <nav class="header-nav" aria-label="Main">
+                <a href="book.html" class="header-nav-link">Book</a>
+                <a href="stylists.html" class="header-nav-link active">Stylists</a>
+                <a href="appointments.html" class="header-nav-link">Appointments</a>
             </nav>
         </header>
 
@@ -86,7 +90,7 @@
         const params = new URLSearchParams(location.search);
         const stylist = getStylist(params.get('id'));
         if (!stylist) {
-            location.replace('stylists.html');
+            location.replace('book.html');
             throw new Error('Unknown stylist');
         }
 
@@ -117,9 +121,8 @@
         const pickedDay = parseDateKey(params.get('day'));
 
         // Back to the same search she came from
-        const searchUrl = lastSearchUrl();
+        const searchUrl = params.get('from') === 'stylists' ? 'stylists.html' : lastSearchUrl();
         document.getElementById('back-link').href = searchUrl;
-        document.getElementById('nav-stylists').href = searchUrl;
 
         const bookUrl = bookingHref();
         document.title = stylist.name + ' | Local Locks';
