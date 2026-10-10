@@ -1,0 +1,11 @@
+.note {
+  font-size: 0.8rem;
+  color: var(--ink-soft);
+  margin-top: 0.75rem;
+}
+
+/* A choice stopped working and she has to act, so it is darker and heavier, not just a colour. */
+.warn {
+  color: var(--gold-ink);
+  font-weight: 500;
+}

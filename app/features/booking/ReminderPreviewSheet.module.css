@@ -1,0 +1,7 @@
+.bubble {
+  padding: 0.8rem 1rem;
+  background: var(--white);
+  border: 1px solid var(--gold-soft);
+  border-radius: var(--radius-lg);
+  color: var(--ink);
+}

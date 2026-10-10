@@ -1,0 +1,86 @@
+.frame {
+  padding: 1.75rem var(--space-4) 0;
+}
+
+.hero {
+  display: flex;
+  flex-direction: column;
+}
+
+.photo {
+  width: 100%;
+  aspect-ratio: 4 / 4.3;
+  object-fit: cover;
+  border-radius: var(--radius-xl);
+  background-color: var(--photo-deep);
+}
+
+.text {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  padding: 1.6rem 1rem 2rem;
+}
+
+.text h1 {
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-style: italic;
+  font-size: var(--fs-display-xl);
+  line-height: 1.15;
+  color: var(--ink);
+  margin-bottom: 0.15rem;
+}
+
+.text p {
+  font-size: 1rem;
+  color: var(--ink-soft);
+  margin-bottom: 1.3rem;
+}
+
+.actions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 0.75rem;
+}
+
+/* Desktop: text on the left, the portrait on the right. */
+@media (min-width: 900px) {
+  .frame {
+    padding: var(--space-6) var(--space-4) 0;
+  }
+
+  .hero {
+    display: grid;
+    grid-template-columns: minmax(0, 1.1fr) minmax(0, 0.9fr);
+    align-items: center;
+    gap: 3.5rem;
+  }
+
+  .photo {
+    grid-column: 2;
+    grid-row: 1;
+    aspect-ratio: 4 / 5;
+    box-shadow: var(--shadow-card);
+  }
+
+  .text {
+    grid-column: 1;
+    grid-row: 1;
+    padding: 0;
+    align-items: flex-start;
+    text-align: left;
+  }
+
+  .text p {
+    margin: 0.75rem 0 1.75rem;
+    max-width: 30ch;
+    font-size: 1.15rem;
+  }
+
+  .actions {
+    justify-content: flex-start;
+  }
+}

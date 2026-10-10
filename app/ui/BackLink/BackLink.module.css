@@ -1,0 +1,19 @@
+.back {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  min-height: 2.75rem;
+  margin: 0.25rem var(--space-5) -0.5rem;
+  font-size: var(--fs-body-sm);
+  color: var(--ink-soft);
+  text-decoration: none;
+}
+
+.back:hover {
+  color: var(--ink);
+}
+
+.back svg {
+  width: 1rem;
+  height: 1rem;
+}

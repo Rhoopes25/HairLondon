@@ -1,0 +1,76 @@
+.head {
+  padding: var(--space-5) var(--space-5) 0;
+}
+
+.top {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+}
+
+.who {
+  flex: 1;
+  min-width: 0;
+}
+
+.who h1 {
+  font-family: var(--font-display);
+  font-weight: 500;
+  font-size: var(--fs-display-lg);
+  line-height: 1.2;
+}
+
+.studio {
+  font-size: var(--fs-body-sm);
+  color: var(--ink-soft);
+}
+
+.aside {
+  align-self: flex-start;
+}
+
+.bio {
+  font-size: 0.9rem;
+  color: var(--ink-soft);
+  margin: var(--space-2) 0 0;
+  max-width: 38ch;
+}
+
+.tabRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-3);
+  border-bottom: 1px solid var(--gold-soft);
+  margin: var(--space-4) var(--space-5) 0;
+}
+
+/* Desktop: avatar, then name and bio together, with the save button at the far right. */
+@media (min-width: 900px) {
+  .head {
+    display: grid;
+    grid-template-columns: auto minmax(0, 1fr) auto;
+    column-gap: var(--space-5);
+    align-items: center;
+    padding-top: var(--space-6);
+  }
+
+  /* The wrapper is only there for the phone layout; its children join the grid. */
+  .top {
+    display: contents;
+  }
+
+  .aside {
+    align-self: center;
+  }
+
+  .bio {
+    grid-column: 2 / 4;
+    max-width: 60ch;
+    font-size: var(--fs-label);
+  }
+
+  .tabRow {
+    margin-top: var(--space-5);
+  }
+}
