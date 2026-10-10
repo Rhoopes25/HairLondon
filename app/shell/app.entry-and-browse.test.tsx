@@ -4,32 +4,34 @@ import { MemoryStorageAdapter } from '@src/data/storage/memory-storage-adapter';
 import { renderApp } from '@app/test/renderApp';
 
 describe('entry screen', () => {
-  it('leads with what this is for, and one main action', async () => {
+  it('leads with what this is for, and two ways in', async () => {
     renderApp('/');
     expect(
-      await screen.findByRole('heading', { level: 1, name: 'Hair by London' }),
+      await screen.findByRole('heading', { level: 1, name: 'Local Locks' }),
     ).toBeInTheDocument();
-    expect(
-      screen.getByText('See real client work and reviews, then book a time that fits your day.'),
-    ).toBeInTheDocument();
-    expect(screen.getByRole('link', { name: 'Find a stylist' })).toHaveAttribute(
+    expect(screen.getByText('Local stylists you can trust.')).toBeInTheDocument();
+    expect(screen.getByRole('link', { name: 'Book Now' })).toHaveAttribute('href', '/book');
+    expect(screen.getByRole('link', { name: 'Explore Stylists' })).toHaveAttribute(
       'href',
       '/stylists',
     );
   });
 
-  it('offers other ways in: a service shortcut with its price range, and returning clients', async () => {
+  it('keeps everything else quiet: the only actions in the page are the two ways in', async () => {
+    renderApp('/');
+    await screen.findByRole('heading', { level: 1, name: 'Local Locks' });
+    const main = screen.getByRole('main');
+    expect(within(main).getAllByRole('link').map((link) => link.textContent)).toEqual([
+      'Book Now',
+      'Explore Stylists',
+    ]);
+  });
+
+  it('starts either way in with one tap', async () => {
     const { user, router } = renderApp('/');
-    const blowout = await screen.findByRole('link', { name: /Blowout/ });
-    expect(blowout).toHaveTextContent('$35–45');
-    expect(screen.getByRole('link', { name: 'See my appointments' })).toBeInTheDocument();
-    await user.click(blowout);
-    expect(
-      await screen.findByRole('heading', { level: 1, name: 'Find a stylist' }),
-    ).toBeInTheDocument();
-    expect(router.state.location.pathname + router.state.location.search).toBe(
-      '/stylists?service=blowout',
-    );
+    await user.click(await screen.findByRole('link', { name: 'Explore Stylists' }));
+    expect(await screen.findByRole('heading', { level: 1, name: 'Stylists' })).toBeInTheDocument();
+    expect(router.state.location.pathname).toBe('/stylists');
   });
 
   it('puts every top-level place one tap away, with the current one marked', async () => {
@@ -37,13 +39,14 @@ describe('entry screen', () => {
     const nav = await screen.findByRole('navigation', { name: 'Main' });
     expect(within(nav).getByRole('link', { name: 'Home' })).toHaveAttribute('aria-current', 'page');
     await user.click(within(nav).getByRole('link', { name: 'Stylists' }));
-    expect(
-      await screen.findByRole('heading', { level: 1, name: 'Find a stylist' }),
-    ).toBeInTheDocument();
+    expect(await screen.findByRole('heading', { level: 1, name: 'Stylists' })).toBeInTheDocument();
     expect(within(nav).getByRole('link', { name: 'Stylists' })).toHaveAttribute(
       'aria-current',
       'page',
     );
+    await user.click(within(nav).getByRole('link', { name: 'Book' }));
+    expect(await screen.findByRole('heading', { level: 1, name: 'Book' })).toBeInTheDocument();
+    expect(within(nav).getByRole('link', { name: 'Book' })).toHaveAttribute('aria-current', 'page');
     for (const label of ['Appointments', 'Saved']) {
       expect(within(nav).getByRole('link', { name: label })).toBeInTheDocument();
     }
@@ -53,12 +56,14 @@ describe('entry screen', () => {
 describe('early-prototype notice', () => {
   it('opens on a first visit with the goal in plain English, and can be closed', async () => {
     const { user } = renderApp('/', { showNotice: true });
-    const dialog = await screen.findByRole('dialog', { name: 'This is an early draft' });
+    const dialog = await screen.findByRole('dialog', { name: 'This is just a prototype' });
     expect(dialog).toHaveTextContent(
       'Find a stylist whose work you trust, then book a time that fits your day.',
     );
     expect(dialog).toHaveTextContent('Most stylists, and all of the reviews, are samples.');
-    await user.click(screen.getByRole('button', { name: 'Start exploring' }));
+    expect(dialog).toHaveTextContent('It isn’t supposed to look polished.');
+    expect(dialog).toHaveTextContent('Nothing you book here is real.');
+    await user.click(screen.getByRole('button', { name: 'Got it' }));
     expect(screen.queryByRole('dialog')).not.toBeInTheDocument();
   });
 
@@ -71,20 +76,20 @@ describe('early-prototype notice', () => {
     first.unmount();
 
     renderApp('/', { showNotice: true, storage });
-    await screen.findByRole('heading', { level: 1, name: 'Hair by London' });
+    await screen.findByRole('heading', { level: 1, name: 'Local Locks' });
     expect(screen.queryByRole('dialog')).not.toBeInTheDocument();
   });
 
   it('is labelled on every screen and can be reopened from the strip, the footer, and help', async () => {
     const { user } = renderApp('/stylists');
-    await screen.findByRole('heading', { name: 'Find a stylist' });
+    await screen.findByRole('heading', { level: 1, name: 'Stylists' });
     expect(screen.getByText('Early prototype')).toBeInTheDocument();
 
     await user.click(screen.getByRole('button', { name: /What.s this\?/ }));
     expect(
-      await screen.findByRole('dialog', { name: 'This is an early draft' }),
+      await screen.findByRole('dialog', { name: 'This is just a prototype' }),
     ).toBeInTheDocument();
-    await user.click(screen.getByRole('button', { name: 'Start exploring' }));
+    await user.click(screen.getByRole('button', { name: 'Got it' }));
 
     await user.click(screen.getByRole('button', { name: 'About this prototype' }));
     expect(await screen.findByRole('dialog')).toBeInTheDocument();
@@ -107,73 +112,62 @@ describe('early-prototype notice', () => {
 describe('stylists list', () => {
   it('lists every stylist with a plain rating and a starting price', async () => {
     renderApp('/stylists');
-    const london = await screen.findByRole('link', { name: /^London/ });
+    const list = await screen.findByRole('region', { name: 'Stylists' });
+    const cards = await within(list).findAllByRole('article');
+    expect(cards).toHaveLength(4);
+    const london = cards[0];
+    if (!london) throw new Error('no cards');
+    expect(within(london).getByRole('link', { name: 'London' })).toHaveAttribute(
+      'href',
+      expect.stringContaining('/stylists/london'),
+    );
     expect(london).toHaveTextContent('Hair by London, Provo');
     expect(london).toHaveTextContent('4.7 · 3 reviews');
-    expect(london).toHaveTextContent('From $35');
-    expect(
-      within(screen.getByRole('region', { name: 'Stylists' })).getAllByRole('link'),
-    ).toHaveLength(4);
+    expect(london).toHaveTextContent('from');
+    expect(london).toHaveTextContent('$35+');
   });
 
-  it('filters by service from the chips and keeps it in the URL', async () => {
+  it('shows her work and her next three open times on each card', async () => {
+    renderApp('/stylists');
+    const list = await screen.findByRole('region', { name: 'Stylists' });
+    const [london] = await within(list).findAllByRole('article');
+    if (!london) throw new Error('no cards');
+    expect(london.querySelectorAll('img[loading="lazy"]')).toHaveLength(3);
+    expect(within(london).getByText('Next open')).toBeInTheDocument();
+    // Wed Oct 7, 8:00 AM, London works Tue to Sat: the first time is Today at 10:00 AM or later
+    // (an hour of notice), and every chip says who and when.
+    const chips = within(london).getAllByRole('link', { name: /^Book London, / });
+    expect(chips).toHaveLength(3);
+    expect(chips[0]).toHaveTextContent(/^Today, /);
+  });
+
+  it('tapping an open time starts a booking with that time held', async () => {
     const { user, router } = renderApp('/stylists');
-    await user.click(await screen.findByRole('button', { name: 'Highlights' }));
-    const list = screen.getByRole('region', { name: 'Stylists' });
-    expect(within(list).getAllByRole('link')).toHaveLength(3);
-    expect(within(list).queryByText(/Kai Nakamura/)).not.toBeInTheDocument();
-    expect(within(list).getAllByRole('link')[0]).toHaveTextContent('Highlights $150');
-    expect(router.state.location.search).toBe('?service=highlights');
-    expect(screen.getByRole('button', { name: 'Highlights' })).toHaveAttribute(
-      'aria-pressed',
-      'true',
-    );
+    const list = await screen.findByRole('region', { name: 'Stylists' });
+    const [london] = await within(list).findAllByRole('article');
+    if (!london) throw new Error('no cards');
+    const chip = within(london).getAllByRole('link', { name: /^Book London, / })[0];
+    if (!chip) throw new Error('no chip');
+    await user.click(chip);
+    await screen.findByRole('heading', { level: 1, name: 'Book Now' });
+    expect(router.state.location.pathname).toBe('/book/london');
+    const params = new URLSearchParams(router.state.location.search);
+    expect(params.get('date')).toBe('2026-10-07');
+    expect(params.get('start')).not.toBeNull();
+    expect(params.get('back')).toBe('/stylists');
+    // The held time is already chosen, so Continue is waiting for a service only.
+    expect(screen.getByText(/^Wed, Oct 7 · \d+:\d\d (AM|PM)$/)).toBeInTheDocument();
   });
 
-  it('starts filtered when arriving with ?service= from the home page', async () => {
-    renderApp('/stylists?service=blowout');
-    expect(await screen.findByRole('button', { name: 'Blowout' })).toHaveAttribute(
-      'aria-pressed',
-      'true',
-    );
-    expect(screen.queryByText(/Brooke Ellis/)).not.toBeInTheDocument(); // she does not offer blowouts
-  });
-
-  it('filters by the day she works, from the sheet, with a live count', async () => {
-    const { user, router } = renderApp('/stylists');
-    await user.click(await screen.findByRole('button', { name: 'Which day can you come?' }));
-    const sheet = await screen.findByRole('dialog', { name: 'Which day can you come?' });
-
-    await user.click(within(sheet).getByRole('radio', { name: 'Monday' }));
-    expect(within(sheet).getByRole('button', { name: 'Show 2 stylists' })).toBeInTheDocument();
-
-    await user.click(within(sheet).getByRole('radio', { name: 'Sunday' }));
-    expect(within(sheet).getByRole('button', { name: 'No stylists on that day' })).toBeDisabled();
-
-    await user.click(within(sheet).getByRole('radio', { name: 'Monday' }));
-    await user.click(within(sheet).getByRole('button', { name: 'Show 2 stylists' }));
-    expect(router.state.location.search).toBe('?day=1');
-    const list = screen.getByRole('region', { name: 'Stylists' });
-    expect(within(list).getAllByRole('link')).toHaveLength(2);
-    expect(screen.getByRole('button', { name: 'Works Mondays' })).toBeInTheDocument();
-
-    await user.click(screen.getByRole('button', { name: 'Clear day' }));
-    expect(
-      within(screen.getByRole('region', { name: 'Stylists' })).getAllByRole('link'),
-    ).toHaveLength(4);
-  });
-
-  it('says so when nothing matches', async () => {
-    renderApp('/stylists?service=highlights&day=1');
-    // Highlights + Monday: Sadie works Mondays and does highlights, so use Sunday instead.
-    await screen.findByRole('region', { name: 'Stylists' });
-  });
-
-  it('shows an empty message for a combination nobody offers', async () => {
-    renderApp('/stylists?day=0');
-    expect(
-      await screen.findByText('No stylists match that. Try a different service or day.'),
-    ).toBeInTheDocument();
+  it('opens a profile from the name, and comes back to the list', async () => {
+    const { user } = renderApp('/stylists');
+    const list = await screen.findByRole('region', { name: 'Stylists' });
+    const [first] = await within(list).findAllByRole('link', { name: 'View profile' });
+    if (!first) throw new Error('no link');
+    await user.click(first);
+    await screen.findByRole('heading', { level: 1, name: 'London' });
+    await user.click(screen.getByRole('link', { name: 'Back to stylists' }));
+    expect(await screen.findByRole('heading', { level: 1, name: 'Stylists' })).toBeInTheDocument();
   });
 });
 
@@ -183,7 +177,7 @@ describe('not found and help', () => {
     expect(
       await screen.findByRole('heading', { name: 'We couldn’t find that page' }),
     ).toBeInTheDocument();
-    expect(screen.getByRole('link', { name: 'Find a stylist' })).toBeInTheDocument();
+    expect(screen.getByRole('link', { name: 'Find a stylist' })).toHaveAttribute('href', '/book');
     expect(screen.getByRole('link', { name: 'Back to home' })).toBeInTheDocument();
   });
 

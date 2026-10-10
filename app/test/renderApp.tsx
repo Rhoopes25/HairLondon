@@ -5,6 +5,7 @@ import { RouterProvider } from 'react-router/dom';
 import { fixedClock } from '@src/domain/clock';
 import { MemoryStorageAdapter } from '@src/data/storage/memory-storage-adapter';
 import type { StorageAdapter } from '@src/data/storage/storage-adapter';
+import type { Stylist } from '@src/domain/models/stylist';
 import { createServices } from '@app/services';
 import { AppProviders } from '@app/shell/providers';
 import { routes } from '@app/shell/routes';
@@ -18,6 +19,8 @@ export interface RenderAppOptions {
   storage?: StorageAdapter;
   /** Leave the early-prototype notice open, as on a first visit. */
   showNotice?: boolean;
+  /** Replace the sample stylists, for cases the sample data does not cover. */
+  stylists?: readonly Stylist[];
 }
 
 /**
@@ -26,7 +29,7 @@ export interface RenderAppOptions {
  */
 export function renderApp(route = '/', options: RenderAppOptions = {}) {
   const storage = options.storage ?? new MemoryStorageAdapter();
-  const services = createServices(storage, fixedClock(options.now ?? TEST_NOW));
+  const services = createServices(storage, fixedClock(options.now ?? TEST_NOW), options.stylists);
   if (!options.showNotice) services.preferences.dismissNotice();
 
   const router = createMemoryRouter(routes, { initialEntries: [route] });

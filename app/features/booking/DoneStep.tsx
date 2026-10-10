@@ -47,7 +47,7 @@ export function DoneStep() {
             { label: 'Stylist', value: `${stylist.name}, ${stylist.studio}` },
             { label: 'Services', value: servicesText(appointment, catalog) },
             { label: 'When', value: whenText(appointment) },
-            { label: 'Total', value: totalText(appointment) },
+            { label: 'Estimated total', value: totalText(appointment) },
             { label: 'Name', value: appointment.name },
           ]}
         />

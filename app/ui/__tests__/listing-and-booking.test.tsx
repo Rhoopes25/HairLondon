@@ -3,14 +3,17 @@ import userEvent from '@testing-library/user-event';
 import { describe, expect, it, vi } from 'vitest';
 import { renderWithRouter } from '@app/test/render';
 import {
+  BookBar,
   Button,
   ConfirmBar,
   Hero,
   NavBar,
+  Notice,
   PortfolioGrid,
   ProfileHeader,
   Reviews,
   ServiceRow,
+  ServiceSummary,
   SlotPicker,
   StylistCard,
   TabRow,
@@ -77,24 +80,118 @@ describe('SlotPicker', () => {
 });
 
 describe('StylistCard', () => {
+  const base = {
+    to: '/stylists/london',
+    name: 'London',
+    photoUrl: null,
+    studio: 'Hair by London',
+    city: 'Provo',
+    average: 4.5,
+    reviewCount: 2,
+  };
+
   it('links to the stylist and shows who, where, rating, and price', () => {
+    renderWithRouter(<StylistCard {...base} price={{ note: 'from', value: '$35+' }} />);
+    expect(screen.getByRole('link', { name: 'London' })).toHaveAttribute('href', '/stylists/london');
+    const card = screen.getByRole('article');
+    expect(card).toHaveTextContent('Hair by London, Provo');
+    expect(card).toHaveTextContent('4.5 · 2 reviews');
+    expect(card).toHaveTextContent('from');
+    expect(card).toHaveTextContent('$35+');
+  });
+
+  it('puts "See all work" on the third photo spot, and a chip per open time', () => {
     renderWithRouter(
       <StylistCard
-        to="/stylists/london"
-        name="London"
-        photoUrl={null}
-        studio="Hair by London"
-        city="Provo"
-        average={4.5}
-        reviewCount={2}
-        priceText="From $35"
+        {...base}
+        photos={[{ src: '/a.jpg' }, { src: '/b.jpg' }]}
+        seeAll={{ to: '/stylists/london', label: 'See all of London’s work' }}
+        slots={{
+          heading: 'Next open',
+          items: [
+            {
+              label: 'Today, 1:00 PM',
+              to: '/book/london?start=780',
+              ariaLabel: 'Book London, today at 1:00 PM',
+            },
+          ],
+        }}
       />,
     );
-    const link = screen.getByRole('link');
-    expect(link).toHaveAttribute('href', '/stylists/london');
-    expect(link).toHaveTextContent('Hair by London, Provo');
-    expect(link).toHaveTextContent('4.5 · 2 reviews');
-    expect(link).toHaveTextContent('From $35');
+    // Two photos, so the tile sits over an empty third spot instead of vanishing.
+    expect(screen.getByRole('link', { name: 'See all of London’s work' })).toBeInTheDocument();
+    expect(screen.getByText('Next open')).toBeInTheDocument();
+    const chip = screen.getByRole('link', { name: 'Book London, today at 1:00 PM' });
+    expect(chip).toHaveAttribute('href', '/book/london?start=780');
+    expect(chip).toHaveTextContent('Today, 1:00 PM');
+  });
+
+  it('shows no photo row or chips when it has none', () => {
+    const { container } = renderWithRouter(<StylistCard {...base} />);
+    expect(container.querySelector('img')).toBeNull();
+    expect(screen.queryByText('Next open')).toBeNull();
+  });
+});
+
+describe('BookBar', () => {
+  it('says what the booking starts with, and holds the time', () => {
+    renderWithRouter(
+      <BookBar
+        title="Haircut + Color"
+        meta="$185+ · about 3 hr"
+        heldTime="Fri, Oct 16 at 1:00 PM"
+        to="/book/london?services=haircut,color"
+        label="Book with London"
+      />,
+    );
+    expect(screen.getByText('Haircut + Color')).toBeInTheDocument();
+    expect(screen.getByText('$185+ · about 3 hr')).toBeInTheDocument();
+    expect(screen.getByText('Fri, Oct 16 at 1:00 PM')).toBeInTheDocument();
+    expect(screen.getByRole('link', { name: 'Book with London' })).toHaveAttribute(
+      'href',
+      '/book/london?services=haircut,color',
+    );
+  });
+});
+
+describe('ServiceSummary', () => {
+  it('shows the picks as one line and toggles the list it controls', async () => {
+    const onToggle = vi.fn();
+    render(
+      <ServiceSummary
+        names="Haircut + Color"
+        meta="$185+ · about 3 hr"
+        expanded={false}
+        onToggle={onToggle}
+        controls="list"
+      />,
+    );
+    const button = screen.getByRole('button', { name: 'Change' });
+    expect(button).toHaveAttribute('aria-expanded', 'false');
+    expect(button).toHaveAttribute('aria-controls', 'list');
+    await userEvent.click(button);
+    expect(onToggle).toHaveBeenCalledOnce();
+  });
+
+  it('says Done while the list is open', () => {
+    render(
+      <ServiceSummary
+        names="Haircut"
+        meta="$65+ · about 1 hr"
+        expanded
+        onToggle={() => undefined}
+        controls="list"
+      />,
+    );
+    expect(screen.getByRole('button', { name: 'Done' })).toHaveAttribute('aria-expanded', 'true');
+  });
+});
+
+describe('Notice', () => {
+  it('announces a calm explanation politely', () => {
+    render(<Notice title="No openings Sat">Here are the soonest times.</Notice>);
+    expect(screen.getByRole('status')).toHaveTextContent('No openings Sat');
+    expect(screen.getByRole('status')).toHaveTextContent('Here are the soonest times.');
   });
 });
 
@@ -211,14 +308,31 @@ describe('ProfileHeader', () => {
 describe('ConfirmBar', () => {
   it('shows the summary and total above the action', () => {
     render(
-      <ConfirmBar summary="Haircut · Fri, Oct 16" total={{ value: '$65 · 1 hr' }}>
+      <ConfirmBar summary="Haircut · Fri, Oct 16" total={{ value: '$65+ · about 1 hr' }}>
         <Button>Continue</Button>
       </ConfirmBar>,
     );
     expect(screen.getByText('Haircut · Fri, Oct 16')).toBeInTheDocument();
     expect(screen.getByText('Total')).toBeInTheDocument();
-    expect(screen.getByText('$65 · 1 hr')).toBeInTheDocument();
+    expect(screen.getByText('$65+ · about 1 hr')).toBeInTheDocument();
     expect(screen.getByRole('button', { name: 'Continue' })).toBeInTheDocument();
+  });
+
+  it('can show progress and a price note', () => {
+    render(
+      <ConfirmBar
+        progress={{ label: 'Choose a time', percent: 67 }}
+        total={{ label: 'Estimated total', value: '$65+' }}
+        note="Starting price."
+      >
+        <Button>Continue</Button>
+      </ConfirmBar>,
+    );
+    const bar = screen.getByRole('progressbar', { name: 'Booking progress' });
+    expect(bar).toHaveAttribute('aria-valuenow', '67');
+    expect(bar).toHaveAttribute('aria-valuetext', 'Choose a time');
+    expect(screen.getByText('Estimated total')).toBeInTheDocument();
+    expect(screen.getByText('Starting price.')).toBeInTheDocument();
   });
 });
 
@@ -229,10 +343,9 @@ describe('Hero', () => {
         imageUrl="/images/home.jpg"
         imageSrcSet="/images/home-640.jpg 640w, /images/home.jpg 900w"
         imageLabel="A stylist holding her shears"
-        title="Hair by London"
+        title="Local Locks"
         tagline="See their work."
-        ctaLabel="Find a stylist"
-        ctaTo="/stylists"
+        actions={[{ label: 'Book Now', to: '/book' }]}
       />,
     );
     const img = container.querySelector('img');
@@ -246,15 +359,18 @@ describe('Hero', () => {
       <Hero
         imageUrl="/images/home.jpg"
         imageLabel="A stylist holding her shears"
-        title="Hair by London"
-        tagline="See their work. Read reviews. Book a time."
-        ctaLabel="Find a stylist"
-        ctaTo="/stylists"
+        title="Local Locks"
+        tagline="Local stylists you can trust."
+        actions={[
+          { label: 'Book Now', to: '/book' },
+          { label: 'Explore Stylists', to: '/stylists' },
+        ]}
       />,
     );
-    expect(screen.getByRole('heading', { level: 1, name: 'Hair by London' })).toBeInTheDocument();
-    expect(screen.getByText('See their work. Read reviews. Book a time.')).toBeInTheDocument();
-    expect(screen.getByRole('link', { name: 'Find a stylist' })).toHaveAttribute(
+    expect(screen.getByRole('heading', { level: 1, name: 'Local Locks' })).toBeInTheDocument();
+    expect(screen.getByText('Local stylists you can trust.')).toBeInTheDocument();
+    expect(screen.getByRole('link', { name: 'Book Now' })).toHaveAttribute('href', '/book');
+    expect(screen.getByRole('link', { name: 'Explore Stylists' })).toHaveAttribute(
       'href',
       '/stylists',
     );
@@ -278,13 +394,13 @@ describe('NavBar', () => {
       'page',
     );
     expect(within(nav).getByRole('link', { name: 'Home' })).not.toHaveAttribute('aria-current');
-    expect(screen.getByRole('link', { name: 'Hair by London, home' })).toHaveAttribute('href', '/');
+    expect(screen.getByRole('link', { name: 'Local Locks, home' })).toHaveAttribute('href', '/');
   });
 
   it('shows the wordmark for desktop without changing the home link name', () => {
     renderWithRouter(<NavBar homeTo="/" links={links} />);
     // Visible text from sm up (CSS), hidden from assistive tech so the link is not announced twice.
-    expect(screen.getByText('Hair by London')).toHaveAttribute('aria-hidden', 'true');
-    expect(screen.getByRole('link', { name: 'Hair by London, home' })).toBeInTheDocument();
+    expect(screen.getByText('Local Locks')).toHaveAttribute('aria-hidden', 'true');
+    expect(screen.getByRole('link', { name: 'Local Locks, home' })).toBeInTheDocument();
   });
 });

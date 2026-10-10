@@ -1,21 +1,33 @@
+import { isServiceId } from '../models/service';
 import type { ServiceId } from '../models/service';
 import type { Stylist } from '../models/stylist';
 import type { Weekday } from '../models/time';
 import { offersService } from '../pricing/totals';
 
-export interface StylistFilter {
-  /** Only stylists who offer this service. */
-  readonly service?: ServiceId | undefined;
-  /** Only stylists who work this day of the week. */
-  readonly weekday?: Weekday | undefined;
+/** Stylists who offer every one of these services. No services means everyone. */
+export function stylistsOffering(
+  stylists: readonly Stylist[],
+  serviceIds: readonly ServiceId[],
+): Stylist[] {
+  return stylists.filter((stylist) => serviceIds.every((id) => offersService(stylist, id)));
 }
 
-export function filterStylists(stylists: readonly Stylist[], filter: StylistFilter): Stylist[] {
-  return stylists.filter(
-    (stylist) =>
-      (filter.service === undefined || offersService(stylist, filter.service)) &&
-      (filter.weekday === undefined || stylist.workDays.includes(filter.weekday)),
-  );
+/**
+ * Valid service ids from a comma-separated query value ("haircut,color"), in the order given,
+ * with unknown and repeated ids dropped. Links are typed and shared, so nothing here may throw.
+ */
+export function parseServiceIds(value: string | null | undefined): ServiceId[] {
+  if (!value) return [];
+  const seen = new Set<ServiceId>();
+  for (const part of value.split(',')) {
+    const id = part.trim();
+    if (isServiceId(id)) seen.add(id);
+  }
+  return [...seen];
+}
+
+export function serviceIdsParam(serviceIds: readonly ServiceId[]): string {
+  return serviceIds.join(',');
 }
 
 export const WEEKDAY_NAMES = [
@@ -27,17 +39,6 @@ export const WEEKDAY_NAMES = [
   'Friday',
   'Saturday',
 ] as const;
-
-export function isWeekday(value: unknown): value is Weekday {
-  return typeof value === 'number' && Number.isInteger(value) && value >= 0 && value <= 6;
-}
-
-/** Parses a ?day= query value ("0" to "6"); anything else means "no day filter". */
-export function parseWeekday(value: string | null | undefined): Weekday | undefined {
-  if (value === null || value === undefined || value === '') return undefined;
-  const n = Number(value);
-  return isWeekday(n) ? n : undefined;
-}
 
 /** "Tuesday, Wednesday, and Friday" */
 export function describeWorkDays(days: readonly Weekday[]): string {

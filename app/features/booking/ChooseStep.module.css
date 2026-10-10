@@ -3,3 +3,13 @@
   flex-direction: column;
   gap: 0.65rem;
 }
+
+/* `display: flex` above would otherwise beat the hidden attribute, and the list would never close. */
+.services[hidden] {
+  display: none;
+}
+
+/* The summary line and the list it opens sit one above the other. */
+.afterSummary {
+  margin-top: 0.65rem;
+}

@@ -45,9 +45,9 @@ export function buildIcs({ appointment, stylist, catalog, stamp }: IcsInput): st
   return [
     'BEGIN:VCALENDAR',
     'VERSION:2.0',
-    'PRODID:-//Hair by London//Booking//EN',
+    'PRODID:-//Local Locks//Booking//EN',
     'BEGIN:VEVENT',
-    `UID:${appointment.id}@hairbylondon`,
+    `UID:${appointment.id}@locallocks`,
     `DTSTAMP:${icsUtcStamp(stamp)}`,
     `DTSTART:${icsLocalStamp(appointment.date, appointment.start)}`,
     `DTEND:${icsLocalStamp(appointment.date, appointmentEnd(appointment))}`,

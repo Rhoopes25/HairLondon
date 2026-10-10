@@ -1,4 +1,5 @@
 import { useMemo } from 'react';
+import type { TimeNote } from '@src/domain/booking/draft';
 import type { ServiceId } from '@src/domain/models/service';
 import type { Stylist } from '@src/domain/models/stylist';
 import { durationMin } from '@src/domain/models/time';
@@ -11,6 +12,7 @@ import { bookableDays, listSlots } from '@src/domain/scheduling/slots';
 import { useAppointments, useServices } from '@app/services';
 import { Section, SlotPicker } from '@app/ui';
 import type { DayOption, TimeOption } from '@app/ui';
+import { cx } from '@app/lib/cx';
 import styles from './SlotSelector.module.css';
 
 export interface SlotSelectorProps {
@@ -23,8 +25,8 @@ export interface SlotSelectorProps {
   onSelectStart: (start: MinuteOfDay) => void;
   /** When rescheduling, the visit being moved, so its own slot counts as free. */
   ignoreAppointmentId?: string;
-  /** A helper line under the times, e.g. "You'll be done by 3:00 PM." */
-  note?: string | null;
+  /** A helper line under the times, e.g. "You'll be done by about 3:00 PM." A warning is stressed. */
+  note?: TimeNote | null;
 }
 
 function toDayOption(date: IsoDate): DayOption {
@@ -86,7 +88,7 @@ export function SlotSelector({
               : undefined
           }
         />
-        {note ? <p className={styles.note}>{note}</p> : null}
+        {note ? <p className={cx(styles.note, note.warn && styles.warn)}>{note.text}</p> : null}
       </Section>
     </>
   );

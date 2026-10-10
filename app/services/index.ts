@@ -4,6 +4,7 @@ export {
   useAppointment,
   useAppointments,
   useSavedIds,
+  useSearchEnvironment,
   useStore,
   useStylist,
   useStylists,

@@ -20,8 +20,10 @@ async function violations() {
 }
 
 const SCREENS: [string, string | RegExp][] = [
-  ['/', 'Hair by London'],
-  ['/stylists', 'Find a stylist'],
+  ['/', 'Local Locks'],
+  ['/book', 'Book'],
+  ['/book?services=color,highlights&time=evening', 'Book'], // nothing fits: the calm notice
+  ['/stylists', 'Stylists'],
   ['/stylists/london', 'London'],
   ['/stylists/london/services', 'London'],
   ['/stylists/london/reviews', 'London'],
@@ -33,7 +35,8 @@ const SCREENS: [string, string | RegExp][] = [
   ['/appointments/apt_sample_past', 'Past visit'],
   ['/appointments/apt_sample_past/review', 'Review London'],
   ['/help', 'How booking works'],
-  ['/book/london?service=haircut', 'Book Now'],
+  ['/book/london?services=haircut', 'Book Now'],
+  ['/book/london?services=haircut&date=2026-10-08&start=540', 'Book Now'], // a held time
   ['/design-library', 'Design library'],
   ['/nowhere', 'We couldn’t find that page'],
 ];
@@ -48,7 +51,7 @@ describe('accessibility: every screen', () => {
 
 describe('accessibility: the booking steps', () => {
   it('details, review, and confirmation have no violations', async () => {
-    const { user } = renderApp('/book/london?service=haircut');
+    const { user } = renderApp('/book/london?services=haircut');
     await screen.findByRole('heading', { level: 1, name: 'Book Now' });
     const days = within(screen.getByRole('group', { name: 'Day' })).getAllByRole('button');
     await user.click(days[1] as HTMLElement);
@@ -77,14 +80,7 @@ describe('accessibility: the booking steps', () => {
 describe('accessibility: overlays', () => {
   it('the early-prototype notice', async () => {
     renderApp('/', { showNotice: true });
-    await screen.findByRole('dialog', { name: 'This is an early draft' });
-    expect(await violations()).toEqual([]);
-  });
-
-  it('the day filter sheet', async () => {
-    const { user } = renderApp('/stylists');
-    await user.click(await screen.findByRole('button', { name: 'Which day can you come?' }));
-    await screen.findByRole('dialog');
+    await screen.findByRole('dialog', { name: 'This is just a prototype' });
     expect(await violations()).toEqual([]);
   });
 
@@ -114,7 +110,7 @@ describe('accessibility: overlays', () => {
   });
 
   it('the leave-booking confirmation', async () => {
-    const { user } = renderApp('/book/london?service=haircut');
+    const { user } = renderApp('/book/london?services=haircut');
     await screen.findByRole('heading', { name: 'Book Now' });
     await user.click(screen.getByRole('link', { name: 'Exit booking' }));
     await screen.findByRole('dialog');

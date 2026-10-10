@@ -1,9 +1,9 @@
 import { useEffect, useRef } from 'react';
 
-/** Sets the browser tab title, e.g. "Find a stylist | Hair by London". */
+/** Sets the browser tab title, e.g. "Find a stylist | Local Locks". */
 export function useDocumentTitle(title: string): void {
   useEffect(() => {
-    document.title = `${title} | Hair by London`;
+    document.title = `${title} | Local Locks`;
   }, [title]);
 }
 

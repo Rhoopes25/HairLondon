@@ -4,25 +4,25 @@ import type { IsoDate } from '../models/time';
 import { SeededAvailability } from './seeded-availability';
 
 /**
- * Golden vectors computed with the legacy site's own hash (booking.html), so the
- * refactor shows the same openings the old pages did.
+ * Golden vectors computed with the static site's own hash (data.js on main: padded date key,
+ * 10% of blocks booked), so the React app shows the same openings the teammates' pages did.
  */
-const LEGACY_BOOKED: { stylist: string; date: string; booked: number[] }[] = [
-  { stylist: 'london', date: '2026-10-07', booked: [750, 840, 1050] },
-  { stylist: 'london', date: '2026-10-08', booked: [600, 630, 930, 1020] },
-  { stylist: 'sadie', date: '2026-11-03', booked: [960] },
-  { stylist: 'kai', date: '2026-01-15', booked: [630, 870, 930] },
-  { stylist: 'brooke', date: '2026-12-25', booked: [630, 780] },
+const SAMPLE_BOOKED: { stylist: string; date: string; booked: number[] }[] = [
+  { stylist: 'london', date: '2026-10-07', booked: [750, 780, 900, 1080] },
+  { stylist: 'london', date: '2026-10-08', booked: [630, 870] },
+  { stylist: 'sadie', date: '2026-11-03', booked: [690, 780, 990] },
+  { stylist: 'kai', date: '2026-01-15', booked: [870] },
+  { stylist: 'brooke', date: '2026-12-25', booked: [630, 780, 1080] },
 ];
 
 describe('SeededAvailability', () => {
   const availability = new SeededAvailability();
 
-  it.each(LEGACY_BOOKED)(
-    'matches the legacy site for $stylist on $date',
+  it.each(SAMPLE_BOOKED)(
+    'matches the static site for $stylist on $date',
     ({ stylist, date, booked }) => {
       const actual: number[] = [];
-      for (let block = 9 * 60; block < 18 * 60; block += 30) {
+      for (let block = 9 * 60; block < 19 * 60; block += 30) {
         if (availability.isBlockBooked(stylist, date as IsoDate, asMinuteOfDay(block)))
           actual.push(block);
       }

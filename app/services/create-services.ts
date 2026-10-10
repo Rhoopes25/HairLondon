@@ -8,6 +8,7 @@ import { seedAppointments } from '@src/data/seed/appointments';
 import { SERVICES } from '@src/data/seed/services';
 import { STYLISTS } from '@src/data/seed/stylists';
 import type { Clock } from '@src/domain/clock';
+import type { Stylist } from '@src/domain/models/stylist';
 import type { ServiceCatalog } from '@src/domain/models/service';
 import { AppointmentAwareAvailability } from '@src/domain/scheduling/appointment-aware-availability';
 import type { AvailabilityStrategy } from '@src/domain/scheduling/availability';
@@ -29,15 +30,22 @@ export interface Services {
   availabilityFor(ignoreAppointmentId?: string): AvailabilityStrategy;
 }
 
-/** The composition root for data: builds every repository over one storage and one clock. */
-export function createServices(storage: StorageAdapter, clock: Clock): Services {
+/**
+ * The composition root for data: builds every repository over one storage and one clock.
+ * `stylists` is the sample roster; tests pass their own to exercise cases the sample data lacks.
+ */
+export function createServices(
+  storage: StorageAdapter,
+  clock: Clock,
+  stylists: readonly Stylist[] = STYLISTS,
+): Services {
   const appointments = new AppointmentRepository(storage, clock, seedAppointments(clock));
   const sample = new SeededAvailability();
 
   return {
     clock,
     catalog: SERVICES,
-    stylists: new StylistRepository(STYLISTS),
+    stylists: new StylistRepository(stylists),
     appointments,
     saved: new SavedStylistRepository(storage),
     reviews: new ReviewRepository(storage, clock),

@@ -14,7 +14,7 @@ export interface SalonHours {
 
 export const SALON_HOURS: SalonHours = {
   open: minuteOfDay(9),
-  close: minuteOfDay(18),
+  close: minuteOfDay(19),
   step: durationMin(30),
   daysAhead: 21,
   leadTime: durationMin(60),

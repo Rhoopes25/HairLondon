@@ -30,10 +30,18 @@ export function Chip({ selected, className, type = 'button', children, ...rest }
   );
 }
 
-/** A horizontally scrolling row of chips. */
-export function ChipRow({ label, children }: { label: string; children: ReactNode }) {
+/** A row of chips: scrolls sideways on a phone, or `wrap`s onto more lines at every width. */
+export function ChipRow({
+  label,
+  wrap,
+  children,
+}: {
+  label: string;
+  wrap?: boolean;
+  children: ReactNode;
+}) {
   return (
-    <div className={styles.row} role="group" aria-label={label}>
+    <div className={cx(styles.row, wrap && styles.wrap)} role="group" aria-label={label}>
       {children}
     </div>
   );

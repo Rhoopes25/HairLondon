@@ -25,9 +25,9 @@ function context(strategy: AvailabilityStrategy, clock = morning): SlotContext {
 
 describe('isStartAvailable', () => {
   it('rejects a visit that would run past closing', () => {
-    // 5:00 PM + 90 min runs to 6:30 PM; the salon closes at 6:00 PM.
-    expect(isStartAvailable(context(openAll), date, minuteOfDay(17), durationMin(90))).toBe(false);
-    expect(isStartAvailable(context(openAll), date, minuteOfDay(16, 30), durationMin(90))).toBe(
+    // 6:00 PM + 90 min runs to 7:30 PM; the salon closes at 7:00 PM.
+    expect(isStartAvailable(context(openAll), date, minuteOfDay(18), durationMin(90))).toBe(false);
+    expect(isStartAvailable(context(openAll), date, minuteOfDay(17, 30), durationMin(90))).toBe(
       true,
     );
   });
@@ -53,15 +53,15 @@ describe('isStartAvailable', () => {
 describe('listSlots', () => {
   it('lists every 30-minute start from open to just before close', () => {
     const slots = listSlots(context(openAll), date, durationMin(30));
-    expect(slots).toHaveLength(18);
+    expect(slots).toHaveLength(20);
     expect(slots[0]?.start).toBe(SALON_HOURS.open);
-    expect(slots.at(-1)?.start).toBe(minuteOfDay(17, 30));
+    expect(slots.at(-1)?.start).toBe(minuteOfDay(18, 30));
   });
 
   it('marks long visits unavailable near closing', () => {
     const slots = listSlots(context(openAll), date, durationMin(120));
     const lastOpen = slots.filter((s) => s.available).at(-1);
-    expect(lastOpen?.start).toBe(minuteOfDay(16));
+    expect(lastOpen?.start).toBe(minuteOfDay(17));
   });
 
   it('treats "no service yet" as the shortest visit', () => {

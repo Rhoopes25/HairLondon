@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router';
+import { bookingPath } from '@app/lib/links';
 import { useDocumentTitle } from '@app/hooks/usePageBehavior';
 import { useServices } from '@app/services';
 import {
@@ -42,7 +43,10 @@ export function AppointmentDetailPage() {
   }
 
   const name = stylist?.name ?? 'your stylist';
-  const bookAgain = `/book/${appointment.stylistId}?service=${appointment.serviceIds[0] ?? ''}`;
+  const bookAgain = bookingPath({
+    stylistId: appointment.stylistId,
+    serviceIds: appointment.serviceIds,
+  });
 
   return (
     <Narrow>
@@ -54,9 +58,10 @@ export function AppointmentDetailPage() {
             label: 'Stylist',
             value: stylist ? <Link to={`/stylists/${stylist.id}`}>{stylist.name}</Link> : name,
           },
+          ...(stylist ? [{ label: 'Studio', value: `${stylist.studio}, ${stylist.city}` }] : []),
           { label: 'Services', value: servicesText(appointment, catalog) },
           { label: 'When', value: whenText(appointment) },
-          { label: 'Total', value: totalText(appointment) },
+          { label: 'Estimated total', value: totalText(appointment) },
           { label: 'Name', value: appointment.name },
           { label: 'Phone', value: appointment.phone },
         ]}

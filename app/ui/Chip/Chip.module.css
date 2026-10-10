@@ -10,6 +10,13 @@
   display: none;
 }
 
+/* A wrapping row sits inside a section that already has side padding, so it adds none of its own. */
+.wrap {
+  flex-wrap: wrap;
+  overflow-x: visible;
+  padding-inline: 0;
+}
+
 .chip {
   flex: 0 0 auto;
   font-family: var(--font-sans);

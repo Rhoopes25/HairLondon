@@ -1,8 +1,19 @@
 import { screen, within } from '@testing-library/react';
 import { describe, expect, it } from 'vitest';
+import { STYLISTS } from '@src/data/seed/stylists';
 import { renderApp } from '@app/test/renderApp';
 
 const tab = (name: string) => screen.getByRole('tab', { name });
+
+/** Sadie as she is in the sample data, but with no photos yet. */
+const sadieWithoutPhotos = () => {
+  const sadie = STYLISTS.find((stylist) => stylist.id === 'sadie');
+  if (!sadie) throw new Error('seed stylist missing');
+  return STYLISTS.map((stylist) => (stylist === sadie ? { ...sadie, portfolio: [] } : stylist));
+};
+
+const bookLink = (name: string) => screen.getByRole('link', { name });
+const hrefOf = (name: string) => new URL(bookLink(name).getAttribute('href') ?? '', 'http://x');
 
 describe('stylist profile', () => {
   it('leads with the work: Portfolio is open and the photos are real', async () => {
@@ -14,24 +25,28 @@ describe('stylist profile', () => {
     expect(screen.getByText('4.7 · 3 reviews')).toBeInTheDocument();
   });
 
-  it('opens on Services when she has no photos yet, and says so on the Portfolio tab', async () => {
-    const { user } = renderApp('/stylists/sadie');
+  it('shows the photos the teammates added for Sadie, Kai and Brooke too', async () => {
+    for (const [id, name] of [
+      ['sadie', 'Sadie Morgan'],
+      ['kai', 'Kai Nakamura'],
+      ['brooke', 'Brooke Ellis'],
+    ] as const) {
+      const { unmount } = renderApp(`/stylists/${id}`);
+      await screen.findByRole('heading', { level: 1, name });
+      const panel = screen.getByRole('tabpanel', { name: 'Portfolio' });
+      expect(within(panel).getAllByRole('img')).toHaveLength(2);
+      unmount();
+    }
+  });
+
+  it('opens on Reviews when she has no photos yet, and says so on the Portfolio tab', async () => {
+    const { user } = renderApp('/stylists/sadie', { stylists: sadieWithoutPhotos() });
     await screen.findByRole('heading', { level: 1, name: 'Sadie Morgan' });
-    expect(tab('Services')).toHaveAttribute('aria-selected', 'true');
+    expect(tab('Reviews')).toHaveAttribute('aria-selected', 'true');
     await user.click(tab('Portfolio'));
     expect(
       screen.getByText('Sadie hasn’t added photos yet. Check the reviews to see what clients say.'),
     ).toBeInTheDocument();
-  });
-
-  it('opens on Services when arriving from a service filter, and the Book button keeps the service', async () => {
-    renderApp('/stylists/london?service=color');
-    await screen.findByRole('heading', { level: 1, name: 'London' });
-    expect(tab('Services')).toHaveAttribute('aria-selected', 'true');
-    expect(screen.getByRole('link', { name: 'Book' })).toHaveAttribute(
-      'href',
-      '/book/london?service=color',
-    );
   });
 
   it('keeps the tab in the URL so it can be shared and survives refresh', async () => {
@@ -46,11 +61,21 @@ describe('stylist profile', () => {
     ).toBeInTheDocument();
   });
 
-  it('lists services with duration and price, each linking to booking with it chosen', async () => {
+  it('lists services with duration and starting price, each linking to booking with it chosen', async () => {
     renderApp('/stylists/london/services');
     const row = await screen.findByRole('link', { name: /^Color/ });
-    expect(row).toHaveTextContent('2 hr · $120');
-    expect(row).toHaveAttribute('href', '/book/london?service=color');
+    expect(row).toHaveTextContent('2 hr · $120+');
+    const href = new URL(row.getAttribute('href') ?? '', 'http://x');
+    expect(href.pathname).toBe('/book/london');
+    expect(href.searchParams.get('services')).toBe('color');
+    expect(screen.getByText(/Prices are starting points/)).toBeInTheDocument();
+  });
+
+  it('adds a tapped service to the ones she already picked', async () => {
+    renderApp('/stylists/london/services?services=haircut');
+    const row = await screen.findByRole('link', { name: /^Color/ });
+    const href = new URL(row.getAttribute('href') ?? '', 'http://x');
+    expect(href.searchParams.get('services')).toBe('haircut,color');
   });
 
   it('redirects an unknown tab to the profile, and an unknown stylist to the list', async () => {
@@ -60,18 +85,79 @@ describe('stylist profile', () => {
     first.unmount();
 
     const second = renderApp('/stylists/nobody');
-    await screen.findByRole('heading', { level: 1, name: 'Find a stylist' });
+    await screen.findByRole('heading', { level: 1, name: 'Stylists' });
     expect(second.router.state.location.pathname).toBe('/stylists');
   });
+});
 
-  it('keeps a Book action in the tab row and again at the bottom', async () => {
+describe('the Book bar', () => {
+  it('is the one Book action, always in reach, and says what happens next', async () => {
     renderApp('/stylists/london');
     await screen.findByRole('heading', { level: 1, name: 'London' });
-    expect(screen.getByRole('link', { name: 'Book' })).toHaveAttribute('href', '/book/london');
-    expect(screen.getByRole('link', { name: 'Book with London' })).toHaveAttribute(
+    // The page itself has one Book action; the "Book" in the header is the navigation.
+    expect(within(screen.getByRole('main')).getAllByRole('link', { name: /^Book/ })).toHaveLength(1);
+    expect(screen.getByText('Services from $35+')).toBeInTheDocument();
+    expect(screen.getByText('Pick services, a day, and a time next')).toBeInTheDocument();
+    const href = hrefOf('Book with London');
+    expect(href.pathname).toBe('/book/london');
+    // The X in booking returns to this profile.
+    expect(href.searchParams.get('back')).toBe('/stylists/london');
+  });
+
+  it('shows the services she searched for, their starting price, and how long they take', async () => {
+    renderApp('/stylists/london?services=haircut,color');
+    await screen.findByRole('heading', { level: 1, name: 'London' });
+    expect(screen.getByText('Haircut + Color')).toBeInTheDocument();
+    expect(screen.getByText('$185+ · about 3 hr')).toBeInTheDocument();
+    expect(hrefOf('Book with London').searchParams.get('services')).toBe('haircut,color');
+  });
+
+  it('holds a time she tapped, if it is still open', async () => {
+    renderApp('/stylists/london?services=haircut&date=2026-10-08&start=540');
+    await screen.findByRole('heading', { level: 1, name: 'London' });
+    expect(screen.getByText('Thu, Oct 8 at 9:00 AM')).toBeInTheDocument();
+    const params = hrefOf('Book with London').searchParams;
+    expect(params.get('date')).toBe('2026-10-08');
+    expect(params.get('start')).toBe('540');
+  });
+
+  it('does not hold a time that is already taken, but keeps the day', async () => {
+    renderApp('/stylists/london?services=haircut&date=2026-10-08&start=630');
+    await screen.findByRole('heading', { level: 1, name: 'London' });
+    expect(screen.queryByText(/Thu, Oct 8 at/)).not.toBeInTheDocument();
+    const params = hrefOf('Book with London').searchParams;
+    expect(params.get('date')).toBe('2026-10-08');
+    expect(params.get('start')).toBeNull();
+  });
+});
+
+describe('the way back', () => {
+  it('goes back to the stylists list by default', async () => {
+    renderApp('/stylists/london');
+    await screen.findByRole('heading', { level: 1, name: 'London' });
+    expect(bookLink('Back to stylists')).toHaveAttribute('href', '/stylists');
+  });
+
+  it('goes back to the exact search she came from', async () => {
+    const back = encodeURIComponent('/book?services=color&time=evening');
+    renderApp(`/stylists/london?back=${back}`);
+    await screen.findByRole('heading', { level: 1, name: 'London' });
+    expect(bookLink('Back to your search')).toHaveAttribute(
       'href',
-      '/book/london',
+      '/book?services=color&time=evening',
     );
+  });
+
+  it('says where it goes back to: saved stylists, for one', async () => {
+    renderApp(`/stylists/london?back=${encodeURIComponent('/saved')}`);
+    await screen.findByRole('heading', { level: 1, name: 'London' });
+    expect(bookLink('Back to saved stylists')).toHaveAttribute('href', '/saved');
+  });
+
+  it('will not go back to an address outside the app', async () => {
+    renderApp(`/stylists/london?back=${encodeURIComponent('https://example.com')}`);
+    await screen.findByRole('heading', { level: 1, name: 'London' });
+    expect(bookLink('Back to stylists')).toHaveAttribute('href', '/stylists');
   });
 });
 
@@ -82,10 +168,11 @@ describe('service detail sheet', () => {
     const sheet = await screen.findByRole('dialog', { name: 'Color' });
     expect(sheet).toHaveTextContent('All-over color, from a subtle refresh to a full change.');
     expect(sheet).toHaveTextContent('2 hr');
-    expect(sheet).toHaveTextContent('$120');
+    expect(sheet).toHaveTextContent('Starting price with London');
+    expect(sheet).toHaveTextContent('$120+');
     expect(within(sheet).getByRole('link', { name: 'Book Color' })).toHaveAttribute(
       'href',
-      '/book/london?service=color',
+      '/book/london?services=color',
     );
     await user.keyboard('{Escape}');
     expect(screen.queryByRole('dialog')).not.toBeInTheDocument();
@@ -155,8 +242,9 @@ describe('saving a stylist', () => {
     await user.click(
       within(screen.getByRole('navigation', { name: 'Main' })).getByRole('link', { name: 'Saved' }),
     );
-    const saved = await screen.findByRole('link', { name: /^Kai Nakamura/ });
-    expect(saved).toHaveTextContent('From $30');
+    const saved = await screen.findByRole('link', { name: 'Kai Nakamura' });
+    expect(saved.closest('article')).toHaveTextContent('from');
+    expect(saved.closest('article')).toHaveTextContent('$30+');
 
     await user.click(saved);
     await user.click(await screen.findByRole('button', { name: 'Save Kai' }));
@@ -177,7 +265,7 @@ describe('about the studio', () => {
     expect(
       screen.getByText('Tuesday, Wednesday, Thursday, Friday, and Saturday'),
     ).toBeInTheDocument();
-    expect(screen.getByText('9:00 AM to 6:00 PM')).toBeInTheDocument();
+    expect(screen.getByText('9:00 AM to 7:00 PM')).toBeInTheDocument();
     expect(screen.getByRole('link', { name: 'Book with London' })).toBeInTheDocument();
   });
 });

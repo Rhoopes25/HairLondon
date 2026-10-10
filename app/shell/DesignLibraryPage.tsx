@@ -4,6 +4,7 @@ import { useDocumentTitle } from '@app/hooks/usePageBehavior';
 import {
   Avatar,
   BackLink,
+  BookBar,
   Button,
   Chip,
   ChipRow,
@@ -11,24 +12,31 @@ import {
   ConfirmDialog,
   Container,
   EmptyNote,
+  Hero,
   Icon,
   LinkButton,
   Modal,
+  NavBar,
   Narrow,
+  Notice,
   PageIntro,
   PortfolioGrid,
+  ProfileHeader,
   QuietLink,
   RatingLine,
   Recap,
   Reviews,
+  Section,
   ServiceOption,
   ServiceRow,
+  ServiceSummary,
   Sheet,
   SlotPicker,
   SplitLayout,
   StarInput,
   Stars,
   StylistCard,
+  TabRow,
   Tabs,
   TextAreaField,
   TextButton,
@@ -36,6 +44,7 @@ import {
 } from '@app/ui';
 import type { IconName } from '@app/ui';
 import { assetUrl } from '@app/config';
+import { formatStartingPrice } from '@src/domain/format/price';
 import styles from './DesignLibraryPage.module.css';
 
 const ICONS: IconName[] = [
@@ -68,6 +77,7 @@ export function DesignLibraryPage() {
   useDocumentTitle('Design library');
   const [chip, setChip] = useState(true);
   const [service, setService] = useState(true);
+  const [changing, setChanging] = useState(false);
   const [tab, setTab] = useState('services');
   const [day, setDay] = useState<string | null>('2026-10-16');
   const [time, setTime] = useState<number | null>(780);
@@ -104,6 +114,47 @@ export function DesignLibraryPage() {
           </div>
         </Specimen>
 
+        <Specimen name="NavBar">
+          <NavBar
+            label="Example navigation"
+            homeTo="/"
+            links={[
+              { to: '/design-library', label: 'Library', end: true },
+              { to: '/book', label: 'Book' },
+              { to: '/stylists', label: 'Stylists' },
+            ]}
+          />
+        </Specimen>
+
+        <Specimen name="Hero">
+          <Hero
+            imageUrl={assetUrl('images/home.jpg')}
+            imageLabel="A stylist holding her shears"
+            title="Local Locks"
+            tagline="Local stylists you can trust."
+            actions={[
+              { label: 'Book Now', to: '/book' },
+              { label: 'Explore Stylists', to: '/stylists' },
+            ]}
+          />
+        </Specimen>
+
+        <Specimen name="ProfileHeader, TabRow">
+          <ProfileHeader
+            name="London"
+            photoUrl={assetUrl('images/home.jpg')}
+            studio="Hair by London"
+            city="Provo"
+            average={4.7}
+            reviewCount={3}
+            bio="Lived-in blondes, soft color, and cuts that grow out well."
+          >
+            <TabRow>
+              <span>Tabs go here</span>
+            </TabRow>
+          </ProfileHeader>
+        </Specimen>
+
         <Specimen name="Avatar, Stars, RatingLine">
           <div className={styles.row}>
             <Avatar name="Sadie Morgan" />
@@ -116,7 +167,7 @@ export function DesignLibraryPage() {
         </Specimen>
 
         <Specimen name="Chip">
-          <ChipRow label="Example filters">
+          <ChipRow label="Example filters" wrap>
             <Chip selected={chip} onClick={() => setChip(true)}>
               Selected
             </Chip>
@@ -124,6 +175,15 @@ export function DesignLibraryPage() {
               Not selected
             </Chip>
           </ChipRow>
+        </Specimen>
+
+        <Specimen name="Section (numbered, optional)">
+          <Section title="What do you need?" step={1}>
+            <p>The one required step is numbered.</p>
+          </Section>
+          <Section title="Which day?" optional>
+            <p>Optional steps sit back.</p>
+          </Section>
         </Specimen>
 
         <Specimen name="Tabs">
@@ -153,15 +213,22 @@ export function DesignLibraryPage() {
             <ServiceOption
               name="Haircut"
               description="Wash, cut, and style."
-              meta="1 hr · $65"
+              meta={`1 hr · ${formatStartingPrice(65)}`}
               checked={service}
               onChange={setService}
+            />
+            <ServiceSummary
+              names="Haircut + Color"
+              meta="$185+ · about 3 hr"
+              expanded={changing}
+              onToggle={() => setChanging(!changing)}
+              controls="library-service-list"
             />
             <ServiceRow
               to="/stylists"
               name="Color"
               description="All-over color."
-              meta="2 hr · $120"
+              meta="2 hr · $120+"
               onInfo={() => undefined}
             />
           </div>
@@ -175,6 +242,7 @@ export function DesignLibraryPage() {
             ]}
             selectedId={day}
             onSelect={setDay}
+            any={{ selected: day === null, onSelect: () => setDay(null) }}
           />
           <SlotPicker.Times
             times={[
@@ -196,8 +264,33 @@ export function DesignLibraryPage() {
             city="Provo"
             average={4.7}
             reviewCount={3}
-            priceText="From $35"
+            price={{ note: 'from', value: '$35+' }}
+            photos={[
+              { src: assetUrl('images/work-1.jpg') },
+              { src: assetUrl('images/work-3.jpg') },
+            ]}
+            seeAll={{ to: '/stylists/london', label: 'See all of London’s work' }}
+            slots={{
+              heading: 'Next open',
+              items: [
+                { label: 'Today, 1:00 PM', to: '/book/london', ariaLabel: 'Book London, today at 1:00 PM' },
+                { label: 'Tomorrow, 9:30 AM', to: '/book/london', ariaLabel: 'Book London, tomorrow at 9:30 AM' },
+              ],
+            }}
           />
+        </Specimen>
+
+        <Specimen name="BookBar, Notice">
+          <BookBar
+            title="Haircut + Color"
+            meta="$185+ · about 3 hr"
+            heldTime="Fri, Oct 16 at 1:00 PM"
+            to="/book/london"
+            label="Book with London"
+          />
+          <Notice title="No openings Sat, Oct 17 in the morning">
+            Nobody has a long enough opening then. Here are the soonest times they do have.
+          </Notice>
         </Specimen>
 
         <Specimen name="PortfolioGrid">
@@ -223,10 +316,15 @@ export function DesignLibraryPage() {
           <Recap
             rows={[
               { label: 'Stylist', value: 'London' },
-              { label: 'Total', value: '$65' },
+              { label: 'Estimated total', value: '$65+, about 1 hr' },
             ]}
           />
-          <ConfirmBar summary="Haircut · Fri, Oct 16" total={{ value: '$65 · 1 hr' }}>
+          <ConfirmBar
+            progress={{ label: 'Choose a time', percent: 67 }}
+            summary="Haircut · Fri, Oct 16"
+            total={{ label: 'Estimated total', value: '$65+ · about 1 hr' }}
+            note="Starting price. Longer or thicker hair can cost more."
+          >
             <Button fullWidth>Continue</Button>
           </ConfirmBar>
         </Specimen>

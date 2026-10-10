@@ -5,14 +5,17 @@ import { fixedClock } from '../clock';
 import { minuteOfDay } from '../models/time';
 import type { IsoDate } from '../models/time';
 import {
+  bookingProgress,
   clearStart,
   doneByNote,
   dropUnavailableStart,
   emptyDraft,
   isComplete,
+  presetDraft,
   selectDate,
   selectStart,
   summaryLine,
+  timeNote,
   toggleService,
   totalLine,
 } from './draft';
@@ -75,7 +78,7 @@ describe('draft summary', () => {
     draft = selectDate(draft, day);
     draft = selectStart(draft, minuteOfDay(13));
     expect(summaryLine(draft, SERVICES)).toBe('Haircut · Fri, Oct 16 · 1:00 to 2:00 PM');
-    expect(totalLine(draft, london, SERVICES)).toBe('$65 · 1 hr');
+    expect(totalLine(draft, london, SERVICES)).toBe('$65+ · about 1 hr');
   });
 
   it('shows just the start time when no service is chosen yet', () => {
@@ -88,8 +91,82 @@ describe('draft summary', () => {
     expect(doneByNote(draft, SERVICES)).toBe('Pick a service to see when you’ll be done.');
     draft = toggleService(draft, 'color');
     draft = selectStart(draft, minuteOfDay(13));
-    expect(doneByNote(draft, SERVICES)).toBe('You’ll be done by 3:00 PM.');
+    expect(doneByNote(draft, SERVICES)).toBe('You’ll be done by about 3:00 PM.');
     expect(doneByNote(emptyDraft('london'), SERVICES)).toBeNull();
+  });
+});
+
+describe('bookingProgress', () => {
+  it('moves a third at a time as services, a day, and a time are chosen', () => {
+    let draft = emptyDraft('london');
+    expect(bookingProgress(draft)).toEqual({ percent: 0, label: 'Pick your services' });
+    draft = toggleService(draft, 'haircut');
+    expect(bookingProgress(draft)).toEqual({ percent: 33, label: 'Add your day' });
+    draft = selectDate(draft, day);
+    expect(bookingProgress(draft)).toEqual({ percent: 67, label: 'Choose a time' });
+    draft = selectStart(draft, minuteOfDay(13));
+    expect(bookingProgress(draft)).toEqual({ percent: 100, label: 'Ready to continue' });
+  });
+});
+
+describe('timeNote', () => {
+  it('warns about a time that stopped fitting, until another is chosen', () => {
+    const draft = toggleService(selectDate(emptyDraft('london'), day), 'color');
+    expect(timeNote(draft, SERVICES, minuteOfDay(16, 30))).toEqual({
+      text: '4:30 PM doesn’t leave enough time for everything you picked. Choose another time.',
+      warn: true,
+    });
+    const chosen = selectStart(draft, minuteOfDay(9));
+    expect(timeNote(chosen, SERVICES, minuteOfDay(16, 30))?.warn).toBe(false);
+  });
+
+  it('is empty when there is nothing to say', () => {
+    expect(timeNote(emptyDraft('london'), SERVICES)).toBeNull();
+  });
+});
+
+describe('presetDraft', () => {
+  const context = {
+    strategy: { isBlockBooked: () => false },
+    clock: fixedClock(new Date(2026, 9, 7, 8, 0)),
+    stylistId: 'london',
+  };
+  // London works Tuesday to Saturday. Fri Oct 9 is bookable; Mon Oct 12 is a day she does not work.
+  const friday = '2026-10-09' as IsoDate;
+  const monday = '2026-10-12' as IsoDate;
+
+  it('starts from the services, day, and time a link carries', () => {
+    const draft = presetDraft(
+      london,
+      { serviceIds: ['haircut'], date: friday, start: minuteOfDay(13) },
+      context,
+      SERVICES,
+    );
+    expect(draft).toMatchObject({ serviceIds: ['haircut'], date: friday, start: 780 });
+  });
+
+  it('ignores services she does not offer, and days she does not work', () => {
+    const draft = presetDraft(
+      london,
+      { serviceIds: ['haircut'], date: monday, start: minuteOfDay(13) },
+      context,
+      SERVICES,
+    );
+    expect(draft).toMatchObject({ serviceIds: ['haircut'], date: null, start: null });
+  });
+
+  it('keeps the day but drops a time that does not fit the chosen services', () => {
+    const draft = presetDraft(
+      london,
+      { serviceIds: ['color'], date: friday, start: minuteOfDay(18) },
+      context,
+      SERVICES,
+    );
+    expect(draft).toMatchObject({ date: friday, start: null });
+  });
+
+  it('is an empty draft when the link carries nothing', () => {
+    expect(presetDraft(london, {}, context, SERVICES)).toEqual(emptyDraft('london'));
   });
 });
 

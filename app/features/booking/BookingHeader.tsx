@@ -7,28 +7,27 @@ import { useBooking } from './BookingProvider';
 import styles from './BookingHeader.module.css';
 
 /**
- * Exit (always available), and who you are booking with. Leaving a booking you have started
- * asks first; leaving an empty one just goes.
+ * Exit on the left, who you are booking with in the middle, and the logo home on the right. Both
+ * ways out ask first once you have started, so a stray tap cannot lose your choices; leaving an
+ * empty booking just goes.
  */
 export function BookingHeader({ confirmExit }: { confirmExit: boolean }) {
-  const { stylist } = useBooking();
+  const { stylist, exitTo } = useBooking();
   const navigate = useNavigate();
-  const [asking, setAsking] = useState(false);
-  const exitTo = `/stylists/${stylist.id}`;
+  const [leavingTo, setLeavingTo] = useState<string | null>(null);
+
+  function leave(to: string) {
+    return (event: { preventDefault: () => void }) => {
+      if (!confirmExit) return;
+      event.preventDefault();
+      setLeavingTo(to);
+    };
+  }
 
   return (
     <>
       <HeaderBar>
-        <Link
-          to={exitTo}
-          className={styles.exit}
-          aria-label="Exit booking"
-          onClick={(event) => {
-            if (!confirmExit) return;
-            event.preventDefault();
-            setAsking(true);
-          }}
-        >
+        <Link to={exitTo} className={styles.exit} aria-label="Exit booking" onClick={leave(exitTo)}>
           <Icon name="close" />
         </Link>
         <span className={styles.with}>
@@ -42,17 +41,19 @@ export function BookingHeader({ confirmExit }: { confirmExit: boolean }) {
             Booking with <strong>{firstName(stylist.name)}</strong>
           </span>
         </span>
-        <span className={styles.spacer} aria-hidden="true" />
+        <Link to="/" className={styles.home} aria-label="Local Locks, home" onClick={leave('/')}>
+          <Icon name="scissors" />
+        </Link>
       </HeaderBar>
 
       <ConfirmDialog
-        open={asking}
+        open={leavingTo !== null}
         title="Leave this booking?"
         message="Your choices won’t be saved."
         confirmLabel="Leave"
         cancelLabel="Keep booking"
-        onCancel={() => setAsking(false)}
-        onConfirm={() => navigate(exitTo)}
+        onCancel={() => setLeavingTo(null)}
+        onConfirm={() => navigate(leavingTo ?? exitTo)}
       />
     </>
   );

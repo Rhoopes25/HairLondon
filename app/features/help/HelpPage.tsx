@@ -43,7 +43,7 @@ export function HelpPage() {
           ))}
         </ol>
         <div className={styles.cta}>
-          <LinkButton to="/stylists">Find a stylist</LinkButton>
+          <LinkButton to="/book">Find a stylist</LinkButton>
         </div>
       </Section>
 

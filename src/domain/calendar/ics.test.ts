@@ -31,7 +31,7 @@ describe('buildIcs', () => {
     expect(ics).toContain('DTSTART:20261016T133000');
     expect(ics).toContain('DTEND:20261016T163000');
     expect(ics).toContain('DTSTAMP:20261007T153005Z');
-    expect(ics).toContain('UID:apt_1@hairbylondon');
+    expect(ics).toContain('UID:apt_1@locallocks');
   });
 
   it('names the services and stylist, and escapes the comma in the location', () => {

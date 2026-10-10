@@ -10,12 +10,15 @@
   color: var(--ink-soft);
 }
 
-.cta {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: var(--space-3);
-  padding: 1.75rem var(--space-5) 2.5rem;
+.priceNote {
+  font-size: 0.78rem;
+  color: var(--ink-soft);
+  padding: var(--space-4) var(--space-5) 0;
+}
+
+.about {
+  text-align: center;
+  padding: var(--space-5) var(--space-5) 0;
 }
 
 @media (min-width: 900px) {
@@ -26,10 +29,7 @@
     padding-top: var(--space-5);
   }
 
-  /* A full-width button across 1200px is a bar, not a button. */
-  .cta {
-    width: 100%;
-    max-width: 28rem;
-    margin-inline: auto;
+  .priceNote {
+    padding-top: var(--space-5);
   }
 }

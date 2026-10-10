@@ -58,19 +58,39 @@ export function SplitLayout({ aside, children }: { aside: ReactNode; children: R
   );
 }
 
-/** A titled block of a screen, e.g. "Choose a day". */
+/**
+ * A titled block of a screen, e.g. "Choose a day". `step` numbers it (the happy path reads 1, 2),
+ * and `optional` marks a block she can skip, which also sits back visually.
+ */
 export function Section({
   title,
+  step,
+  optional,
   children,
   className,
 }: {
   title: string;
+  step?: number;
+  optional?: boolean;
   children: ReactNode;
   className?: string;
 }) {
   return (
-    <section className={cx(styles.section, className)}>
-      <h2>{title}</h2>
+    <section className={cx(styles.section, optional && styles.optional, className)}>
+      <h2>
+        {step !== undefined ? (
+          <span className={styles.step} aria-hidden="true">
+            {step}
+          </span>
+        ) : null}
+        {title}
+        {optional ? (
+          <>
+            {' '}
+            <span className={styles.optionalTag}>optional</span>
+          </>
+        ) : null}
+      </h2>
       {children}
     </section>
   );

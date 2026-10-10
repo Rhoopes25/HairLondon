@@ -11,6 +11,7 @@ import { Frame } from './Frame';
  */
 const NAV_LINKS: readonly NavLinkItem[] = [
   { to: '/', label: 'Home', end: true },
+  { to: '/book', label: 'Book' },
   { to: '/stylists', label: 'Stylists' },
   { to: '/appointments', label: 'Appointments' },
   { to: '/saved', label: 'Saved' },

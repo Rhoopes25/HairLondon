@@ -41,6 +41,36 @@
   margin-bottom: var(--space-2);
 }
 
+/* A number in a dark circle: the order things are done in, without saying "Step". */
+.step {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 1.6rem;
+  height: 1.6rem;
+  margin-right: 0.45rem;
+  border-radius: var(--radius-round);
+  background: var(--ink);
+  color: var(--white);
+  font-family: var(--font-sans);
+  font-size: 0.85rem;
+  font-weight: 600;
+  vertical-align: 0.1em;
+}
+
+/* Optional blocks sit back, so the required one is the loud one. */
+.optional h2 {
+  font-size: 1rem;
+  color: var(--ink-soft);
+}
+
+.optionalTag {
+  font-family: var(--font-sans);
+  font-size: 0.75rem;
+  font-weight: 400;
+  color: var(--ink-soft);
+}
+
 .empty {
   text-align: center;
   font-size: var(--fs-body-sm);

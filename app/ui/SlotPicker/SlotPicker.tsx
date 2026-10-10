@@ -1,3 +1,4 @@
+import { useEffect, useRef } from 'react';
 import { cx } from '@app/lib/cx';
 import styles from './SlotPicker.module.css';
 
@@ -15,12 +16,38 @@ export interface DaysProps {
   days: readonly DayOption[];
   selectedId: string | null;
   onSelect: (id: string) => void;
+  /** A first "Any day" chip, for searches where the day is optional. */
+  any?: { selected: boolean; onSelect: () => void };
 }
 
 /** A scrolling strip of day chips. Each is a real toggle button. */
-function Days({ days, selectedId, onSelect }: DaysProps) {
+function Days({ days, selectedId, onSelect, any }: DaysProps) {
+  const row = useRef<HTMLDivElement>(null);
+
+  // A day that arrives already chosen (from a held time) may be off-screen in the scrolling strip.
+  useEffect(() => {
+    row.current
+      ?.querySelector<HTMLElement>('[aria-pressed="true"]')
+      ?.scrollIntoView?.({ block: 'nearest', inline: 'center' });
+  }, [selectedId]);
+
   return (
-    <div className={styles.days} role="group" aria-label="Day">
+    <div ref={row} className={styles.days} role="group" aria-label="Day">
+      {any ? (
+        <button
+          type="button"
+          className={cx(styles.day, any.selected && styles.daySelected)}
+          aria-pressed={any.selected}
+          aria-label="Any day"
+          onClick={any.onSelect}
+        >
+          <span>Any</span>
+          <span className={cx(styles.dayNum, styles.dayAny)}>day</span>
+          <span className={styles.dayMonth} aria-hidden="true">
+            &nbsp;
+          </span>
+        </button>
+      ) : null}
       {days.map((day) => {
         const selected = day.id === selectedId;
         return (

@@ -12,7 +12,7 @@ export function NotFoundPage() {
         The link may be old or mistyped. Here are some ways back in.
       </PageIntro>
       <div className={styles.actions}>
-        <LinkButton to="/stylists">Find a stylist</LinkButton>
+        <LinkButton to="/book">Find a stylist</LinkButton>
         <QuietLink to="/">Back to home</QuietLink>
         <QuietLink to="/appointments">See my appointments</QuietLink>
       </div>

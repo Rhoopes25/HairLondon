@@ -103,8 +103,13 @@ async function fillDetails(page: Page) {
 
 const SCENARIOS: Scenario[] = [
   { name: 'home', path: '/' },
+  { name: 'book-search', path: '/book' },
+  { name: 'book-search-filtered', path: '/book?services=haircut,color&time=morning' },
+  // 4.5 hours cannot start in the evening, so this is the calm "nothing fits" notice.
+  { name: 'book-search-no-match', path: '/book?services=color,highlights&time=evening' },
   { name: 'stylists', path: '/stylists' },
   { name: 'profile-portfolio', path: '/stylists/london' },
+  { name: 'profile-with-selection', path: '/stylists/london?services=haircut,color' },
   { name: 'profile-services', path: '/stylists/london/services' },
   { name: 'profile-reviews', path: '/stylists/london/reviews' },
   { name: 'photo-viewer', path: '/stylists/london/photos/1' },
@@ -119,6 +124,16 @@ const SCENARIOS: Scenario[] = [
   { name: 'design-library', path: '/design-library' },
   { name: 'not-found', path: '/no-such-page' },
   { name: 'booking-choose', path: '/book/london' },
+  { name: 'booking-choose-summary', path: '/book/london?services=haircut,color' },
+  {
+    // A time tapped on the search arrives held: the day and time are already chosen.
+    name: 'booking-time-held',
+    path: '/book?services=haircut',
+    act: async (page) => {
+      await page.locator('a[aria-label^="Book "]').first().click();
+      await page.waitForLoadState('networkidle');
+    },
+  },
   {
     name: 'booking-choose-filled',
     path: '/book/london',
@@ -155,14 +170,6 @@ const SCENARIOS: Scenario[] = [
   },
   // Overlays count as screens.
   { name: 'overlay-notice', path: '/', noticeDismissed: false, overlay: true },
-  {
-    name: 'overlay-day-filter',
-    path: '/stylists',
-    overlay: true,
-    act: async (page) => {
-      await page.getByRole('button', { name: /Which day can you come/ }).click();
-    },
-  },
   {
     name: 'overlay-service-detail',
     path: '/stylists/london/services',

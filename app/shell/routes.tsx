@@ -31,6 +31,13 @@ export const routes: RouteObject[] = [
             ),
           },
           {
+            path: 'book',
+            lazy: page(
+              () => import('@app/features/book-search'),
+              (m) => m.BookPage,
+            ),
+          },
+          {
             path: 'stylists',
             lazy: page(
               () => import('@app/features/stylists'),

@@ -1,5 +1,6 @@
 import { formatDay } from '@src/domain/format/date';
 import { formatDuration } from '@src/domain/format/duration';
+import { formatStartingPrice } from '@src/domain/format/price';
 import { formatRange } from '@src/domain/format/time';
 import { appointmentEnd } from '@src/domain/booking/appointments';
 import type { Appointment } from '@src/domain/models/appointment';
@@ -18,7 +19,7 @@ export function whenText(appointment: Pick<Appointment, 'date' | 'start' | 'dura
   return `${formatDay(appointment.date)}, ${formatRange(appointment.start, appointmentEnd(appointment))}`;
 }
 
-/** "$65 · 1 hr" */
+/** "$65+, about 1 hr". The price is a starting price: the stylist confirms the final one. */
 export function totalText(appointment: Pick<Appointment, 'total' | 'durationMin'>): string {
-  return `$${appointment.total} · ${formatDuration(appointment.durationMin)}`;
+  return `${formatStartingPrice(appointment.total)}, about ${formatDuration(appointment.durationMin)}`;
 }

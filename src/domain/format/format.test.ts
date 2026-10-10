@@ -3,9 +3,11 @@ import { addDays, dayParts, formatDay, parseIsoDate, toIsoDate, weekdayOf } from
 import { formatDuration } from './duration';
 import { firstName, initials, reviewerName } from './name';
 import { formatPhone, isValidPhone, phoneDigits } from './phone';
-import { formatPrice, formatPriceRange } from './price';
+import { formatPrice, formatPriceRange, formatStartingPrice } from './price';
 import { averageRating, formatRating, reviewCountLabel, starsText } from './rating';
+import { formatOpening } from './opening';
 import { formatRange, formatTime } from './time';
+import { minuteOfDay } from '../models/time';
 import type { IsoDate } from '../models/time';
 
 describe('formatTime', () => {
@@ -133,5 +135,18 @@ describe('names and prices', () => {
     expect(formatPrice(65)).toBe('$65');
     expect(formatPriceRange(45, 45)).toBe('$45');
     expect(formatPriceRange(35, 45)).toBe('$35–45');
+    expect(formatStartingPrice(65)).toBe('$65+');
+  });
+});
+
+describe('formatOpening', () => {
+  const today = '2026-10-07' as IsoDate;
+
+  it('says Today and Tomorrow, then the weekday and date', () => {
+    expect(formatOpening(today, minuteOfDay(13), today)).toBe('Today, 1:00 PM');
+    expect(formatOpening('2026-10-08' as IsoDate, minuteOfDay(9, 30), today)).toBe(
+      'Tomorrow, 9:30 AM',
+    );
+    expect(formatOpening('2026-10-14' as IsoDate, minuteOfDay(15), today)).toBe('Wed 14, 3:00 PM');
   });
 });

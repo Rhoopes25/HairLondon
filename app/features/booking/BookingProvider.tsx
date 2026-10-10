@@ -1,7 +1,9 @@
-import { createContext, useCallback, useContext, useMemo, useReducer } from 'react';
+import { createContext, useCallback, useContext, useMemo, useReducer, useState } from 'react';
 import type { ReactNode } from 'react';
 import { createBookingReducer, initialBookingState } from '@src/domain/booking/booking-state';
 import type { BookingState } from '@src/domain/booking/booking-state';
+import { presetDraft } from '@src/domain/booking/draft';
+import type { DraftPreset } from '@src/domain/booking/draft';
 import type { ServiceId } from '@src/domain/models/service';
 import type { Stylist } from '@src/domain/models/stylist';
 import type { IsoDate, MinuteOfDay } from '@src/domain/models/time';
@@ -10,6 +12,10 @@ import { useServices } from '@app/services';
 
 interface BookingContextValue extends BookingState {
   stylist: Stylist;
+  /** Where the X goes: the search or profile she came from. */
+  exitTo: string;
+  /** She came in with services already picked, so step 1 shows them as one line. */
+  arrivedWithServices: boolean;
   toggleService: (id: ServiceId) => void;
   selectDate: (date: IsoDate) => void;
   selectStart: (start: MinuteOfDay) => void;
@@ -22,11 +28,13 @@ const BookingContext = createContext<BookingContextValue | null>(null);
 /** Holds one booking in progress. It lives across the steps because the steps are child routes of the same parent. */
 export function BookingProvider({
   stylist,
-  presetService,
+  preset,
+  exitTo,
   children,
 }: {
   stylist: Stylist;
-  presetService?: ServiceId;
+  preset?: DraftPreset;
+  exitTo: string;
   children: ReactNode;
 }) {
   const { clock, catalog, availabilityFor } = useServices();
@@ -40,8 +48,18 @@ export function BookingProvider({
     [availabilityFor, clock, catalog, stylist.id],
   );
   const [state, dispatch] = useReducer(reducer, undefined, () =>
-    initialBookingState(stylist.id, presetService),
+    initialBookingState(
+      stylist.id,
+      presetDraft(
+        stylist,
+        preset ?? {},
+        { strategy: availabilityFor(), clock, stylistId: stylist.id },
+        catalog,
+      ),
+    ),
   );
+  // Decided once, on arrival: later toggles must not make the summary line appear or vanish.
+  const [arrivedWithServices] = useState(() => state.draft.serviceIds.length > 0);
 
   const toggleService = useCallback((id: ServiceId) => dispatch({ type: 'toggleService', id }), []);
   const selectDate = useCallback((date: IsoDate) => dispatch({ type: 'selectDate', date }), []);
@@ -56,8 +74,18 @@ export function BookingProvider({
   const reset = useCallback(() => dispatch({ type: 'reset', stylistId: stylist.id }), [stylist.id]);
 
   const value = useMemo(
-    () => ({ ...state, stylist, toggleService, selectDate, selectStart, setDetails, reset }),
-    [state, stylist, toggleService, selectDate, selectStart, setDetails, reset],
+    () => ({
+      ...state,
+      stylist,
+      exitTo,
+      arrivedWithServices,
+      toggleService,
+      selectDate,
+      selectStart,
+      setDetails,
+      reset,
+    }),
+    [state, stylist, exitTo, arrivedWithServices, toggleService, selectDate, selectStart, setDetails, reset],
   );
   return <BookingContext.Provider value={value}>{children}</BookingContext.Provider>;
 }

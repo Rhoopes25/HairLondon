@@ -63,10 +63,19 @@ export const STYLISTS: readonly Stylist[] = [
     studio: 'Juniper Hair Studio',
     city: 'Orem',
     photo: null,
-    bio: 'Color specialist. Rich brunettes, glossy reds, and gray coverage that looks natural.',
+    bio: 'Color specialist. Rich brunettes, soft pastels, and gray coverage that looks natural.',
     workDays: [1, 3, 4, 5, 6],
     prices: { haircut: 55, color: 110, highlights: 165, 'root-touch-up': 75, blowout: 40 },
-    portfolio: [],
+    portfolio: [
+      {
+        src: 'images/sadie-1.jpg',
+        alt: 'Deep brunette with soft caramel highlights, curled into loose waves',
+      },
+      {
+        src: 'images/sadie-2.jpg',
+        alt: 'Long lavender waves with a soft, deeper root',
+      },
+    ],
     reviews: [
       {
         id: 'sadie-1',
@@ -91,7 +100,16 @@ export const STYLISTS: readonly Stylist[] = [
     bio: 'Short cuts, bobs, and shapes that are easy to style at home in five minutes.',
     workDays: [1, 2, 3, 4, 5],
     prices: { haircut: 45, color: 95, blowout: 35, 'deep-conditioning': 30 },
-    portfolio: [],
+    portfolio: [
+      {
+        src: 'images/kai-1.jpg',
+        alt: 'Straight, blunt-cut blonde lob, seen from the back',
+      },
+      {
+        src: 'images/kai-2.jpg',
+        alt: 'Copper and brunette bob with a hidden blonde underlayer',
+      },
+    ],
     reviews: [
       {
         id: 'kai-1',
@@ -117,7 +135,16 @@ export const STYLISTS: readonly Stylist[] = [
       'root-touch-up': 85,
       'deep-conditioning': 40,
     },
-    portfolio: [],
+    portfolio: [
+      {
+        src: 'images/brooke-1.jpg',
+        alt: 'Long caramel and honey highlights with soft curled ends, seen from the back',
+      },
+      {
+        src: 'images/brooke-2.jpg',
+        alt: 'Dark root melting into ash blonde balayage on loose waves',
+      },
+    ],
     reviews: [
       {
         id: 'brooke-1',

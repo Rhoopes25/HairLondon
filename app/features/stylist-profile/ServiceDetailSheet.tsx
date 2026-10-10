@@ -1,6 +1,8 @@
 import { formatDuration } from '@src/domain/format/duration';
+import { formatStartingPrice } from '@src/domain/format/price';
 import type { ServiceId } from '@src/domain/models/service';
 import type { Stylist } from '@src/domain/models/stylist';
+import { bookingPath } from '@app/lib/links';
 import { useServices } from '@app/services';
 import { LinkButton, Sheet } from '@app/ui';
 import styles from './ServiceDetailSheet.module.css';
@@ -27,7 +29,7 @@ export function ServiceDetailSheet({
       title={service?.name ?? ''}
       footer={
         service ? (
-          <LinkButton to={`/book/${stylist.id}?service=${service.id}`} fullWidth>
+          <LinkButton to={bookingPath({ stylistId: stylist.id, serviceIds: [service.id] })} fullWidth>
             Book {service.name}
           </LinkButton>
         ) : null
@@ -42,8 +44,8 @@ export function ServiceDetailSheet({
               <dd>{formatDuration(service.durationMin)}</dd>
             </div>
             <div>
-              <dt>Price with {stylist.name}</dt>
-              <dd>{price === undefined ? '—' : `$${price}`}</dd>
+              <dt>Starting price with {stylist.name}</dt>
+              <dd>{price === undefined ? '—' : formatStartingPrice(price)}</dd>
             </div>
           </dl>
         </>

@@ -1,44 +1,42 @@
 import { describe, expect, it } from 'vitest';
 import { STYLISTS } from '../../data/seed/stylists';
-import { describeWorkDays, filterStylists, parseWeekday } from './filter';
+import { describeWorkDays, parseServiceIds, serviceIdsParam, stylistsOffering } from './filter';
 
 const ids = (list: readonly { id: string }[]) => list.map((s) => s.id);
 
-describe('filterStylists', () => {
-  it('returns everyone with no filter', () => {
-    expect(ids(filterStylists(STYLISTS, {}))).toEqual(['london', 'sadie', 'kai', 'brooke']);
+describe('stylistsOffering', () => {
+  it('returns everyone when no service is chosen', () => {
+    expect(ids(stylistsOffering(STYLISTS, []))).toEqual(['london', 'sadie', 'kai', 'brooke']);
   });
 
-  it('filters by service', () => {
-    expect(ids(filterStylists(STYLISTS, { service: 'highlights' }))).toEqual([
+  it('keeps stylists who offer a service', () => {
+    expect(ids(stylistsOffering(STYLISTS, ['highlights']))).toEqual(['london', 'sadie', 'brooke']);
+  });
+
+  it('needs every chosen service, so a combination can leave nobody', () => {
+    expect(ids(stylistsOffering(STYLISTS, ['highlights', 'deep-conditioning']))).toEqual([
       'london',
-      'sadie',
       'brooke',
     ]);
-  });
-
-  it('filters by the day of the week she works', () => {
-    // Sunday: nobody. Monday(1): sadie and kai.
-    expect(filterStylists(STYLISTS, { weekday: 0 })).toEqual([]);
-    expect(ids(filterStylists(STYLISTS, { weekday: 1 }))).toEqual(['sadie', 'kai']);
-  });
-
-  it('combines filters', () => {
-    expect(ids(filterStylists(STYLISTS, { service: 'highlights', weekday: 2 }))).toEqual([
-      'london',
-    ]);
+    expect(stylistsOffering(STYLISTS, ['highlights', 'haircut', 'deep-conditioning'])).toHaveLength(
+      2,
+    );
   });
 });
 
-describe('parseWeekday', () => {
-  it('accepts 0 to 6 and rejects everything else', () => {
-    expect(parseWeekday('0')).toBe(0);
-    expect(parseWeekday('6')).toBe(6);
-    expect(parseWeekday('7')).toBeUndefined();
-    expect(parseWeekday('-1')).toBeUndefined();
-    expect(parseWeekday('abc')).toBeUndefined();
-    expect(parseWeekday('')).toBeUndefined();
-    expect(parseWeekday(null)).toBeUndefined();
+describe('parseServiceIds', () => {
+  it('reads a comma-separated list in order', () => {
+    expect(parseServiceIds('color,haircut')).toEqual(['color', 'haircut']);
+  });
+
+  it('drops unknown and repeated ids, and survives empty input', () => {
+    expect(parseServiceIds('haircut,nope,haircut, color ')).toEqual(['haircut', 'color']);
+    expect(parseServiceIds('')).toEqual([]);
+    expect(parseServiceIds(null)).toEqual([]);
+  });
+
+  it('round-trips with serviceIdsParam', () => {
+    expect(parseServiceIds(serviceIdsParam(['blowout', 'color']))).toEqual(['blowout', 'color']);
   });
 });
 

@@ -1,16 +1,23 @@
 import { useState } from 'react';
-import { Navigate, useNavigate, useParams, useSearchParams } from 'react-router';
-import { averageRating } from '@src/domain/format/rating';
-import { firstName } from '@src/domain/format/name';
+import { Navigate, useLocation, useNavigate, useParams, useSearchParams } from 'react-router';
+import { presetDraft } from '@src/domain/booking/draft';
+import { formatDay } from '@src/domain/format/date';
 import { formatDuration } from '@src/domain/format/duration';
+import { firstName } from '@src/domain/format/name';
+import { formatStartingPrice } from '@src/domain/format/price';
+import { averageRating } from '@src/domain/format/rating';
+import { formatTime } from '@src/domain/format/time';
 import { SERVICE_IDS } from '@src/domain/models/service';
 import type { ServiceId } from '@src/domain/models/service';
+import { startingPrice, totalDuration, totalPrice } from '@src/domain/pricing/totals';
 import { assetUrl, photoSrcSet } from '@app/config';
 import { useDocumentTitle } from '@app/hooks/usePageBehavior';
+import { bookingPath, readDate, readServiceIds, readStart, safeBackPath } from '@app/lib/links';
 import { useServices, useStylist } from '@app/services';
 import {
+  BackLink,
+  BookBar,
   EmptyNote,
-  LinkButton,
   PortfolioGrid,
   ProfileHeader,
   QuietLink,
@@ -30,11 +37,19 @@ function isTab(value: string | undefined): value is Tab {
   return TABS.includes(value as Tab);
 }
 
+/** Says where the link goes, so she knows what she is returning to. */
+function backLabelFor(path: string): string {
+  if (path.startsWith('/book')) return 'Back to your search';
+  if (path.startsWith('/saved')) return 'Back to saved stylists';
+  return 'Back to stylists';
+}
+
 export function StylistProfilePage() {
   const { id, tab } = useParams();
   const stylist = useStylist(id);
-  const { catalog } = useServices();
+  const { catalog, clock, availabilityFor } = useServices();
   const [searchParams] = useSearchParams();
+  const location = useLocation();
   const navigate = useNavigate();
   const [detailService, setDetailService] = useState<ServiceId | null>(null);
   useDocumentTitle(stylist?.name ?? 'Stylist');
@@ -44,16 +59,39 @@ export function StylistProfilePage() {
 
   const base = `/stylists/${stylist.id}`;
   const search = searchParams.toString() ? `?${searchParams.toString()}` : '';
-  // Lead with the work. Open on Services instead when she came from a service filter,
-  // or when there are no photos yet.
-  const current: Tab =
-    tab ?? (searchParams.get('service') || !stylist.portfolio.length ? 'services' : 'portfolio');
+  // Lead with the work, because that is what builds trust. Reviews first if there are no photos yet.
+  const current: Tab = tab ?? (stylist.portfolio.length ? 'portfolio' : 'reviews');
   const first = firstName(stylist.name);
-  const bookTo = `/book/${stylist.id}`;
-  const preset = searchParams.get('service');
+
+  // What she chose before arriving (services, a day, maybe a held time), checked against what
+  // this stylist really offers and has open, so the Book bar never promises something stale.
+  const chosen = presetDraft(
+    stylist,
+    {
+      serviceIds: readServiceIds(searchParams),
+      date: readDate(searchParams),
+      start: readStart(searchParams),
+    },
+    { strategy: availabilityFor(), clock, stylistId: stylist.id },
+    catalog,
+  );
+  const picked = chosen.serviceIds.length > 0;
+
+  const backTo = safeBackPath(searchParams.get('back'), '/stylists');
+  const backLabel = backLabelFor(backTo);
+  // The X in booking returns here, to this exact view of the profile.
+  const here = `${location.pathname}${location.search}`;
+  const bookTo = bookingPath({
+    stylistId: stylist.id,
+    serviceIds: chosen.serviceIds,
+    date: chosen.date,
+    start: chosen.start,
+    back: here,
+  });
 
   return (
     <>
+      <BackLink to={backTo}>{backLabel}</BackLink>
       <ProfileHeader
         name={stylist.name}
         photoUrl={stylist.photo ? assetUrl(stylist.photo) : null}
@@ -75,9 +113,6 @@ export function StylistProfilePage() {
               <Tabs.Tab value="services">Services</Tabs.Tab>
               <Tabs.Tab value="reviews">Reviews</Tabs.Tab>
             </Tabs.List>
-            <LinkButton to={preset ? `${bookTo}?service=${preset}` : bookTo} size="sm">
-              Book
-            </LinkButton>
           </TabRow>
 
           <Tabs.Panel value="portfolio">
@@ -98,14 +133,27 @@ export function StylistProfilePage() {
           </Tabs.Panel>
 
           <Tabs.Panel value="services">
+            <p className={styles.priceNote}>
+              Prices are starting points. Longer or thicker hair can cost more, and times are
+              estimates.
+            </p>
             <div className={styles.services}>
               {SERVICE_IDS.filter((sid) => stylist.prices[sid] !== undefined).map((sid) => (
                 <ServiceRow
                   key={sid}
-                  to={`${bookTo}?service=${sid}`}
+                  // Tapping a service adds it to what she already picked. The held time is left
+                  // behind, because a longer visit may not fit it.
+                  to={bookingPath({
+                    stylistId: stylist.id,
+                    serviceIds: chosen.serviceIds.includes(sid)
+                      ? chosen.serviceIds
+                      : [...chosen.serviceIds, sid],
+                    date: chosen.date,
+                    back: here,
+                  })}
                   name={catalog[sid].name}
                   description={catalog[sid].description}
-                  meta={`${formatDuration(catalog[sid].durationMin)} · $${stylist.prices[sid]}`}
+                  meta={`${formatDuration(catalog[sid].durationMin)} · ${formatStartingPrice(stylist.prices[sid] ?? 0)}`}
                   onInfo={() => setDetailService(sid)}
                 />
               ))}
@@ -127,12 +175,29 @@ export function StylistProfilePage() {
         </Tabs>
       </ProfileHeader>
 
-      <div className={styles.cta}>
-        <LinkButton to={bookTo} fullWidth>
-          Book with {first}
-        </LinkButton>
+      <p className={styles.about}>
         <QuietLink to={`${base}/about`}>About {stylist.studio}</QuietLink>
-      </div>
+      </p>
+
+      <BookBar
+        title={
+          picked
+            ? chosen.serviceIds.map((sid) => catalog[sid].name).join(' + ')
+            : `Services from ${formatStartingPrice(startingPrice(stylist) ?? 0)}`
+        }
+        meta={
+          picked
+            ? `${formatStartingPrice(totalPrice(stylist, chosen.serviceIds))} · about ${formatDuration(totalDuration(catalog, chosen.serviceIds))}`
+            : 'Pick services, a day, and a time next'
+        }
+        heldTime={
+          picked && chosen.date !== null && chosen.start !== null
+            ? `${formatDay(chosen.date)} at ${formatTime(chosen.start)}`
+            : null
+        }
+        to={bookTo}
+        label={`Book with ${first}`}
+      />
 
       <ServiceDetailSheet
         stylist={stylist}

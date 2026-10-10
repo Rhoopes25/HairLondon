@@ -1,4 +1,6 @@
 import { formatDay } from '@src/domain/format/date';
+import { formatDuration } from '@src/domain/format/duration';
+import { formatStartingPrice } from '@src/domain/format/price';
 import { formatRange } from '@src/domain/format/time';
 import type { CompleteDraft } from '@src/domain/booking/draft';
 import type { ServiceCatalog } from '@src/domain/models/service';
@@ -22,7 +24,10 @@ export function draftRecapRows(
       label: 'When',
       value: `${formatDay(draft.date)}, ${formatRange(draft.start, addDuration(draft.start, length))}`,
     },
-    { label: 'Total', value: `$${totalPrice(stylist, draft.serviceIds)}` },
+    {
+      label: 'Estimated total',
+      value: `${formatStartingPrice(totalPrice(stylist, draft.serviceIds))}, about ${formatDuration(length)}`,
+    },
     ...extra,
   ];
 }

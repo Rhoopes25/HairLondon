@@ -15,7 +15,7 @@ export function Footer() {
               About this prototype
             </button>
           </nav>
-          <p>&copy; 2026 Hair by London</p>
+          <p>&copy; 2026 Local Locks</p>
         </div>
       </Container>
     </footer>

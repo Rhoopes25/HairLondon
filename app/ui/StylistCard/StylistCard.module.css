@@ -1,18 +1,24 @@
 .card {
+  position: relative;
   display: flex;
-  align-items: center;
-  gap: var(--space-2);
+  flex-direction: column;
+  gap: 0.85rem;
   padding: 0.9rem 1.1rem;
   background: var(--white);
   border: 1.5px solid var(--cream-deep);
   border-radius: var(--radius-md);
-  text-decoration: none;
   color: var(--ink);
   transition: border-color 0.15s ease;
 }
 
 .card:hover {
   border-color: var(--gold-deep);
+}
+
+.top {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
 }
 
 .body {
@@ -22,11 +28,37 @@
   min-width: 0;
 }
 
+/* The name's link covers the whole card, so tapping anywhere opens the profile. Chips, thumbnails
+   and the footer sit above it (z-index) so they keep their own taps. */
 .name {
+  display: flex;
+  align-items: center;
+  /* The link's own box is a full 44px tap target; the negative margin gives the height back so the
+     card is no taller for it. (Its ::after already makes the whole card tappable.) */
+  min-height: 2.75rem;
+  margin-block: -0.6rem;
   font-family: var(--font-display);
   font-size: 1.2rem;
   font-weight: 600;
   line-height: 1.25;
+  color: var(--ink);
+  text-decoration: none;
+}
+
+.name::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: var(--radius-md);
+}
+
+.name:focus-visible {
+  outline: none;
+}
+
+.name:focus-visible::after {
+  outline: 2px solid var(--gold-deep);
+  outline-offset: 2px;
 }
 
 .studio {
@@ -35,16 +67,133 @@
 }
 
 .price {
-  font-size: 0.8rem;
-  color: var(--ink);
-  font-weight: 500;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
   text-align: right;
   white-space: nowrap;
+}
+
+.priceValue {
+  font-family: var(--font-display);
+  font-size: 1.3rem;
+  font-weight: 600;
+  line-height: 1.1;
+  color: var(--ink);
+}
+
+.priceNote {
+  font-size: 0.72rem;
+  color: var(--ink-soft);
+}
+
+.thumbs {
+  position: relative;
+  z-index: 1;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 0.4rem;
+}
+
+.thumb {
+  position: relative;
+  aspect-ratio: 1;
+  border-radius: var(--radius-sm);
+  overflow: hidden;
+  background: linear-gradient(145deg, var(--photo-light), var(--photo-deep));
+}
+
+.thumb img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+/* The way into her profile (photos, services, reviews), right where people already want to tap. */
+.seeAll {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  background: rgba(43, 36, 32, 0.6);
+  color: var(--white);
+  font-size: 0.8rem;
+  font-weight: 600;
+  line-height: 1.3;
+  text-decoration: none;
+  border-radius: inherit;
+  transition: background 0.15s ease;
+}
+
+.seeAll:hover,
+.seeAll:focus-visible {
+  background: rgba(43, 36, 32, 0.75);
+}
+
+.seeAll:focus-visible {
+  outline: 2px solid var(--gold-deep);
+  outline-offset: 2px;
+}
+
+.slots {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+}
+
+.slotsHeading {
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--ink);
+}
+
+.slotRow {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+}
+
+/* The original cream chip: a time is the thing to tap on a result, and it starts the booking. */
+.slot {
+  display: inline-flex;
+  align-items: center;
+  min-height: 2.75rem;
+  font-size: 0.82rem;
+  color: var(--gold-ink);
+  background: var(--cream);
+  border: 1.5px solid var(--gold-soft);
+  border-radius: var(--radius-pill);
+  padding: 0.35rem 0.9rem;
+  text-decoration: none;
+  white-space: nowrap;
+}
+
+.slot:hover {
+  border-color: var(--gold-deep);
+}
+
+.slot:focus-visible {
+  outline: 2px solid var(--gold-deep);
+  outline-offset: 2px;
+}
+
+.footer {
+  position: relative;
+  z-index: 1;
+  font-size: var(--fs-body-sm);
 }
 
 @media (min-width: 900px) {
   .card {
     padding: 1.1rem 1.4rem;
+  }
+
+  .top {
     gap: var(--space-3);
   }
 }

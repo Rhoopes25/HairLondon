@@ -15,16 +15,26 @@ async function chooseHaircutOct8At9(user: UserEvent) {
   await user.click(timeButton('9:00 AM'));
 }
 
+/** Services that arrive chosen are one line; the full list opens with Change. */
+async function openServices(user: UserEvent) {
+  await user.click(screen.getByRole('button', { name: 'Change' }));
+}
+
 async function fillDetails(user: UserEvent) {
   await user.type(screen.getByLabelText('Name'), 'Maren');
   await user.type(screen.getByLabelText('Phone'), '5551234567');
 }
 
 describe('booking: choose services, day, and time', () => {
-  it('preselects the service from ?service= and needs a day and a time before continuing', async () => {
-    const { user } = renderApp('/book/london?service=haircut');
+  it('arrives with the service chosen as one line, and needs a day and a time before continuing', async () => {
+    const { user } = renderApp('/book/london?services=haircut');
     await screen.findByRole('heading', { level: 1, name: 'Book Now' });
+    const change = screen.getByRole('button', { name: 'Change' });
+    expect(change).toHaveAttribute('aria-expanded', 'false');
+    expect(screen.queryByRole('checkbox', { name: /Haircut/ })).not.toBeInTheDocument();
+    await user.click(change);
     expect(screen.getByRole('checkbox', { name: /Haircut/ })).toBeChecked();
+    expect(screen.getByRole('button', { name: 'Done' })).toHaveAttribute('aria-expanded', 'true');
     expect(continueButton()).toBeDisabled();
     expect(screen.getByText('Select a day to see available times')).toBeInTheDocument();
 
@@ -34,8 +44,16 @@ describe('booking: choose services, day, and time', () => {
     expect(continueButton()).toBeEnabled();
   });
 
-  it('ignores a ?service= the stylist does not offer', async () => {
-    renderApp('/book/kai?service=highlights');
+  it('still understands the older single ?service= link', async () => {
+    renderApp('/book/london?service=color');
+    await screen.findByRole('heading', { level: 1, name: 'Book Now' });
+    expect(screen.getByRole('button', { name: 'Change' })).toBeInTheDocument();
+    // The one-line summary and the bar below both show it: $120+ for about 2 hr.
+    expect(screen.getAllByText('$120+ · about 2 hr')).toHaveLength(2);
+  });
+
+  it('ignores a service the stylist does not offer', async () => {
+    renderApp('/book/kai?services=highlights');
     await screen.findByRole('heading', { level: 1, name: 'Book Now' });
     expect(screen.queryByRole('checkbox', { name: /Highlights/ })).not.toBeInTheDocument();
     expect(screen.getAllByRole('checkbox').every((box) => !(box as HTMLInputElement).checked)).toBe(
@@ -49,7 +67,7 @@ describe('booking: choose services, day, and time', () => {
     const boxes = screen.getAllByRole('checkbox');
     expect(boxes).toHaveLength(4);
     expect(screen.getByRole('checkbox', { name: /Haircut/ }).closest('label')).toHaveTextContent(
-      '1 hr · $45',
+      '1 hr · $45+',
     );
   });
 
@@ -70,7 +88,7 @@ describe('booking: choose services, day, and time', () => {
   });
 
   it('applies the lead-time rule today: nothing starts within the next hour', async () => {
-    const { user } = renderApp('/book/london?service=haircut'); // it is 8:00 AM
+    const { user } = renderApp('/book/london?services=haircut'); // it is 8:00 AM
     await screen.findByRole('heading', { level: 1, name: 'Book Now' });
     await user.click(days()[0] as HTMLElement);
     expect(timeButton('9:00 AM')).toBeDisabled(); // 8:00 now + 1 hour: starts at or before 9:00 are out
@@ -78,15 +96,18 @@ describe('booking: choose services, day, and time', () => {
   });
 
   it('disables times a long visit cannot fit and offers none past closing', async () => {
-    const { user } = renderApp('/book/london?service=highlights'); // 2 hr 30 min
+    const { user } = renderApp('/book/london?services=highlights'); // 2 hr 30 min
     await screen.findByRole('heading', { level: 1, name: 'Book Now' });
-    await user.click(days()[1] as HTMLElement);
-    expect(timeButton('4:00 PM')).toBeDisabled();
-    expect(timeButton('5:30 PM')).toBeDisabled();
+    await user.click(days()[1] as HTMLElement); // Thu, Oct 8: the sample 10:30 AM block is taken
+    expect(timeButton('9:00 AM')).toBeDisabled(); // runs through 10:30
+    expect(timeButton('11:00 AM')).toBeEnabled();
+    expect(timeButton('4:30 PM')).toBeEnabled(); // done at 7:00 PM, exactly closing
+    expect(timeButton('5:00 PM')).toBeDisabled(); // would run to 7:30 PM
+    expect(timeButton('6:30 PM')).toBeDisabled();
   });
 
   it('strikes through unavailable times rather than relying on color', async () => {
-    const { user } = renderApp('/book/london?service=haircut');
+    const { user } = renderApp('/book/london?services=haircut');
     await screen.findByRole('heading', { level: 1, name: 'Book Now' });
     await user.click(days()[1] as HTMLElement);
     const disabled = within(screen.getByRole('group', { name: 'Time' }))
@@ -96,34 +117,68 @@ describe('booking: choose services, day, and time', () => {
   });
 
   it('updates the summary, total, and finish time as choices are made', async () => {
-    const { user } = renderApp('/book/london?service=haircut');
+    const { user } = renderApp('/book/london?services=haircut');
     await screen.findByRole('heading', { level: 1, name: 'Book Now' });
     await user.click(days()[5] as HTMLElement); // Wed, Oct 14: the morning is open after 9:00
     await user.click(timeButton('10:00 AM'));
     expect(screen.getByText('Haircut · Wed, Oct 14 · 10:00 to 11:00 AM')).toBeInTheDocument();
-    expect(screen.getByText('$65 · 1 hr')).toBeInTheDocument();
-    expect(screen.getByText('You’ll be done by 11:00 AM.')).toBeInTheDocument();
+    expect(screen.getAllByText('$65+ · about 1 hr')).toHaveLength(2); // the services line and the bar
+    expect(screen.getByText('You’ll be done by about 11:00 AM.')).toBeInTheDocument();
+    expect(
+      screen.getByText(/Starting price\. Longer or thicker hair can cost more, and London will/),
+    ).toBeInTheDocument();
 
+    await openServices(user);
     await user.click(screen.getByRole('checkbox', { name: /Blowout/ }));
     expect(
       screen.getByText('Haircut + Blowout · Wed, Oct 14 · 10:00 to 11:45 AM'),
     ).toBeInTheDocument();
-    expect(screen.getByText('$110 · 1 hr 45 min')).toBeInTheDocument();
-    expect(screen.getByText('You’ll be done by 11:45 AM.')).toBeInTheDocument();
+    expect(screen.getAllByText('$110+ · about 1 hr 45 min')).toHaveLength(2);
+    expect(screen.getByText('You’ll be done by about 11:45 AM.')).toBeInTheDocument();
   });
 
   it('clears the chosen time when a longer service no longer fits it', async () => {
-    const { user } = renderApp('/book/london?service=haircut');
+    const { user } = renderApp('/book/london?services=haircut');
     await chooseHaircutOct8At9(user);
     expect(continueButton()).toBeEnabled();
-    // Highlights make it 3.5 hours, running into the sample 10:00 booking that day.
+    // Highlights make it 3.5 hours, running into the sample 10:30 booking that day.
+    await openServices(user);
     await user.click(screen.getByRole('checkbox', { name: /Highlights/ }));
     expect(timeButton('9:00 AM')).toHaveAttribute('aria-pressed', 'false');
     expect(continueButton()).toBeDisabled();
+    // She is told why, instead of the time quietly vanishing.
+    expect(
+      screen.getByText(
+        '9:00 AM doesn’t leave enough time for everything you picked. Choose another time.',
+      ),
+    ).toBeInTheDocument();
+    await user.click(timeButton('11:00 AM'));
+    expect(screen.queryByText(/doesn’t leave enough time/)).not.toBeInTheDocument();
+    expect(continueButton()).toBeEnabled();
+  });
+
+  it('shows how far along she is, a third at a time', async () => {
+    const { user } = renderApp('/book/london');
+    await screen.findByRole('heading', { level: 1, name: 'Book Now' });
+    const progress = () => screen.getByRole('progressbar', { name: 'Booking progress' });
+    expect(progress()).toHaveAttribute('aria-valuenow', '0');
+    expect(progress()).toHaveAttribute('aria-valuetext', 'Pick your services');
+
+    await user.click(screen.getByRole('checkbox', { name: /Haircut/ }));
+    expect(progress()).toHaveAttribute('aria-valuenow', '33');
+    expect(progress()).toHaveAttribute('aria-valuetext', 'Add your day');
+
+    await user.click(days()[1] as HTMLElement);
+    expect(progress()).toHaveAttribute('aria-valuenow', '67');
+    expect(progress()).toHaveAttribute('aria-valuetext', 'Choose a time');
+
+    await user.click(timeButton('9:00 AM'));
+    expect(progress()).toHaveAttribute('aria-valuenow', '100');
+    expect(progress()).toHaveAttribute('aria-valuetext', 'Ready to continue');
   });
 
   it('clears the time when a new day is picked, and the day when it is picked again', async () => {
-    const { user } = renderApp('/book/london?service=haircut');
+    const { user } = renderApp('/book/london?services=haircut');
     await chooseHaircutOct8At9(user);
     await user.click(days()[2] as HTMLElement); // Fri, Oct 9
     expect(continueButton()).toBeDisabled();
@@ -133,7 +188,7 @@ describe('booking: choose services, day, and time', () => {
 
   it('sends an unknown stylist back to the list', async () => {
     const { router } = renderApp('/book/nobody');
-    await screen.findByRole('heading', { level: 1, name: 'Find a stylist' });
+    await screen.findByRole('heading', { level: 1, name: 'Stylists' });
     expect(router.state.location.pathname).toBe('/stylists');
   });
 });
@@ -144,7 +199,7 @@ describe('booking: the whole flow', () => {
   });
 
   it('books an appointment through details, review, and confirmation', async () => {
-    const { user, services, router } = renderApp('/book/london?service=haircut');
+    const { user, services, router } = renderApp('/book/london?services=haircut');
     await chooseHaircutOct8At9(user);
     await user.click(continueButton());
 
@@ -187,7 +242,7 @@ describe('booking: the whole flow', () => {
   });
 
   it('shows the confirmation again after a refresh, because it reads from storage', async () => {
-    const first = renderApp('/book/london?service=haircut');
+    const first = renderApp('/book/london?services=haircut');
     await chooseHaircutOct8At9(first.user);
     await first.user.click(continueButton());
     await screen.findByRole('heading', { name: 'Your details' });
@@ -203,7 +258,7 @@ describe('booking: the whole flow', () => {
   });
 
   it('explains each problem on the details form and focuses the first field to fix', async () => {
-    const { user } = renderApp('/book/london?service=haircut');
+    const { user } = renderApp('/book/london?services=haircut');
     await chooseHaircutOct8At9(user);
     await user.click(continueButton());
     await screen.findByRole('heading', { name: 'Your details' });
@@ -223,7 +278,7 @@ describe('booking: the whole flow', () => {
   });
 
   it('accepts a phone number with a leading country code and formats it', async () => {
-    const { user } = renderApp('/book/london?service=haircut');
+    const { user } = renderApp('/book/london?services=haircut');
     await chooseHaircutOct8At9(user);
     await user.click(continueButton());
     await screen.findByRole('heading', { name: 'Your details' });
@@ -234,7 +289,7 @@ describe('booking: the whole flow', () => {
   });
 
   it('keeps what was typed when going back and forward', async () => {
-    const { user } = renderApp('/book/london?service=haircut');
+    const { user } = renderApp('/book/london?services=haircut');
     await chooseHaircutOct8At9(user);
     await user.click(continueButton());
     await screen.findByRole('heading', { name: 'Your details' });
@@ -246,7 +301,7 @@ describe('booking: the whole flow', () => {
   });
 
   it('previews the reminder text without sending anything', async () => {
-    const { user } = renderApp('/book/london?service=haircut');
+    const { user } = renderApp('/book/london?services=haircut');
     await chooseHaircutOct8At9(user);
     await user.click(continueButton());
     await screen.findByRole('heading', { name: 'Your details' });
@@ -269,7 +324,7 @@ describe('booking: the whole flow', () => {
   });
 
   it('sends a review without details back to the details step', async () => {
-    const { user, router } = renderApp('/book/london?service=haircut');
+    const { user, router } = renderApp('/book/london?services=haircut');
     await chooseHaircutOct8At9(user);
     await user.click(continueButton());
     await screen.findByRole('heading', { name: 'Your details' });
@@ -290,7 +345,7 @@ describe('booking: the whole flow', () => {
   });
 
   it('makes the booked time unavailable for the next booking, and frees it when cancelled', async () => {
-    const { user, services } = renderApp('/book/london?service=haircut');
+    const { user, services } = renderApp('/book/london?services=haircut');
     await chooseHaircutOct8At9(user);
     await user.click(continueButton());
     await screen.findByRole('heading', { name: 'Your details' });
@@ -300,8 +355,8 @@ describe('booking: the whole flow', () => {
     await screen.findByRole('heading', { name: 'You’re booked' });
 
     await user.click(screen.getByRole('link', { name: 'Browse more stylists' }));
-    await screen.findByRole('heading', { name: 'Find a stylist' });
-    await user.click(screen.getByRole('link', { name: /^London/ }));
+    await screen.findByRole('heading', { level: 1, name: 'Stylists' });
+    await user.click(screen.getByRole('link', { name: 'London' }));
     await user.click(await screen.findByRole('link', { name: 'Book with London' }));
     await screen.findByRole('heading', { level: 1, name: 'Book Now' });
     await user.click(screen.getByRole('checkbox', { name: /Haircut/ }));
@@ -326,7 +381,7 @@ describe('booking: leaving', () => {
   });
 
   it('asks first once something is chosen, and Keep booking changes nothing', async () => {
-    const { user, router } = renderApp('/book/london?service=haircut');
+    const { user, router } = renderApp('/book/london?services=haircut');
     await screen.findByRole('heading', { level: 1, name: 'Book Now' });
     await user.click(screen.getByRole('link', { name: 'Exit booking' }));
     const dialog = await screen.findByRole('dialog', { name: 'Leave this booking?' });
@@ -334,11 +389,13 @@ describe('booking: leaving', () => {
     await user.click(within(dialog).getByRole('button', { name: 'Keep booking' }));
     expect(screen.queryByRole('dialog')).not.toBeInTheDocument();
     expect(router.state.location.pathname).toBe('/book/london');
+    expect(screen.getByRole('button', { name: 'Change' })).toBeInTheDocument();
+    await user.click(screen.getByRole('button', { name: 'Change' }));
     expect(screen.getByRole('checkbox', { name: /Haircut/ })).toBeChecked();
   });
 
   it('leaves for the stylist profile once confirmed', async () => {
-    const { user, router } = renderApp('/book/london?service=haircut');
+    const { user, router } = renderApp('/book/london?services=haircut');
     await screen.findByRole('heading', { level: 1, name: 'Book Now' });
     await user.click(screen.getByRole('link', { name: 'Exit booking' }));
     await user.click(await screen.findByRole('button', { name: 'Leave' }));
@@ -351,6 +408,7 @@ describe('booking: leaving', () => {
     const fromServices = renderApp('/stylists/london/services');
     await fromServices.user.click(await screen.findByRole('link', { name: /^Blowout/ }));
     await screen.findByRole('heading', { level: 1, name: 'Book Now' });
+    await fromServices.user.click(screen.getByRole('button', { name: 'Change' }));
     expect(screen.getByRole('checkbox', { name: /Blowout/ })).toBeChecked();
     fromServices.unmount();
 
@@ -383,7 +441,7 @@ describe('booking: add to calendar', () => {
       .spyOn(HTMLAnchorElement.prototype, 'click')
       .mockImplementation(() => undefined);
 
-    const { user } = renderApp('/book/london?service=haircut');
+    const { user } = renderApp('/book/london?services=haircut');
     await chooseHaircutOct8At9(user);
     await user.click(continueButton());
     await screen.findByRole('heading', { name: 'Your details' });
@@ -402,5 +460,75 @@ describe('booking: add to calendar', () => {
     const sheet = await screen.findByRole('dialog', { name: 'Calendar file saved' });
     await user.click(within(sheet).getByRole('button', { name: 'Got it' }));
     expect(screen.queryByRole('dialog')).not.toBeInTheDocument();
+  });
+});
+
+describe('booking: arriving from a search or a profile', () => {
+  it('opens with a held day and time already chosen', async () => {
+    renderApp('/book/london?services=haircut&date=2026-10-08&start=540');
+    await screen.findByRole('heading', { level: 1, name: 'Book Now' });
+    expect(screen.getByRole('button', { name: 'Thu, Oct 8' })).toHaveAttribute(
+      'aria-pressed',
+      'true',
+    );
+    expect(timeButton('9:00 AM')).toHaveAttribute('aria-pressed', 'true');
+    expect(continueButton()).toBeEnabled();
+    expect(screen.getByText('Haircut · Thu, Oct 8 · 9:00 to 10:00 AM')).toBeInTheDocument();
+  });
+
+  it('keeps the held day but not a time that is already taken', async () => {
+    renderApp('/book/london?services=haircut&date=2026-10-08&start=630'); // 10:30 AM is booked
+    await screen.findByRole('heading', { level: 1, name: 'Book Now' });
+    expect(screen.getByRole('button', { name: 'Thu, Oct 8' })).toHaveAttribute(
+      'aria-pressed',
+      'true',
+    );
+    expect(timeButton('10:30 AM')).toHaveAttribute('aria-pressed', 'false');
+    expect(continueButton()).toBeDisabled();
+  });
+
+  it('ignores a day she does not work, and nonsense in the address', async () => {
+    renderApp('/book/london?services=haircut&date=2026-10-12&start=abc'); // a Monday
+    await screen.findByRole('heading', { level: 1, name: 'Book Now' });
+    expect(
+      within(screen.getByRole('group', { name: 'Day' }))
+        .getAllByRole('button')
+        .every((day) => day.getAttribute('aria-pressed') === 'false'),
+    ).toBe(true);
+    expect(screen.getByText('Select a day to see available times')).toBeInTheDocument();
+  });
+
+  it('exits to where she came from, not always the profile', async () => {
+    const back = encodeURIComponent('/book?services=haircut');
+    const { user, router } = renderApp(`/book/london?services=haircut&back=${back}`);
+    await screen.findByRole('heading', { level: 1, name: 'Book Now' });
+    await user.click(screen.getByRole('link', { name: 'Exit booking' }));
+    await user.click(await screen.findByRole('button', { name: 'Leave' }));
+    expect(await screen.findByRole('heading', { level: 1, name: 'Book' })).toBeInTheDocument();
+    expect(router.state.location.pathname + router.state.location.search).toBe(
+      '/book?services=haircut',
+    );
+  });
+
+  it('never exits to an address outside the app', async () => {
+    const { user, router } = renderApp(
+      `/book/london?back=${encodeURIComponent('https://example.com/phish')}`,
+    );
+    await screen.findByRole('heading', { level: 1, name: 'Book Now' });
+    await user.click(screen.getByRole('link', { name: 'Exit booking' }));
+    expect(await screen.findByRole('heading', { level: 1, name: 'London' })).toBeInTheDocument();
+    expect(router.state.location.pathname).toBe('/stylists/london');
+  });
+
+  it('has the logo home too, and asks first once something is chosen', async () => {
+    const { user, router } = renderApp('/book/london?services=haircut');
+    await screen.findByRole('heading', { level: 1, name: 'Book Now' });
+    await user.click(screen.getByRole('link', { name: 'Local Locks, home' }));
+    const dialog = await screen.findByRole('dialog', { name: 'Leave this booking?' });
+    await user.click(within(dialog).getByRole('button', { name: 'Leave' }));
+    expect(
+      await screen.findByRole('heading', { level: 1, name: 'Local Locks' }),
+    ).toBeInTheDocument();
+    expect(router.state.location.pathname).toBe('/');
   });
 });

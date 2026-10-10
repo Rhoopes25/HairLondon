@@ -30,7 +30,7 @@ describe('my appointments', () => {
       await screen.findByRole('heading', { level: 1, name: 'My appointments' }),
     ).toBeInTheDocument();
     expect(screen.getByText('You don’t have anything booked yet.')).toBeInTheDocument();
-    expect(screen.getByRole('link', { name: 'Find a stylist' })).toBeInTheDocument();
+    expect(screen.getByRole('link', { name: 'Find a stylist' })).toHaveAttribute('href', '/book');
     const past = screen.getByRole('heading', { name: 'Past visits' }).parentElement as HTMLElement;
     expect(within(past).getByRole('link')).toHaveTextContent('Haircut with London');
     expect(within(past).getByRole('link')).toHaveTextContent('Completed');
@@ -75,7 +75,9 @@ describe('appointment detail', () => {
     );
     expect(screen.getByText('Haircut')).toBeInTheDocument();
     expect(screen.getByText('Thu, Oct 8, 9:00 to 10:00 AM')).toBeInTheDocument();
-    expect(screen.getByText('$65 · 1 hr')).toBeInTheDocument();
+    expect(screen.getByText('Estimated total')).toBeInTheDocument();
+    expect(screen.getByText('$65+, about 1 hr')).toBeInTheDocument();
+    expect(screen.getByText('Hair by London, Provo')).toBeInTheDocument();
     expect(screen.getByText('Maren Thompson')).toBeInTheDocument();
     expect(screen.getByRole('button', { name: 'Add to calendar' })).toBeInTheDocument();
     expect(screen.getByRole('link', { name: 'Reschedule' })).toHaveAttribute(
@@ -123,7 +125,7 @@ describe('cancelling', () => {
     );
 
     // The slot is open again.
-    await router.navigate('/book/london?service=haircut');
+    await router.navigate('/book/london?services=haircut');
     await screen.findByRole('heading', { level: 1, name: 'Book Now' });
     await user.click(days()[1] as HTMLElement);
     expect(timeButton('9:00 AM')).toBeEnabled();
@@ -148,15 +150,15 @@ describe('rescheduling', () => {
     expect(timeButton('9:00 AM')).toBeEnabled();
 
     await user.click(days()[2] as HTMLElement); // Fri, Oct 9
-    await user.click(timeButton('11:00 AM'));
-    expect(screen.getByText('Move to Fri, Oct 9 · 11:00 AM to 12:00 PM')).toBeInTheDocument();
+    await user.click(timeButton('10:00 AM')); // 11:00 is one of London's sample bookings
+    expect(screen.getByText('Move to Fri, Oct 9 · 10:00 to 11:00 AM')).toBeInTheDocument();
     await user.click(confirm);
 
-    expect(await screen.findByText('Fri, Oct 9, 11:00 AM to 12:00 PM')).toBeInTheDocument();
-    expect(services.appointments.get(id)).toMatchObject({ date: '2026-10-09', start: 660 });
+    expect(await screen.findByText('Fri, Oct 9, 10:00 to 11:00 AM')).toBeInTheDocument();
+    expect(services.appointments.get(id)).toMatchObject({ date: '2026-10-09', start: 600 });
 
     // The old slot is open for others.
-    await router.navigate('/book/london?service=haircut');
+    await router.navigate('/book/london?services=haircut');
     await screen.findByRole('heading', { level: 1, name: 'Book Now' });
     await user.click(days()[1] as HTMLElement);
     expect(timeButton('9:00 AM')).toBeEnabled();
@@ -234,6 +236,7 @@ describe('reviewing a past visit', () => {
     const { user } = renderApp('/appointments/apt_sample_past');
     await user.click(await screen.findByRole('link', { name: 'Book again' }));
     await screen.findByRole('heading', { level: 1, name: 'Book Now' });
+    await user.click(screen.getByRole('button', { name: 'Change' }));
     expect(screen.getByRole('checkbox', { name: /Haircut/ })).toBeChecked();
   });
 });

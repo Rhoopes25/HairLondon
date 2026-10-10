@@ -40,7 +40,7 @@ export function AppointmentsPage() {
           <>
             <EmptyNote>You don&rsquo;t have anything booked yet.</EmptyNote>
             <div className={styles.cta}>
-              <LinkButton to="/stylists">Find a stylist</LinkButton>
+              <LinkButton to="/book">Find a stylist</LinkButton>
             </div>
           </>
         )}

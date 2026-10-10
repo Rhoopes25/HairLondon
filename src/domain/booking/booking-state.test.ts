@@ -4,6 +4,7 @@ import { fixedClock } from '../clock';
 import { minuteOfDay } from '../models/time';
 import type { IsoDate } from '../models/time';
 import { createBookingReducer, initialBookingState } from './booking-state';
+import { emptyDraft } from './draft';
 
 const day = '2026-10-16' as IsoDate;
 const reducer = createBookingReducer({
@@ -18,7 +19,9 @@ const reducer = createBookingReducer({
 describe('booking reducer', () => {
   it('starts empty, optionally with a preselected service', () => {
     expect(initialBookingState('london').draft.serviceIds).toEqual([]);
-    expect(initialBookingState('london', 'color').draft.serviceIds).toEqual(['color']);
+    expect(initialBookingState('london', emptyDraft('london', 'color')).draft.serviceIds).toEqual([
+      'color',
+    ]);
   });
 
   it('walks through choosing services, a day, and a time', () => {
@@ -30,12 +33,22 @@ describe('booking reducer', () => {
   });
 
   it('drops the time when a longer service no longer fits it', () => {
-    let state = initialBookingState('london', 'haircut');
+    let state = initialBookingState('london', emptyDraft('london', 'haircut'));
     state = reducer(state, { type: 'selectDate', date: day });
     state = reducer(state, { type: 'selectStart', start: minuteOfDay(16, 30) });
     state = reducer(state, { type: 'toggleService', id: 'color' });
     expect(state.draft.start).toBeNull();
     expect(state.draft.serviceIds).toEqual(['haircut', 'color']);
+  });
+
+  it('remembers the time it dropped, until she picks again', () => {
+    let state = initialBookingState('london', emptyDraft('london', 'haircut'));
+    state = reducer(state, { type: 'selectDate', date: day });
+    state = reducer(state, { type: 'selectStart', start: minuteOfDay(16, 30) });
+    state = reducer(state, { type: 'toggleService', id: 'color' });
+    expect(state.droppedStart).toBe(minuteOfDay(16, 30));
+    state = reducer(state, { type: 'selectStart', start: minuteOfDay(9) });
+    expect(state.droppedStart).toBeNull();
   });
 
   it('keeps the details when going back and forth, and merges partial updates', () => {

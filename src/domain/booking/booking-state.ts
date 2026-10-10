@@ -12,6 +12,8 @@ import type { DetailsInput } from './validate-details';
 export interface BookingState {
   readonly draft: BookingDraft;
   readonly details: DetailsInput;
+  /** A time she had picked that stopped fitting when she added a service, so the page can say so. */
+  readonly droppedStart: MinuteOfDay | null;
 }
 
 export type BookingAction =
@@ -27,8 +29,11 @@ export interface BookingEnv {
   readonly catalog: ServiceCatalog;
 }
 
-export function initialBookingState(stylistId: string, presetService?: ServiceId): BookingState {
-  return { draft: emptyDraft(stylistId, presetService), details: { name: '', phone: '' } };
+export function initialBookingState(
+  stylistId: string,
+  draft: BookingDraft = emptyDraft(stylistId),
+): BookingState {
+  return { draft, details: { name: '', phone: '' }, droppedStart: null };
 }
 
 /**
@@ -38,19 +43,19 @@ export function initialBookingState(stylistId: string, presetService?: ServiceId
 export function createBookingReducer(env: BookingEnv) {
   return function bookingReducer(state: BookingState, action: BookingAction): BookingState {
     switch (action.type) {
-      case 'toggleService':
-        return {
-          ...state,
-          draft: dropUnavailableStart(
-            toggleService(state.draft, action.id),
-            env.context,
-            env.catalog,
-          ),
-        };
+      case 'toggleService': {
+        const draft = dropUnavailableStart(
+          toggleService(state.draft, action.id),
+          env.context,
+          env.catalog,
+        );
+        const dropped = state.draft.start !== null && draft.start === null;
+        return { ...state, draft, droppedStart: dropped ? state.draft.start : state.droppedStart };
+      }
       case 'selectDate':
-        return { ...state, draft: selectDate(state.draft, action.date) };
+        return { ...state, draft: selectDate(state.draft, action.date), droppedStart: null };
       case 'selectStart':
-        return { ...state, draft: selectStart(state.draft, action.start) };
+        return { ...state, draft: selectStart(state.draft, action.start), droppedStart: null };
       case 'setDetails':
         return { ...state, details: { ...state.details, ...action.details } };
       case 'reset':
