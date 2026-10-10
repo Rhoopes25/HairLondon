@@ -12,7 +12,7 @@
 <body>
     <div class="app-frame">
         <header class="site-header site-header--booking">
-            <a href="stylists.html" class="exit-btn" id="exit-btn" aria-label="Exit booking">
+            <a href="book.html" class="exit-btn" id="exit-btn" aria-label="Exit booking">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><line x1="6" y1="6" x2="18" y2="18"/><line x1="18" y1="6" x2="6" y2="18"/></svg>
             </a>
             <span class="booking-with" id="booking-with"></span>
@@ -55,6 +55,15 @@
                 </section>
 
                 <div class="confirm-bar confirm-bar--sticky">
+                    <div class="booking-progress" id="booking-progress" aria-live="polite" aria-label="Booking progress">
+                        <div class="booking-progress-track">
+                            <span class="booking-progress-fill" id="booking-progress-fill" style="width: 0%"></span>
+                        </div>
+                        <div class="booking-progress-label">
+                            <span id="booking-progress-label">Pick your services</span>
+                            <span id="booking-progress-value">0%</span>
+                        </div>
+                    </div>
                     <div class="confirm-summary">
                         <span id="summary-line">Select services, day &amp; time</span>
                     </div>
@@ -106,6 +115,7 @@
                 </section>
                 <div class="recap" id="done-recap"></div>
                 <div class="done-actions">
+                    <a href="appointments.html" class="confirm-btn confirm-btn--outline">View appointment</a>
                     <button type="button" class="confirm-btn confirm-btn--outline" id="calendar-btn">Add to calendar</button>
                     <a href="index.html" class="link-quiet">Back to home</a>
                 </div>
@@ -122,7 +132,7 @@
         const params = new URLSearchParams(location.search);
         const stylist = getStylist(params.get('stylist'));
         if (!stylist) {
-            location.replace('stylists.html');
+            location.replace('book.html');
             throw new Error('Unknown stylist');
         }
         const firstName = stylist.name.split(' ')[0];
@@ -351,6 +361,9 @@
         const summaryPrice = document.getElementById('summary-price');
         const priceNote = document.getElementById('price-note');
         const continueBtn = document.getElementById('continue-btn');
+        const progressFill = document.getElementById('booking-progress-fill');
+        const progressLabel = document.getElementById('booking-progress-label');
+        const progressValue = document.getElementById('booking-progress-value');
 
         function whenText() {
             const end = state.start + totalDuration();
@@ -373,6 +386,20 @@
             priceNote.textContent = total ?
                 'Starting price. Longer or thicker hair can cost more, and ' + firstName + ' will confirm it with you.' : '';
             priceNote.hidden = !total;
+
+            const steps = [
+                state.services.length > 0,
+                state.date != null,
+                state.start != null
+            ].filter(Boolean).length;
+            const progress = Math.round((steps / 3) * 100);
+            progressFill.style.width = progress + '%';
+            progressValue.textContent = progress + '%';
+
+            if (steps === 0) progressLabel.textContent = 'Pick your services';
+            else if (steps === 1) progressLabel.textContent = 'Add your day';
+            else if (steps === 2) progressLabel.textContent = 'Choose a time';
+            else progressLabel.textContent = 'Ready to continue';
 
             timeNote.classList.toggle('time-note--warn', bumpedTime != null && state.start == null);
             if (bumpedTime != null && state.start == null) {
@@ -406,6 +433,7 @@
             Object.entries(views).forEach(([k, el]) => el.hidden = k !== name);
             window.scrollTo(0, 0);
             if (focusId) document.getElementById(focusId).focus();
+            document.getElementById('booking-progress').hidden = name !== 'choose';
 
             // Back arrow on the details step, X everywhere else
             const onDetails = name === 'details';
@@ -460,6 +488,37 @@
             input.setAttribute('aria-invalid', message ? 'true' : 'false');
         }
 
+        const APPOINTMENT_STORAGE_KEY = 'locallocks-appointments';
+
+        function readAppointments() {
+            try {
+                const saved = localStorage.getItem(APPOINTMENT_STORAGE_KEY);
+                return saved ? JSON.parse(saved) : [];
+            } catch (e) {
+                return [];
+            }
+        }
+
+        function saveAppointment() {
+            const appointments = readAppointments();
+            appointments.push({
+                id: Date.now(),
+                name: state.name,
+                phone: state.phone,
+                stylistId: stylist.id,
+                stylistName: stylist.name,
+                studio: stylist.studio,
+                city: stylist.city,
+                services: state.services.slice(),
+                date: dateKey(state.date),
+                start: state.start,
+                end: state.start + totalDuration(),
+                total: totalPrice(),
+                createdAt: new Date().toISOString()
+            });
+            localStorage.setItem(APPOINTMENT_STORAGE_KEY, JSON.stringify(appointments));
+        }
+
         document.getElementById('details-form').addEventListener('submit', e => {
             e.preventDefault();
             const name = nameInput.value.trim();
@@ -472,6 +531,7 @@
 
             state.name = name;
             state.phone = formatPhone(digits);
+            saveAppointment();
 
             document.getElementById('done-note').textContent =
                 'A reminder text will go to ' + state.phone + ' the day before.';

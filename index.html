@@ -12,12 +12,16 @@
 <body>
     <div class="app-frame">
         <header class="site-header site-header--split">
-            <a href="index.html" class="logo" aria-label="Local Locks, home">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><circle cx="6" cy="6" r="3"/><circle cx="6" cy="18" r="3"/><line x1="20" y1="4" x2="8.12" y2="15.88"/><line x1="14.47" y1="14.48" x2="20" y2="20"/><line x1="8.12" y1="8.12" x2="12" y2="12"/></svg>
-            </a>
-            <nav class="header-nav" aria-label="Main">
+            <div class="header-brand">
                 <a href="index.html" class="header-nav-link active" aria-current="page">Home</a>
+                <a href="index.html" class="logo" aria-label="Local Locks, home">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><circle cx="6" cy="6" r="3"/><circle cx="6" cy="18" r="3"/><line x1="20" y1="4" x2="8.12" y2="15.88"/><line x1="14.47" y1="14.48" x2="20" y2="20"/><line x1="8.12" y1="8.12" x2="12" y2="12"/></svg>
+                </a>
+            </div>
+            <nav class="header-nav" aria-label="Main">
+                <a href="book.html" class="header-nav-link">Book</a>
                 <a href="stylists.html" class="header-nav-link">Stylists</a>
+                <a href="appointments.html" class="header-nav-link">Appointments</a>
             </nav>
         </header>
 
@@ -27,7 +31,10 @@
                 <section class="hero-text">
                     <h1>Local Locks</h1>
                     <p class="hero-tagline">Local stylists you can trust.</p>
-                    <a href="stylists.html" class="hero-cta hero-cta--filled">Find a stylist</a>
+                    <div class="hero-actions">
+                        <a href="book.html" class="hero-cta hero-cta--filled">Book Now</a>
+                        <a href="stylists.html" class="hero-cta hero-cta--filled">Explore Stylists</a>
+                    </div>
                 </section>
             </div>
         </main>

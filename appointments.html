@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Your appointments | Local Locks</title>
+    <meta name="description" content="See the details of your confirmed hair appointments.">
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+    <div class="app-frame">
+        <header class="site-header site-header--split">
+            <div class="header-brand">
+                <a href="index.html" class="header-nav-link">Home</a>
+                <a href="index.html" class="logo" aria-label="Local Locks, home">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><circle cx="6" cy="6" r="3"/><circle cx="6" cy="18" r="3"/><line x1="20" y1="4" x2="8.12" y2="15.88"/><line x1="14.47" y1="14.48" x2="20" y2="20"/><line x1="8.12" y1="8.12" x2="12" y2="12"/></svg>
+                </a>
+            </div>
+            <nav class="header-nav" aria-label="Main">
+                <a href="book.html" class="header-nav-link">Book</a>
+                <a href="stylists.html" class="header-nav-link">Stylists</a>
+                <a href="appointments.html" class="header-nav-link active" aria-current="page">Appointments</a>
+            </nav>
+        </header>
+
+        <main>
+            <section class="page-intro">
+                <h1>Your appointments</h1>
+                <p>Everything you've booked with Local Locks.</p>
+            </section>
+
+            <section id="appointments-list" class="appointment-list" aria-live="polite"></section>
+        </main>
+
+        <footer class="site-footer">
+            <p>&copy; 2026 Local Locks</p>
+        </footer>
+    </div>
+
+    <script src="data.js"></script>
+    <script>
+        const STORAGE_KEY = 'locallocks-appointments';
+
+        function readAppointments() {
+            try {
+                const saved = localStorage.getItem(STORAGE_KEY);
+                const appointments = saved ? JSON.parse(saved) : [];
+                return Array.isArray(appointments) ? appointments : [];
+            } catch (e) {
+                return [];
+            }
+        }
+
+        function serviceNames(ids) {
+            return ids.map(id => SERVICES[id] && SERVICES[id].name).filter(Boolean).join(' + ') || 'Hair appointment';
+        }
+
+        function appointmentDateLabel(dateKeyValue) {
+            const parsed = parseDateKey(dateKeyValue);
+            return parsed ? formatDay(parsed) : 'Date to be confirmed';
+        }
+
+        function renderAppointments() {
+            const list = document.getElementById('appointments-list');
+            const appointments = readAppointments().sort((a, b) => (a.date || '').localeCompare(b.date || ''));
+
+            if (!appointments.length) {
+                list.innerHTML = '<div class="appointment-empty"><p>No appointments booked yet.</p><a href="book.html" class="confirm-btn">Find a stylist</a></div>';
+                return;
+            }
+
+            list.innerHTML = appointments.map(appointment => {
+                const stylist = getStylist(appointment.stylistId) || {
+                    name: appointment.stylistName || 'Local Locks stylist',
+                    photo: null
+                };
+                const dateLabel = appointmentDateLabel(appointment.date);
+                const start = Number(appointment.start);
+                const end = Number(appointment.end) || start;
+                const serviceLine = serviceNames((appointment.services || []).map(String));
+
+                return '<article class="appointment-card" data-id="' + escapeHTML(String(appointment.id || '')) + '">' +
+                    '<div class="appointment-header">' +
+                        '<div>' +
+                            '<p class="appointment-label">Upcoming appointment</p>' +
+                            '<h2>' + escapeHTML(stylist.name) + '</h2>' +
+                        '</div>' +
+                        avatarHTML(stylist, 'sm') +
+                    '</div>' +
+                    '<div class="appointment-meta">' +
+                        '<div class="appointment-meta-row"><span>Studio</span><strong>' + escapeHTML(appointment.studio || 'Local Locks') + '</strong></div>' +
+                        '<div class="appointment-meta-row"><span>Date</span><strong>' + escapeHTML(dateLabel) + '</strong></div>' +
+                        '<div class="appointment-meta-row"><span>Time</span><strong>' + escapeHTML(formatRange(start, end)) + '</strong></div>' +
+                        '<div class="appointment-meta-row"><span>Services</span><strong>' + escapeHTML(serviceLine) + '</strong></div>' +
+                        '<div class="appointment-meta-row"><span>Contact</span><strong>' + escapeHTML(appointment.name || 'Guest') + '<br>' + escapeHTML(appointment.phone || '') + '</strong></div>' +
+                        '<div class="appointment-meta-row"><span>Estimated total</span><strong>' + escapeHTML(priceText(Number(appointment.total || 0))) + '</strong></div>' +
+                    '</div>' +
+                    '<div class="appointment-actions">' +
+                        '<button type="button" class="appointment-action-btn" data-action="cancel" data-appointment-id="' + escapeHTML(String(appointment.id || '')) + '">Cancel appointment</button>' +
+                    '</div>' +
+                '</article>';
+            }).join('');
+
+            list.querySelectorAll('[data-action="cancel"]').forEach(button => {
+                button.addEventListener('click', () => {
+                    const id = String(button.dataset.appointmentId || '');
+                    const remaining = readAppointments().filter(appointment => String(appointment.id) !== id);
+                    localStorage.setItem(STORAGE_KEY, JSON.stringify(remaining));
+                    renderAppointments();
+                });
+            });
+        }
+
+        renderAppointments();
+    </script>
+</body>
+
+</html>
