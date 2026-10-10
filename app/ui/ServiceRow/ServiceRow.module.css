@@ -1,0 +1,77 @@
+.row {
+  display: flex;
+  align-items: stretch;
+  background: var(--white);
+  border: 1.5px solid var(--cream-deep);
+  border-radius: var(--radius-md);
+  transition: border-color 0.15s ease;
+}
+
+.row:hover {
+  border-color: var(--gold-deep);
+}
+
+.link {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  padding: 0.9rem 1.1rem;
+  color: var(--ink);
+  text-decoration: none;
+  border-radius: var(--radius-md);
+}
+
+.body {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.name {
+  font-size: var(--fs-label);
+  font-weight: 500;
+}
+
+.desc {
+  font-size: 0.8rem;
+  color: var(--ink-soft);
+  line-height: 1.45;
+}
+
+.meta {
+  font-size: 0.8rem;
+  color: var(--ink-soft);
+  white-space: nowrap;
+}
+
+.arrow {
+  width: 1rem;
+  height: 1rem;
+  color: var(--gold-deep);
+  flex-shrink: 0;
+}
+
+.info {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 2.75rem;
+  background: none;
+  border: 0;
+  border-left: 1px solid var(--cream-deep);
+  border-radius: 0 var(--radius-md) var(--radius-md) 0;
+  color: var(--ink-soft);
+  cursor: pointer;
+}
+
+.info:hover {
+  color: var(--ink);
+  background: var(--cream-deep);
+}
+
+.info svg {
+  width: 1.15rem;
+  height: 1.15rem;
+}

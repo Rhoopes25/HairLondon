@@ -1,8 +1,35 @@
 # Local Locks
 
-Low-fidelity prototype for IS 551. Find a stylist you trust, see their real work, and book a hair appointment in a few minutes.
+A mobile-first, responsive (phone to desktop) hair stylist booking prototype for IS 551. See a stylist's real work and reviews, then book a time that fits your day. It is an **early prototype**: the stylists and reviews are samples, nothing is sent, and your appointments live only in your browser.
 
-**Happy path:** Home → Find a stylist → pick a service → tap an open time (or open a stylist's profile and tap Book) → pick a day and time → Continue → name and phone → Confirm booking → You're booked.
+**Live:** `https://rhoopes25.github.io/HairLondon/` (once GitHub Pages is enabled; see `docs/deployment.md`)
+
+## Run it
+
+Needs Node 20 or newer.
+
+```
+npm install
+npm run dev          # http://localhost:5173
+npm test             # unit, integration, and accessibility tests
+npm run lint
+npm run build:pages  # the GitHub Pages build
+npm run layout       # screenshots and layout checks at 4 widths (after `npm run build`)
+```
+
+## Where things are
+
+| Path | What |
+| --- | --- |
+| `app/` | The React frontend: `ui/` (design library), `features/` (screens), `shell/` (routes, layouts), `services/` |
+| `src/` | Pure TypeScript with no React or DOM: domain rules (scheduling, pricing, formatting) and the data layer |
+| `local-locks-design-system/` | The design system spec; `tokens.json` is the source of truth for the look |
+| `docs/` | `refactor-plan.md` (architecture and what was built), `usability-audit.md`, `deployment.md`, `submission-notes.md` |
+| `CLAUDE.md` | Rules for working in this repo, for people and for Claude Code |
+
+The sections below are the original discovery write-up. They describe the first three-screen concept (Home, Work, Book); the app has since grown to more screens, listed in `docs/submission-notes.md`.
+
+---
 
 ## 1. Need, Persona, Capability, Value
 

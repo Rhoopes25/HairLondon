@@ -1,0 +1,27 @@
+.save {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  min-height: 2.75rem;
+  padding: 0 0.85rem;
+  font-family: var(--font-sans);
+  font-size: 0.8rem;
+  color: var(--gold-ink);
+  background: var(--white);
+  border: 1.5px solid var(--gold-soft);
+  border-radius: var(--radius-pill);
+  cursor: pointer;
+}
+
+.save:hover {
+  border-color: var(--gold-deep);
+}
+
+.save[aria-pressed='true'] {
+  border-color: var(--gold-ink);
+}
+
+.save svg {
+  width: 1rem;
+  height: 1rem;
+}
