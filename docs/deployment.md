@@ -27,16 +27,16 @@ Only `app/config.ts` may read `import.meta.env` (lint enforces this).
 
 ## One-time GitHub Pages setup
 
-**Current state (checked 2026-10-10):** `https://rhoopes25.github.io/HairLondon/` is live, but it serves the teammates' *static* site from the `main` branch. Pages is set to "Deploy from a branch" (`main`, `/`), not to GitHub Actions. Until the steps below are done, the public URL does **not** show this React app.
+**Current state (checked 2026-10-10, after PR #5 merged):** `https://rhoopes25.github.io/HairLondon/` serves this React app. The `Deploy to GitHub Pages` workflow succeeded on the merge, and a real-browser check of the live URL at 390px and 1280px found the first-visit modal, Home, a booking from Book to the booking page, and a profile with no console errors or broken images. One thing to confirm by eye: the GitHub API still reports the Pages build type as `legacy`, so open **Settings -> Pages** and check that **Source** says **GitHub Actions**. If it says "Deploy from a branch", a later redeploy could publish the repository root (which has no `index.html`) and the link would break.
 
-Recommended order, done well before the deadline (expect a few minutes where the site is down or stale):
+If you ever have to set this up again, the order matters:
 
 1. The repository must be **public** (it is).
-2. A repository admin (the repo is owned by `Rhoopes25`) opens **Settings -> Pages** and sets **Source** to **GitHub Actions**. From this moment the old static site is no longer served.
-3. Merge `Review_Main` into `main` with a pull request (CI runs on it). The merge triggers `Deploy to GitHub Pages`, which builds with `npm run build:pages` and publishes. Watch the **Actions** tab until it is green.
+2. A repository admin (the repo is owned by `Rhoopes25`) opens **Settings -> Pages** and sets **Source** to **GitHub Actions** *before* merging anything to `main`. In "Deploy from a branch" mode the repository root is published, and the root has no `index.html`.
+3. Merge to `main` with a pull request (CI runs on it). The merge triggers `Deploy to GitHub Pages`, which builds with `npm run build:pages` and publishes. Watch the **Actions** tab until it is green.
 4. Verify the live URL in a private window and on a phone: the first visit must show the "This is just a prototype" modal, the page title should say Local Locks, and Home should show "Book Now" and "Explore Stylists". Open a deep link such as `.../HairLondon/#/stylists/london` in a fresh tab and refresh.
 
-Do not merge to `main` while Pages is still on "Deploy from a branch": that mode would publish the repository root, which no longer has an `index.html`. A manual run (`workflow_dispatch`) only works for workflows that exist on the default branch, so it cannot deploy `Review_Main` before the merge. To preview first, run `npm run build:pages` and serve `dist/` under `/HairLondon/`.
+A manual run (`workflow_dispatch`) only works for workflows that exist on the default branch. To preview before merging, run `npm run build:pages` and serve `dist/` under `/HairLondon/`.
 
 ## Switching hosts
 

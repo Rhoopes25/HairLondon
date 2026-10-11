@@ -156,7 +156,7 @@ Current host: GitHub Pages (`https://rhoopes25.github.io/HairLondon/`), hash rou
 - Never hard-code a base path, host, or router mode. Use `assetUrl()` for public assets and the router `basename`.
 - Only `app/config.ts` reads `import.meta.env` (`VITE_BASE`, `VITE_ROUTER_MODE`, `VITE_API_URL`).
 - Host-specific files live in `deploy/<target>/` and are applied by `scripts/postbuild.ts` (`DEPLOY_TARGET`). `.github/workflows/ci.yml` is host-neutral and each host's deploy workflow reuses it, then runs its own build script (the base path is baked in at build time). Steps for switching hosts are in `docs/deployment.md`.
-- As of 2026-10-10 the live URL serves the teammates' old static site from `main` (Pages source is "Deploy from a branch"). It will not show this app until a repo admin switches the source to GitHub Actions and `Review_Main` is merged to `main`; order and warnings are in `docs/deployment.md`. The React deploy has **not** been verified on the live host.
+- As of 2026-10-10 the live URL serves this React app (PR #5 merged, the deploy workflow succeeded, and the live site was checked in a real browser). The GitHub API still reports the Pages build type as `legacy`, so confirm in Settings -> Pages that Source is **GitHub Actions**; if it were "Deploy from a branch", the next redeploy could publish a repo root with no `index.html`. Setup order and warnings are in `docs/deployment.md`.
 
 ## Git workflow
 

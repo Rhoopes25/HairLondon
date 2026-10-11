@@ -41,6 +41,7 @@ configure({ asyncUtilTimeout: 5000 });
 beforeEach(() => {
   // jsdom does not implement scrolling; ScrollRestoration calls it on navigation.
   window.scrollTo = vi.fn();
+  Element.prototype.scrollIntoView = vi.fn();
 });
 
 afterEach(() => {

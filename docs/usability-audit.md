@@ -124,6 +124,8 @@ Not covered by this check: a real phone or tablet (touch feel, iOS Safari), land
 | Chips in a wrapping row were indented twice (the row's padding plus the section's) | Looking at the Book screenshots | No side padding on a wrapping row |
 | "Optional" in a heading read as "Which day?optional" | A test on the heading name | An explicit space before the tag |
 | Empty-state buttons and a profile's back link sent people to the wrong place | The eight-principle review (see above) | They go to Book, and the back link names its destination |
+| On a phone the Book page's result count sat below the filters, so tapping a chip changed something she could not see | A Playwright walk through the live site at 390px | A bar pinned to the bottom of the screen shows the count and a "See times" jump to the results (hidden once filters and results sit side by side) |
+| The "Any day" chip set "day" in italics, unlike every other chip | The same walk | Plain type |
 
 ## Not checked: be honest about these when you submit
 

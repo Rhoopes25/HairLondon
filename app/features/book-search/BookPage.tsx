@@ -1,3 +1,4 @@
+import { useRef } from 'react';
 import { useLocation, useNavigate, useSearchParams } from 'react-router';
 import { dayParts, formatDay } from '@src/domain/format/date';
 import { formatDuration } from '@src/domain/format/duration';
@@ -50,6 +51,16 @@ export function BookPage() {
   const stylists = useStylists();
   const env = useSearchEnvironment();
   useDocumentTitle('Book');
+  const resultsRef = useRef<HTMLElement>(null);
+
+  // On a phone the answer sits below the filters; this brings her to it (and her screen reader with her).
+  const showResults = () => {
+    const results = resultsRef.current;
+    if (!results) return;
+    const calm = window.matchMedia?.('(prefers-reduced-motion: reduce)').matches;
+    results.scrollIntoView({ behavior: calm ? 'auto' : 'smooth', block: 'start' });
+    results.focus({ preventScroll: true });
+  };
 
   const days = searchableDays(env.clock, stylists);
   const requestedDay = searchParams.get('day');
@@ -219,9 +230,18 @@ export function BookPage() {
               </TextButton>
             </div>
           ) : null}
+
+          <button type="button" className={styles.peek} onClick={showResults}>
+            {countText} · See times <span aria-hidden="true">↓</span>
+          </button>
         </div>
 
-        <section className={styles.results} aria-label="Stylists who can fit you in">
+        <section
+          ref={resultsRef}
+          tabIndex={-1}
+          className={styles.results}
+          aria-label="Stylists who can fit you in"
+        >
           <Section title="Tap a time to book" step={2}>
             <p className={styles.count} aria-live="polite">
               {countText}

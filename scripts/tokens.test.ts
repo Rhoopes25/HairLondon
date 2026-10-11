@@ -3,7 +3,9 @@ import { describe, expect, it } from 'vitest';
 import { buildTokensCss } from '../app/ui/tokens/build-tokens-css';
 import type { TokensJson } from '../app/ui/tokens/build-tokens-css';
 
-const read = (path: string) => readFileSync(new URL(path, import.meta.url), 'utf8');
+// Git on Windows may check files out with CRLF; the content is what matters.
+const read = (path: string) =>
+  readFileSync(new URL(path, import.meta.url), 'utf8').replace(/\r\n/g, '\n');
 const tokens = JSON.parse(read('../local-locks-design-system/tokens.json')) as TokensJson;
 
 describe('design tokens', () => {

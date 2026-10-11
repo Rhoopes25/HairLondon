@@ -316,3 +316,19 @@ describe('Book: booked times disappear', () => {
     await waitFor(() => expect(firstTime()).toHaveAccessibleName(/at 9:00 AM/));
   });
 });
+
+describe('Book: seeing the answer on a phone', () => {
+  it('keeps the count in reach, and "See times" moves her to the results', async () => {
+    const { user } = renderApp('/book?services=haircut');
+    await ready();
+    const peek = screen.getByRole('button', { name: /stylists can fit you in · See times/ });
+    expect(peek).toHaveTextContent('4 stylists can fit you in');
+
+    // Tapping another filter changes the count she can still see.
+    await user.click(chip('Evening'));
+    await waitFor(() => expect(peek).toHaveTextContent(/^\d stylists? can fit you in|No exact matches/));
+
+    await user.click(peek);
+    expect(results()).toHaveFocus();
+  });
+});
