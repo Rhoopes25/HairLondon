@@ -33,9 +33,10 @@
         y.parentNode.insertBefore(t, y);
       })(window, document, 'clarity', 'script', 'yxp5e59u8k');
     </script>
-    <!-- Google Analytics 4. The app uses hash routes (#/stylists), and GA4 drops everything after
-         the #, so every screen would look like the same page. We send a page_view on each route change
-         with the route written into the path (/HairLondon/stylists) so screens and funnels stay separate. -->
+    <!-- Google Analytics 4. The app uses hash routes (#/stylists). GA4 drops everything after the #,
+         and React Router changes screens with history.pushState, which fires no hashchange event, so
+         GA4 would only ever see the first screen. We watch pushState, replaceState and popstate, and
+         send one page_view per new screen with the route written into the path (/HairLondon/stylists). -->
     <script async src="https://www.googletagmanager.com/gtag/js?id=G-BLTGWG1DK4"></script>
     <script>
       window.dataLayer = window.dataLayer || [];
@@ -44,16 +45,34 @@
       }
       gtag('js', new Date());
       gtag('config', 'G-BLTGWG1DK4', { send_page_view: false });
-      function sendPageView() {
-        var route = (location.hash || '#/').replace(/^#/, '').split('?')[0] || '/';
-        var base = location.pathname.replace(/index\.html$/, '').replace(/\/$/, '');
-        gtag('event', 'page_view', {
-          page_location: location.origin + base + route,
-          page_title: document.title,
+      (function () {
+        var lastRoute = null;
+        function currentRoute() {
+          return (location.hash || '#/').replace(/^#/, '').split('?')[0] || '/';
+        }
+        function sendPageView() {
+          var route = currentRoute();
+          // Query-only changes (filters, a held time) are the same screen, so they don't count.
+          if (route === lastRoute) return;
+          lastRoute = route;
+          var base = location.pathname.replace(/index\.html$/, '').replace(/\/$/, '');
+          gtag('event', 'page_view', {
+            page_location: location.origin + base + route,
+            page_title: document.title,
+          });
+        }
+        ['pushState', 'replaceState'].forEach(function (method) {
+          var original = history[method];
+          history[method] = function () {
+            var result = original.apply(this, arguments);
+            sendPageView();
+            return result;
+          };
         });
-      }
-      sendPageView();
-      window.addEventListener('hashchange', sendPageView);
+        window.addEventListener('popstate', sendPageView);
+        window.addEventListener('hashchange', sendPageView);
+        sendPageView();
+      })();
     </script>
   </head>
   <body>
