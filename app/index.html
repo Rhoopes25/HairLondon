@@ -33,6 +33,27 @@
         y.parentNode.insertBefore(t, y);
       })(window, document, 'clarity', 'script', 'yxp5e59u8k');
     </script>
+    <!-- Google Analytics 4. The app uses hash routes (#/stylists), which GA4 doesn't see as
+         new pages on its own, so we send a page_view with the hash route each time it changes. -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-BLTGWG1DK4"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag() {
+        dataLayer.push(arguments);
+      }
+      gtag('js', new Date());
+      gtag('config', 'G-BLTGWG1DK4', { send_page_view: false });
+      function sendPageView() {
+        var route = (location.hash || '#/').replace(/^#/, '').split('?')[0];
+        gtag('event', 'page_view', {
+          page_location: location.origin + location.pathname + '#' + route,
+          page_path: location.pathname + '#' + route,
+          page_title: document.title,
+        });
+      }
+      sendPageView();
+      window.addEventListener('hashchange', sendPageView);
+    </script>
   </head>
   <body>
     <div id="root"></div>
