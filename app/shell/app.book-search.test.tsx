@@ -4,14 +4,16 @@ import { STYLISTS } from '@src/data/seed/stylists';
 import { renderApp } from '@app/test/renderApp';
 
 /**
- * The Book page: say what you need, optionally when, and see who can fit you in.
- * The test clock is Wednesday Oct 7, 2026, 8:00 AM.
+ * The Book page, in two parts: say what you need and optionally when (part 1), then see who can
+ * fit you in (part 2, `?step=who`). The test clock is Wednesday Oct 7, 2026, 8:00 AM.
  */
 const results = () => screen.getByRole('region', { name: 'Stylists who can fit you in' });
 const cards = () => within(results()).queryAllByRole('article');
 /** Results sort soonest-first once a day or time is chosen, so find a stylist by name, not position. */
 const londonCard = () => {
-  const card = cards().find((candidate) => within(candidate).queryByRole('link', { name: 'London' }));
+  const card = cards().find((candidate) =>
+    within(candidate).queryByRole('link', { name: 'London' }),
+  );
   if (!card) throw new Error('London is not in the results');
   return card;
 };
@@ -22,19 +24,75 @@ async function ready() {
   await screen.findByRole('heading', { level: 1, name: 'Book' });
 }
 
+/** Part 1's one action: on to the stylists who can fit her in. */
+async function seeWho(user: { click: (element: Element) => Promise<void> }) {
+  await user.click(screen.getByRole('button', { name: 'See who can fit me in' }));
+  await screen.findByRole('region', { name: 'Stylists who can fit you in' });
+}
+
 describe('Book: the page', () => {
   it('leads with what she needs, and marks day and time as optional', async () => {
     renderApp('/book');
     await ready();
-    expect(screen.getByRole('heading', { level: 2, name: /What do you need\?/ })).toBeInTheDocument();
-    expect(screen.getByRole('heading', { level: 2, name: /Which day\? optional/ })).toBeInTheDocument();
-    expect(screen.getByRole('heading', { level: 2, name: /What time\? optional/ })).toBeInTheDocument();
-    expect(screen.getByRole('heading', { level: 2, name: /Tap a time to book/ })).toBeInTheDocument();
+    expect(
+      screen.getByRole('heading', { level: 2, name: /What do you need\?/ }),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByRole('heading', { level: 2, name: /Which day\? optional/ }),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByRole('heading', { level: 2, name: /What time\? optional/ }),
+    ).toBeInTheDocument();
     expect(screen.getByText('Pick as many as you like.')).toBeInTheDocument();
+    // One decision at a time: the stylists wait for part 2.
+    expect(screen.queryByRole('region', { name: 'Stylists who can fit you in' })).toBeNull();
+    expect(screen.getByRole('button', { name: 'See who can fit me in' })).toBeInTheDocument();
   });
 
-  it('shows every stylist and her next three open times before anything is chosen', async () => {
-    renderApp('/book');
+  it('shows how booking works as three icon steps, and where she is', async () => {
+    const { user } = renderApp('/book');
+    await ready();
+    const guide = screen.getByRole('list', { name: 'How booking works' });
+    const steps = within(guide).getAllByRole('listitem');
+    expect(steps.map((step) => step.textContent)).toEqual([
+      'Pick services',
+      'Pick a day',
+      'Tap a stylist’s time',
+    ]);
+    expect(steps[0]).toHaveAttribute('aria-current', 'step');
+    await user.click(chip('Haircut'));
+    expect(within(guide).getAllByRole('listitem')[1]).toHaveAttribute('aria-current', 'step');
+    await seeWho(user);
+    expect(within(guide).getAllByRole('listitem')[2]).toHaveAttribute('aria-current', 'step');
+  });
+
+  it('opens part 2 with a summary of her picks and an Edit link back to part 1', async () => {
+    const { user, router } = renderApp('/book?services=haircut&time=morning');
+    await ready();
+    await seeWho(user);
+    expect(router.state.location.search).toBe('?services=haircut&time=morning&step=who');
+    expect(screen.getByText('Haircut · Any day · Morning')).toBeInTheDocument();
+    expect(
+      screen.getByRole('heading', { level: 2, name: /Tap a time to book/ }),
+    ).toBeInTheDocument();
+    await user.click(screen.getByRole('link', { name: 'Edit your search' }));
+    await screen.findByRole('button', { name: 'See who can fit me in' });
+    expect(router.state.location.search).toBe('?services=haircut&time=morning');
+    expect(pressed('Haircut')).toBe(true);
+    expect(pressed('Morning')).toBe(true);
+  });
+
+  it('goes back from part 2 to part 1 with the back button', async () => {
+    const { user, router } = renderApp('/book?services=color');
+    await ready();
+    await seeWho(user);
+    await router.navigate(-1);
+    await screen.findByRole('button', { name: 'See who can fit me in' });
+    expect(pressed('Color')).toBe(true);
+  });
+
+  it('shows every stylist and her next three open times when nothing is chosen', async () => {
+    renderApp('/book?step=who');
     await ready();
     expect(cards()).toHaveLength(4);
     expect(screen.getByText('4 stylists')).toBeInTheDocument();
@@ -45,11 +103,13 @@ describe('Book: the page', () => {
   });
 
   it('puts "See all work" on each card, and the starting price', async () => {
-    renderApp('/book');
+    renderApp('/book?step=who');
     await ready();
     const [london] = cards();
     if (!london) throw new Error('no cards');
-    expect(within(london).getByRole('link', { name: /See all of London.s work/ })).toBeInTheDocument();
+    expect(
+      within(london).getByRole('link', { name: /See all of London.s work/ }),
+    ).toBeInTheDocument();
     expect(london).not.toHaveTextContent('from');
     expect(london).toHaveTextContent('$35+');
   });
@@ -70,16 +130,17 @@ describe('Book: services', () => {
     await user.click(chip('Highlights'));
     expect(pressed('Highlights')).toBe(true);
     expect(screen.getByText('Takes about 2 hr 30 min.')).toBeInTheDocument();
-    expect(cards()).toHaveLength(3); // Kai does not do highlights
-    expect(screen.getByText('3 stylists can fit you in')).toBeInTheDocument();
+    expect(screen.getByText('3 stylists can fit you in')).toBeInTheDocument(); // Kai does not do highlights
 
     await user.click(chip('Haircut'));
     expect(screen.getByText('Together these take about 3 hr 30 min.')).toBeInTheDocument();
     expect(router.state.location.search).toBe('?services=haircut,highlights');
+    await seeWho(user);
+    expect(cards()).toHaveLength(3);
   });
 
   it('prices the visit for each stylist and says how long it takes', async () => {
-    renderApp('/book?services=haircut,color');
+    renderApp('/book?services=haircut,color&step=who');
     await ready();
     const [london] = cards();
     if (!london) throw new Error('no cards');
@@ -98,7 +159,9 @@ describe('Book: services', () => {
   });
 
   it('keeps only the stylists who offer every service together', async () => {
-    renderApp('/book?services=highlights,deep-conditioning,haircut,blowout,color,root-touch-up');
+    renderApp(
+      '/book?services=highlights,deep-conditioning,haircut,blowout,color,root-touch-up&step=who',
+    );
     await ready();
     // Only London offers all six.
     expect(cards()).toHaveLength(1);
@@ -107,11 +170,13 @@ describe('Book: services', () => {
 
   it('says so, and how to fix it, when nobody offers what she picked', async () => {
     const kai = STYLISTS.filter((stylist) => stylist.id === 'kai'); // Kai does not do highlights
-    renderApp('/book?services=highlights,haircut', { stylists: kai });
+    renderApp('/book?services=highlights,haircut&step=who', { stylists: kai });
     await ready();
     expect(screen.getByText('No stylists yet')).toBeInTheDocument();
     expect(
-      screen.getByText('Nobody offers Highlights + Haircut together yet. Try removing one service.'),
+      screen.getByText(
+        'Nobody offers Highlights + Haircut together yet. Try removing one service.',
+      ),
     ).toBeInTheDocument();
     expect(cards()).toHaveLength(0);
   });
@@ -149,12 +214,14 @@ describe('Book: day and time', () => {
     expect(pressed('Fri, Oct 9')).toBe(true);
     expect(pressed('Any day')).toBe(false);
     expect(router.state.location.search).toBe('?day=2026-10-09');
+    await seeWho(user);
     for (const card of cards()) {
       for (const link of within(card).getAllByRole('link', { name: /^Book / })) {
         expect(link).toHaveAccessibleName(/Fri, Oct 9 at /);
       }
     }
-    await user.click(chip('Fri, Oct 9'));
+    await user.click(screen.getByRole('link', { name: 'Edit your search' }));
+    await user.click(await screen.findByRole('button', { name: 'Fri, Oct 9' }));
     expect(pressed('Any day')).toBe(true);
   });
 
@@ -164,6 +231,7 @@ describe('Book: day and time', () => {
     await user.click(chip('Evening'));
     expect(pressed('Evening')).toBe(true);
     expect(router.state.location.search).toBe('?time=evening');
+    await seeWho(user);
     for (const link of within(results()).getAllByRole('link', { name: /^Book / })) {
       const time = /at (\d+):(\d+) PM/.exec(link.getAttribute('aria-label') ?? '');
       expect(Number(time?.[1] ?? 0) === 12 || Number(time?.[1]) >= 4).toBe(true);
@@ -172,7 +240,7 @@ describe('Book: day and time', () => {
   });
 
   it('puts the soonest opening first once she picks a day or a time', async () => {
-    renderApp('/book?time=morning');
+    renderApp('/book?time=morning&step=who');
     await ready();
     const firsts = cards().map((card) => within(card).getAllByRole('link', { name: /^Book / })[0]);
     expect(firsts.length).toBeGreaterThan(1);
@@ -184,13 +252,13 @@ describe('Book: day and time', () => {
     renderApp('/book?day=2026-10-11'); // a Sunday: nobody works it
     await ready();
     expect(pressed('Any day')).toBe(true);
-    expect(cards()).toHaveLength(4);
+    expect(screen.getByText('4 stylists')).toBeInTheDocument();
   });
 });
 
 describe('Book: nothing fits', () => {
   it('says so calmly and offers the soonest times they do have', async () => {
-    renderApp('/book?services=color,highlights&time=evening'); // 4.5 hours cannot start after 4 PM
+    renderApp('/book?services=color,highlights&time=evening&step=who'); // 4.5 hours cannot start after 4 PM
     await ready();
     expect(screen.getByText('No exact matches')).toBeInTheDocument();
     expect(screen.getByRole('status')).toHaveTextContent('No openings in the evening');
@@ -202,7 +270,7 @@ describe('Book: nothing fits', () => {
 
   it('offers no alternatives when nobody can do the services at all', async () => {
     const kai = STYLISTS.filter((stylist) => stylist.id === 'kai');
-    renderApp('/book?services=highlights&time=morning', { stylists: kai });
+    renderApp('/book?services=highlights&time=morning&step=who', { stylists: kai });
     await ready();
     expect(screen.queryByText('Other times')).not.toBeInTheDocument();
     expect(screen.queryByRole('status')).not.toBeInTheDocument();
@@ -233,7 +301,7 @@ describe('Book: clearing', () => {
 
 describe('Book: starting a booking from a result', () => {
   it('holds the tapped time, with the services she searched for', async () => {
-    const { user, router } = renderApp('/book?services=haircut&day=2026-10-08');
+    const { user, router } = renderApp('/book?services=haircut&day=2026-10-08&step=who');
     await ready();
     const first = within(results()).getAllByRole('link', { name: /^Book / })[0];
     if (!first) throw new Error('no time to tap');
@@ -245,7 +313,7 @@ describe('Book: starting a booking from a result', () => {
     expect(router.state.location.pathname).toMatch(/^\/book\//);
     expect(params.get('services')).toBe('haircut');
     expect(params.get('date')).toBe('2026-10-08');
-    expect(params.get('back')).toBe('/book?services=haircut&day=2026-10-08');
+    expect(params.get('back')).toBe('/book?services=haircut&day=2026-10-08&step=who');
     expect(screen.getByRole('button', { name: 'Thu, Oct 8' })).toHaveAttribute(
       'aria-pressed',
       'true',
@@ -256,7 +324,7 @@ describe('Book: starting a booking from a result', () => {
   });
 
   it('comes back to the same search from the X, and from the profile', async () => {
-    const { user, router } = renderApp('/book?services=color&time=morning');
+    const { user, router } = renderApp('/book?services=color&time=morning&step=who');
     await ready();
     const [first] = cards();
     if (!first) throw new Error('no cards');
@@ -266,9 +334,8 @@ describe('Book: starting a booking from a result', () => {
     await user.click(screen.getByRole('link', { name: 'Exit booking' }));
     await user.click(await screen.findByRole('button', { name: 'Leave' }));
     await ready();
-    expect(router.state.location.search).toBe('?services=color&time=morning');
-    expect(pressed('Color')).toBe(true);
-    expect(pressed('Morning')).toBe(true);
+    expect(router.state.location.search).toBe('?services=color&time=morning&step=who');
+    expect(screen.getByText('Color · Any day · Morning')).toBeInTheDocument();
 
     // And the profile, from the card's name.
     const [again] = cards();
@@ -277,11 +344,11 @@ describe('Book: starting a booking from a result', () => {
     await waitFor(() => expect(router.state.location.pathname).toMatch(/^\/stylists\//));
     await user.click(await screen.findByRole('link', { name: 'Back to your search' }));
     await ready();
-    expect(router.state.location.search).toBe('?services=color&time=morning');
+    expect(router.state.location.search).toBe('?services=color&time=morning&step=who');
   });
 
   it('opens a profile from "See all work", keeping the services and day', async () => {
-    const { user, router } = renderApp('/book?services=haircut&day=2026-10-09');
+    const { user, router } = renderApp('/book?services=haircut&day=2026-10-09&step=who');
     await ready();
     const london = londonCard();
     await user.click(within(london).getByRole('link', { name: /See all of London.s work/ }));
@@ -295,7 +362,7 @@ describe('Book: starting a booking from a result', () => {
 
 describe('Book: booked times disappear', () => {
   it('stops offering a time once it is booked, and offers it again when cancelled', async () => {
-    const { services } = renderApp('/book?services=haircut&day=2026-10-08');
+    const { services } = renderApp('/book?services=haircut&day=2026-10-08&step=who');
     await ready();
     const firstTime = () => within(londonCard()).getAllByRole('link', { name: /^Book / })[0];
     expect(firstTime()).toHaveAccessibleName(/Thu, Oct 8 at 9:00 AM/);

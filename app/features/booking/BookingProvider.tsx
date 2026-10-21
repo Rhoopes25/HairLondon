@@ -85,7 +85,17 @@ export function BookingProvider({
       setDetails,
       reset,
     }),
-    [state, stylist, exitTo, arrivedWithServices, toggleService, selectDate, selectStart, setDetails, reset],
+    [
+      state,
+      stylist,
+      exitTo,
+      arrivedWithServices,
+      toggleService,
+      selectDate,
+      selectStart,
+      setDetails,
+      reset,
+    ],
   );
   return <BookingContext.Provider value={value}>{children}</BookingContext.Provider>;
 }

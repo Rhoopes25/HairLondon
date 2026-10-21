@@ -18,6 +18,7 @@ import {
   Section,
   SplitLayout,
   Stars,
+  StepGuide,
   TextButton,
 } from '..';
 
@@ -212,5 +213,23 @@ describe('layout pieces', () => {
     );
     expect(screen.getByText('Stylist').tagName).toBe('DT');
     expect(screen.getByText('$65').tagName).toBe('DD');
+  });
+});
+
+describe('StepGuide', () => {
+  const steps = [
+    { label: 'Time', icon: 'calendar' },
+    { label: 'You', icon: 'user' },
+    { label: 'Review', icon: 'list' },
+  ] as const;
+
+  it('lists the steps in order, marks the current one, and says which are done', () => {
+    render(<StepGuide label="Booking steps" steps={steps} current={1} />);
+    const items = screen.getAllByRole('listitem');
+    expect(screen.getByRole('list', { name: 'Booking steps' })).toBeInTheDocument();
+    expect(items[0]).toHaveTextContent('Time (done)');
+    expect(items[1]).toHaveAttribute('aria-current', 'step');
+    expect(items[2]).not.toHaveAttribute('aria-current');
+    expect(items[2]).not.toHaveTextContent('done');
   });
 });

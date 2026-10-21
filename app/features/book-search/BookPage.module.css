@@ -10,14 +10,62 @@
   color: var(--gold-ink);
 }
 
-.clear {
-  padding: 0.5rem var(--space-5) 0;
-}
-
 .count {
   margin: -0.4rem 0 var(--space-2);
   font-size: 0.85rem;
   color: var(--ink-soft);
+}
+
+/* Part 1 reads top to bottom in one column on every screen, ending in the one action. */
+.filters {
+  max-width: var(--container-narrow);
+  padding-bottom: var(--space-6);
+}
+
+.next {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-1);
+  padding: var(--space-5) var(--space-5) 0;
+}
+
+.next .count {
+  margin: 0;
+}
+
+/* Part 2 opens with what she picked, so she never has to remember it, and a way back to change it. */
+.summary {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-2);
+  margin: var(--space-3) var(--space-5) 0;
+  padding: var(--space-1) var(--space-3);
+  background: var(--white);
+  border: 1.5px solid var(--cream-deep);
+  border-radius: var(--radius-md);
+  font-size: var(--fs-body-sm);
+}
+
+.summary p {
+  min-width: 0;
+}
+
+.edit {
+  display: inline-flex;
+  align-items: center;
+  min-height: 2.75rem;
+  padding-inline: var(--space-1);
+  color: var(--gold-ink);
+  font-weight: 500;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+.edit:focus-visible {
+  outline: 2px solid var(--gold-deep);
+  outline-offset: 2px;
 }
 
 .list {
@@ -37,30 +85,19 @@
   padding-bottom: var(--space-6);
 }
 
-/* The filters sit beside the results, so changing one never scrolls the answer out of view. */
 @media (min-width: 900px) {
-  .layout {
-    display: grid;
-    grid-template-columns: 22rem minmax(0, 1fr);
-    column-gap: var(--space-5);
-    align-items: start;
-    padding-right: var(--space-5);
+  .list {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: var(--space-3);
   }
 
-  .filters {
-    position: sticky;
-    top: calc(var(--header-height) + var(--space-3));
-    max-height: calc(100dvh - var(--header-height) - var(--space-5));
-    overflow-y: auto;
+  .summary {
+    max-width: var(--container-narrow);
   }
 }
 
 @media (min-width: 1200px) {
-  .layout {
-    grid-template-columns: 24rem minmax(0, 1fr);
-  }
-
   .list {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
+    grid-template-columns: repeat(3, minmax(0, 1fr));
   }
 }

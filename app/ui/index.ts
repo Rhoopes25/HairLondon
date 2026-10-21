@@ -38,6 +38,8 @@ export { SlotPicker } from './SlotPicker';
 export type { DayOption, DaysProps, TimeOption, TimesProps } from './SlotPicker';
 export { RatingLine, Stars } from './Stars';
 export type { RatingLineProps } from './Stars';
+export { StepGuide } from './StepGuide';
+export type { GuideStep, StepGuideProps } from './StepGuide';
 export { StylistCard } from './StylistCard';
 export type { CardPhoto, CardSlot, StylistCardProps } from './StylistCard';
 export { StarInput } from './StarInput';
