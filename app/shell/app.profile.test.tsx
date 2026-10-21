@@ -1,5 +1,5 @@
 import { screen, within } from '@testing-library/react';
-import { describe, expect, it } from 'vitest';
+import { describe, expect, it, vi } from 'vitest';
 import { STYLISTS } from '@src/data/seed/stylists';
 import { renderApp } from '@app/test/renderApp';
 
@@ -52,7 +52,12 @@ describe('stylist profile', () => {
   it('keeps the tab in the URL so it can be shared and survives refresh', async () => {
     const { user, router } = renderApp('/stylists/london');
     await screen.findByRole('heading', { level: 1, name: 'London' });
+    // Let the page's own scroll-to-top on arrival happen first; only the tab switch is under test.
+    await new Promise((resolve) => setTimeout(resolve, 0));
+    vi.mocked(window.scrollTo).mockClear();
     await user.click(tab('Reviews'));
+    // Switching tabs keeps her place on the page.
+    expect(window.scrollTo).not.toHaveBeenCalled();
     expect(router.state.location.pathname).toBe('/stylists/london/reviews');
     expect(
       screen.getByText(
