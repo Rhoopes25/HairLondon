@@ -26,11 +26,12 @@ import {
   TabRow,
   Tabs,
 } from '@app/ui';
+import { AboutMePanel } from './AboutMePanel';
 import { SaveButton } from './SaveButton';
 import { ServiceDetailSheet } from './ServiceDetailSheet';
 import styles from './StylistProfilePage.module.css';
 
-const TABS = ['portfolio', 'services', 'reviews'] as const;
+const TABS = ['portfolio', 'services', 'reviews', 'about-me'] as const;
 type Tab = (typeof TABS)[number];
 
 function isTab(value: string | undefined): value is Tab {
@@ -112,6 +113,7 @@ export function StylistProfilePage() {
               <Tabs.Tab value="portfolio">Portfolio</Tabs.Tab>
               <Tabs.Tab value="services">Services</Tabs.Tab>
               <Tabs.Tab value="reviews">Reviews</Tabs.Tab>
+              <Tabs.Tab value="about-me">About me</Tabs.Tab>
             </Tabs.List>
           </TabRow>
 
@@ -171,6 +173,10 @@ export function StylistProfilePage() {
                 </p>
               }
             />
+          </Tabs.Panel>
+
+          <Tabs.Panel value="about-me">
+            <AboutMePanel stylist={stylist} />
           </Tabs.Panel>
         </Tabs>
       </ProfileHeader>

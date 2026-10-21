@@ -50,11 +50,7 @@ describe('searchStylists', () => {
   });
 
   it('puts the soonest opening first once a time of day is chosen', () => {
-    const { matches } = searchStylists(
-      STYLISTS,
-      { serviceIds: [], timeOfDay: 'evening' },
-      env(),
-    );
+    const { matches } = searchStylists(STYLISTS, { serviceIds: [], timeOfDay: 'evening' }, env());
     const firsts = matches.map((m) => `${m.openings[0]?.date}${m.openings[0]?.start}`);
     expect([...firsts].sort()).toEqual(firsts);
     expect(matches.every((m) => (m.openings[0]?.start ?? 0) >= 16 * 60)).toBe(true);

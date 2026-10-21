@@ -59,7 +59,7 @@ export const routes: RouteObject[] = [
             ),
           },
           {
-            // :tab is portfolio, services, or reviews; the page redirects anything else.
+            // :tab is portfolio, services, reviews, or about-me; the page redirects anything else.
             path: 'stylists/:id/:tab?',
             lazy: page(
               () => import('@app/features/stylist-profile'),

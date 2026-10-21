@@ -15,6 +15,8 @@ export type { HeroProps } from './Hero';
 export { Icon } from './Icon';
 export type { IconName, IconProps } from './Icon';
 export { Container, EmptyNote, Narrow, PageIntro, Section, SplitLayout } from './Layout';
+export { MapCard } from './MapCard';
+export type { MapCardProps } from './MapCard';
 export { ConfirmDialog, Modal, Sheet } from './Modal';
 export { Notice } from './Notice';
 export type { ConfirmDialogProps, ModalProps } from './Modal';

@@ -127,7 +127,12 @@ export interface BookingProgress {
   readonly label: string;
 }
 
-const PROGRESS_LABELS = ['Pick your services', 'Add your day', 'Choose a time', 'Ready to continue'];
+const PROGRESS_LABELS = [
+  'Pick your services',
+  'Add your day',
+  'Choose a time',
+  'Ready to continue',
+];
 
 /** How much of step 1 is done: services, a day, a time. Each is a third. */
 export function bookingProgress(draft: BookingDraft): BookingProgress {

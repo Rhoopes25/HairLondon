@@ -61,6 +61,23 @@ describe('stylist profile', () => {
     ).toBeInTheDocument();
   });
 
+  it('has an About me tab: her story, the facts, and where to find her with directions', async () => {
+    const { user, router } = renderApp('/stylists/london');
+    await screen.findByRole('heading', { level: 1, name: 'London' });
+    await user.click(tab('About me'));
+    expect(router.state.location.pathname).toBe('/stylists/london/about-me');
+    const panel = screen.getByRole('tabpanel', { name: 'About me' });
+    expect(within(panel).getByRole('heading', { name: 'Hi, I’m London' })).toBeInTheDocument();
+    expect(panel).toHaveTextContent('8 years doing hair');
+    expect(panel).toHaveTextContent('184 N University Ave, Provo, UT');
+    expect(
+      within(panel).getByRole('img', { name: /Map pin at 184 N University Ave/ }),
+    ).toBeInTheDocument();
+    const directions = within(panel).getByRole('link', { name: /Get directions/ });
+    expect(directions).toHaveAttribute('href', expect.stringContaining('google.com/maps/dir/'));
+    expect(directions).toHaveAttribute('target', '_blank');
+  });
+
   it('lists services with duration and starting price, each linking to booking with it chosen', async () => {
     renderApp('/stylists/london/services');
     const row = await screen.findByRole('link', { name: /^Color/ });
@@ -95,7 +112,9 @@ describe('the Book bar', () => {
     renderApp('/stylists/london');
     await screen.findByRole('heading', { level: 1, name: 'London' });
     // The page itself has one Book action; the "Book" in the header is the navigation.
-    expect(within(screen.getByRole('main')).getAllByRole('link', { name: /^Book/ })).toHaveLength(1);
+    expect(within(screen.getByRole('main')).getAllByRole('link', { name: /^Book/ })).toHaveLength(
+      1,
+    );
     expect(screen.getByText('Services from $35+')).toBeInTheDocument();
     expect(screen.getByText('Pick services, a day, and a time next')).toBeInTheDocument();
     const href = hrefOf('Book with London');
@@ -266,6 +285,8 @@ describe('about the studio', () => {
       screen.getByText('Tuesday, Wednesday, Thursday, Friday, and Saturday'),
     ).toBeInTheDocument();
     expect(screen.getByText('9:00 AM to 7:00 PM')).toBeInTheDocument();
+    expect(screen.getByText('184 N University Ave, Provo, UT')).toBeInTheDocument();
+    expect(screen.getByRole('link', { name: /Get directions/ })).toBeInTheDocument();
     expect(screen.getByRole('link', { name: 'Book with London' })).toBeInTheDocument();
   });
 });

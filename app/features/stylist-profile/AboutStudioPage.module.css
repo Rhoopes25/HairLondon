@@ -36,6 +36,10 @@
   color: var(--ink-soft);
 }
 
+.map {
+  padding: 0.65rem var(--space-5) 0;
+}
+
 .cta {
   display: flex;
   flex-direction: column;
