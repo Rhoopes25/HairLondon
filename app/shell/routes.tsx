@@ -67,6 +67,27 @@ export const routes: RouteObject[] = [
             ),
           },
           {
+            path: 'account',
+            lazy: page(
+              () => import('@app/features/account'),
+              (m) => m.AccountPage,
+            ),
+          },
+          {
+            path: 'account/sign-in',
+            lazy: page(
+              () => import('@app/features/account'),
+              (m) => m.SignInPage,
+            ),
+          },
+          {
+            path: 'account/create',
+            lazy: page(
+              () => import('@app/features/account'),
+              (m) => m.CreateAccountPage,
+            ),
+          },
+          {
             path: 'saved',
             lazy: page(
               () => import('@app/features/saved'),

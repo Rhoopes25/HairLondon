@@ -1,15 +1,18 @@
 import { Link } from 'react-router';
 import { useNotice } from '@app/features/prototype-notice';
+import { useAccount } from '@app/services';
 import { Container } from '@app/ui';
 import styles from './Footer.module.css';
 
 export function Footer() {
   const { open } = useNotice();
+  const account = useAccount();
   return (
     <footer className={styles.footer}>
       <Container>
         <div className={styles.inner}>
           <nav aria-label="More" className={styles.links}>
+            <Link to="/account">{account ? 'Your account' : 'Sign in'}</Link>
             <Link to="/help">How booking works</Link>
             <button type="button" onClick={open}>
               About this prototype

@@ -8,7 +8,7 @@ import type { ServiceId } from '@src/domain/models/service';
 import type { Stylist } from '@src/domain/models/stylist';
 import type { IsoDate, MinuteOfDay } from '@src/domain/models/time';
 import type { DetailsInput } from '@src/domain/booking/validate-details';
-import { useServices } from '@app/services';
+import { useAccount, useServices } from '@app/services';
 
 interface BookingContextValue extends BookingState {
   stylist: Stylist;
@@ -38,6 +38,7 @@ export function BookingProvider({
   children: ReactNode;
 }) {
   const { clock, catalog, availabilityFor } = useServices();
+  const account = useAccount();
 
   const reducer = useMemo(
     () =>
@@ -47,8 +48,8 @@ export function BookingProvider({
       }),
     [availabilityFor, clock, catalog, stylist.id],
   );
-  const [state, dispatch] = useReducer(reducer, undefined, () =>
-    initialBookingState(
+  const [state, dispatch] = useReducer(reducer, undefined, () => {
+    const initial = initialBookingState(
       stylist.id,
       presetDraft(
         stylist,
@@ -56,8 +57,12 @@ export function BookingProvider({
         { strategy: availabilityFor(), clock, stylistId: stylist.id },
         catalog,
       ),
-    ),
-  );
+    );
+    // Signed in already: her saved details are there from the start, with no empty flash.
+    return account
+      ? { ...initial, details: { name: account.name, phone: account.phone } }
+      : initial;
+  });
   // Decided once, on arrival: later toggles must not make the summary line appear or vanish.
   const [arrivedWithServices] = useState(() => state.draft.serviceIds.length > 0);
 

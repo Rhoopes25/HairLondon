@@ -17,7 +17,7 @@ describe('entry screen', () => {
     );
   });
 
-  it('keeps everything else quiet: the only actions in the page are the two ways in', async () => {
+  it('keeps everything else quiet: two ways in, and only a small sign-in link besides', async () => {
     renderApp('/');
     await screen.findByRole('heading', { level: 1, name: 'Local Locks' });
     const main = screen.getByRole('main');
@@ -25,7 +25,27 @@ describe('entry screen', () => {
       within(main)
         .getAllByRole('link')
         .map((link) => link.textContent),
-    ).toEqual(['Book Now', 'Explore Stylists']);
+    ).toEqual(['Book Now', 'Explore Stylists', 'Sign in']);
+  });
+
+  it('shows her next visit under the buttons once she is signed in', async () => {
+    const { services } = renderApp('/');
+    await screen.findByRole('heading', { level: 1, name: 'Local Locks' });
+    services.accounts.create({ name: 'Rachel', phone: '(555) 123-4567', email: 'r@example.com' });
+    expect(await screen.findByText('Nothing booked yet.', { exact: false })).toBeInTheDocument();
+    services.appointments.add({
+      stylistId: 'london',
+      serviceIds: ['haircut'],
+      date: '2026-10-09' as never,
+      start: 600 as never,
+      durationMin: 60 as never,
+      total: 65,
+      name: 'Rachel',
+      phone: '(555) 123-4567',
+    });
+    const card = await screen.findByRole('region', { name: 'Your next visit' });
+    expect(card).toHaveTextContent('Haircut with London');
+    expect(card).toHaveTextContent('Fri, Oct 9 at 10:00 AM');
   });
 
   it('starts either way in with one tap', async () => {

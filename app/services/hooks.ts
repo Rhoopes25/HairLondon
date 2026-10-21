@@ -1,5 +1,6 @@
 import { useMemo, useSyncExternalStore } from 'react';
 import type { MyLocation } from '@src/data/repositories/location-repository';
+import type { Account } from '@src/domain/account/account';
 import type { Appointment } from '@src/domain/models/appointment';
 import type { Stylist } from '@src/domain/models/stylist';
 import { withUserReviews } from '@src/domain/reviews';
@@ -60,4 +61,14 @@ export function useSavedIds(): readonly string[] {
 /** Where she is, if she has shared it (or the sample spot standing in for it). */
 export function useMyLocation(): MyLocation | null {
   return useStore(useServices().location);
+}
+
+/** The signed-in pretend account, or null for a guest. */
+export function useAccount(): Account | null {
+  const { accounts } = useServices();
+  const state = useStore(accounts);
+  return useMemo(
+    () => state.accounts.find((account) => account.id === state.currentId) ?? null,
+    [state],
+  );
 }
