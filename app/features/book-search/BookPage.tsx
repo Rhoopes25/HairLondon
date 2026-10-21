@@ -93,7 +93,10 @@ export function BookPage() {
 
   function update(next: Filters) {
     // Replace, not push: every tap on a filter would otherwise be a step the back button must undo.
-    navigate({ pathname: location.pathname, search: searchFor(next) }, { replace: true });
+    navigate(
+      { pathname: location.pathname, search: searchFor(next) },
+      { replace: true, preventScrollReset: true },
+    );
   }
 
   function showResults() {

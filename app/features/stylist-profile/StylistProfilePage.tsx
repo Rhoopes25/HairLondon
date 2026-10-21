@@ -108,7 +108,9 @@ export function StylistProfilePage() {
       >
         <Tabs
           value={current}
-          onValueChange={(next) => navigate(`${base}/${next}${search}`, { replace: true })}
+          onValueChange={(next) =>
+            navigate(`${base}/${next}${search}`, { replace: true, preventScrollReset: true })
+          }
         >
           <TabRow>
             <Tabs.List label="Profile sections">

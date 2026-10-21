@@ -1,5 +1,5 @@
 import { screen, waitFor, within } from '@testing-library/react';
-import { describe, expect, it } from 'vitest';
+import { describe, expect, it, vi } from 'vitest';
 import { STYLISTS } from '@src/data/seed/stylists';
 import { renderApp } from '@app/test/renderApp';
 
@@ -288,6 +288,18 @@ describe('Book: clearing', () => {
     expect(pressed('Any day')).toBe(true);
     expect(pressed('Any time')).toBe(true);
     expect(pressed('Color')).toBe(false);
+  });
+
+  it('keeps her place on the page when she taps a filter, instead of jumping to the top', async () => {
+    const { user } = renderApp('/book');
+    await ready();
+    // Let the page's own scroll-to-top on arrival happen first; only the filters are under test.
+    await new Promise((resolve) => setTimeout(resolve, 0));
+    vi.mocked(window.scrollTo).mockClear();
+    await user.click(chip('Haircut'));
+    await user.click(chip('Fri, Oct 9'));
+    await user.click(chip('Morning'));
+    expect(window.scrollTo).not.toHaveBeenCalled();
   });
 
   it('keeps focus on the control she used, so the keyboard is not thrown back to the top', async () => {

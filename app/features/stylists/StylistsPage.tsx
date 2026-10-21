@@ -35,7 +35,7 @@ export function StylistsPage() {
     // Replace, so each keystroke is not a step the back button has to undo.
     navigate(
       { pathname: location.pathname, search: queryString({ q: next || undefined }) },
-      { replace: true },
+      { replace: true, preventScrollReset: true },
     );
   }
 

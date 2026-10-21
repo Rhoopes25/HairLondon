@@ -29,9 +29,15 @@ export function PhotoViewerPage() {
     const next = (index + 1) % photos.length;
     function onKeyDown(event: KeyboardEvent) {
       if (event.key === 'ArrowLeft')
-        navigate(`/stylists/${stylist?.id}/photos/${prev}`, { replace: true });
+        navigate(`/stylists/${stylist?.id}/photos/${prev}`, {
+          replace: true,
+          preventScrollReset: true,
+        });
       if (event.key === 'ArrowRight')
-        navigate(`/stylists/${stylist?.id}/photos/${next}`, { replace: true });
+        navigate(`/stylists/${stylist?.id}/photos/${next}`, {
+          replace: true,
+          preventScrollReset: true,
+        });
     }
     window.addEventListener('keydown', onKeyDown);
     return () => window.removeEventListener('keydown', onKeyDown);
@@ -72,6 +78,7 @@ export function PhotoViewerPage() {
           <LinkButton
             to={`/stylists/${stylist.id}/photos/${prev}`}
             replace
+            preventScrollReset
             variant="outline"
             size="sm"
           >
@@ -83,6 +90,7 @@ export function PhotoViewerPage() {
           <LinkButton
             to={`/stylists/${stylist.id}/photos/${next}`}
             replace
+            preventScrollReset
             variant="outline"
             size="sm"
           >
