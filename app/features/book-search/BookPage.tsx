@@ -107,7 +107,7 @@ export function BookPage() {
         }
       : lowest === null
         ? null
-        : { note: 'from', value: formatStartingPrice(lowest) };
+        : { value: formatStartingPrice(lowest) };
     return (
       <StylistCard
         key={stylist.id}

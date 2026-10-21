@@ -27,7 +27,7 @@ export interface StylistCardProps {
   city: string;
   average: number | null;
   reviewCount: number;
-  /** "from $65+", or "$185+" with a line under it like "about 3 hr". */
+  /** "$65+" (the plus already says it is a starting price), or "$185+" with a line under it like "about 3 hr". */
   price?: { value: string; note?: string; detail?: string } | null;
   /** Up to three thumbnails of her work. */
   photos?: readonly CardPhoto[];

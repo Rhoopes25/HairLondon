@@ -39,7 +39,7 @@ export function SavedPage() {
                 key={stylist.id}
                 to={profilePath({ stylistId: stylist.id, back: '/saved' })}
                 {...stylistCardIdentity(stylist)}
-                price={lowest === null ? null : { note: 'from', value: formatStartingPrice(lowest) }}
+                price={lowest === null ? null : { value: formatStartingPrice(lowest) }}
               />
             );
           })}

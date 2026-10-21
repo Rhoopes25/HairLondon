@@ -50,7 +50,7 @@ describe('Book: the page', () => {
     const [london] = cards();
     if (!london) throw new Error('no cards');
     expect(within(london).getByRole('link', { name: /See all of London.s work/ })).toBeInTheDocument();
-    expect(london).toHaveTextContent('from');
+    expect(london).not.toHaveTextContent('from');
     expect(london).toHaveTextContent('$35+');
   });
 

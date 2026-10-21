@@ -243,7 +243,7 @@ describe('saving a stylist', () => {
       within(screen.getByRole('navigation', { name: 'Main' })).getByRole('link', { name: 'Saved' }),
     );
     const saved = await screen.findByRole('link', { name: 'Kai Nakamura' });
-    expect(saved.closest('article')).toHaveTextContent('from');
+    expect(saved.closest('article')).not.toHaveTextContent('from');
     expect(saved.closest('article')).toHaveTextContent('$30+');
 
     await user.click(saved);

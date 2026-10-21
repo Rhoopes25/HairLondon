@@ -264,7 +264,7 @@ export function DesignLibraryPage() {
             city="Provo"
             average={4.7}
             reviewCount={3}
-            price={{ note: 'from', value: '$35+' }}
+            price={{ value: '$35+' }}
             photos={[
               { src: assetUrl('images/work-1.jpg') },
               { src: assetUrl('images/work-3.jpg') },
