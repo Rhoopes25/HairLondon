@@ -3,6 +3,7 @@ export type { Services } from './create-services';
 export {
   useAppointment,
   useAppointments,
+  useMyLocation,
   useSavedIds,
   useSearchEnvironment,
   useStore,

@@ -1,5 +1,5 @@
 import { screen, within } from '@testing-library/react';
-import { describe, expect, it } from 'vitest';
+import { afterEach, describe, expect, it, vi } from 'vitest';
 import { MemoryStorageAdapter } from '@src/data/storage/memory-storage-adapter';
 import { renderApp } from '@app/test/renderApp';
 
@@ -145,6 +145,91 @@ describe('stylists list', () => {
     await screen.findByRole('heading', { level: 1, name: 'London' });
     await user.click(screen.getByRole('link', { name: 'Back to stylists' }));
     expect(await screen.findByRole('heading', { level: 1, name: 'Stylists' })).toBeInTheDocument();
+  });
+});
+
+/** Pretends the device answered "where am I?" with this point, or refused. */
+function stubGeolocation(answer: { lat: number; lng: number } | 'denied') {
+  Object.defineProperty(navigator, 'geolocation', {
+    configurable: true,
+    value: {
+      getCurrentPosition: (ok: PositionCallback, fail: PositionErrorCallback) => {
+        if (answer === 'denied') {
+          fail({ code: 1, message: 'User denied Geolocation' } as GeolocationPositionError);
+        } else {
+          ok({ coords: { latitude: answer.lat, longitude: answer.lng } } as GeolocationPosition);
+        }
+      },
+    },
+  });
+}
+
+describe('stylists: search', () => {
+  it('filters as she types, by name, city, or specialty, and keeps the search in the address', async () => {
+    const { user, router } = renderApp('/stylists');
+    const field = await screen.findByRole('searchbox', { name: 'Search stylists' });
+    await user.type(field, 'orem');
+    const list = screen.getByRole('region', { name: 'Stylists' });
+    expect(within(list).getAllByRole('article')).toHaveLength(1);
+    expect(within(list).getByRole('link', { name: 'Sadie Morgan' })).toBeInTheDocument();
+    expect(router.state.location.search).toBe('?q=orem');
+  });
+
+  it('still finds her when the spelling is off, and says what it searched for', async () => {
+    renderApp('/stylists?q=londn');
+    const list = await screen.findByRole('region', { name: 'Stylists' });
+    const [first] = within(list).getAllByRole('article');
+    expect(within(first as HTMLElement).getByRole('link', { name: 'London' })).toBeInTheDocument();
+    expect(screen.getByText('Showing results for “london”')).toBeInTheDocument();
+  });
+
+  it('says so, with ideas, when nothing matches', async () => {
+    renderApp('/stylists?q=qwertyuiop');
+    expect(
+      await screen.findByText(/No stylists match “qwertyuiop”\. Try a name, a city like Provo/),
+    ).toBeInTheDocument();
+    expect(screen.queryByRole('region', { name: 'Stylists' })).toBeNull();
+  });
+});
+
+describe('stylists: use my location', () => {
+  afterEach(() => {
+    Reflect.deleteProperty(navigator, 'geolocation');
+    vi.restoreAllMocks();
+  });
+
+  it('sorts nearest first and shows how far each one is', async () => {
+    stubGeolocation({ lat: 40.39, lng: -111.85 }); // Lehi
+    const { user, services } = renderApp('/stylists');
+    await user.click(await screen.findByRole('button', { name: 'Use my location' }));
+    expect(
+      await screen.findByText('Showing how far each stylist is from you.'),
+    ).toBeInTheDocument();
+    const [nearest] = within(screen.getByRole('region', { name: 'Stylists' })).getAllByRole(
+      'article',
+    );
+    expect(within(nearest as HTMLElement).getByRole('link', { name: 'Kai Nakamura' })).toBeTruthy();
+    expect(nearest).toHaveTextContent(/mi away/);
+    expect(services.location.getSnapshot()).toMatchObject({ source: 'device' });
+  });
+
+  it('stands in a sample spot, and says so, when she is far from every stylist', async () => {
+    stubGeolocation({ lat: 51.5, lng: -0.12 }); // London, England
+    const { user } = renderApp('/stylists');
+    await user.click(await screen.findByRole('button', { name: 'Use my location' }));
+    expect(await screen.findByText(/measuring from downtown Provo/)).toBeInTheDocument();
+  });
+
+  it('stays calm when the device will not say, and offers the sample spot', async () => {
+    stubGeolocation('denied');
+    const { user, services } = renderApp('/stylists');
+    await user.click(await screen.findByRole('button', { name: 'Use my location' }));
+    expect(await screen.findByText(/We couldn’t get your location/)).toBeInTheDocument();
+    await user.click(screen.getByRole('button', { name: 'Use a sample spot in Provo' }));
+    expect(services.location.getSnapshot()).toMatchObject({ source: 'sample' });
+    await user.click(screen.getByRole('button', { name: 'Stop using location' }));
+    expect(services.location.getSnapshot()).toBeNull();
+    expect(screen.getByRole('button', { name: 'Use my location' })).toBeInTheDocument();
   });
 });
 

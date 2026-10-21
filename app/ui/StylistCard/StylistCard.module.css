@@ -66,6 +66,11 @@
   color: var(--ink-soft);
 }
 
+.distance {
+  color: var(--gold-ink);
+  font-weight: 500;
+}
+
 .price {
   display: flex;
   flex-direction: column;

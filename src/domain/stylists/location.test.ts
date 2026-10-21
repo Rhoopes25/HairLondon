@@ -1,5 +1,11 @@
 import { describe, expect, it } from 'vitest';
-import { directionsUrl, formatDistance, milesBetween, sortByDistance } from './location';
+import {
+  directionsUrl,
+  formatDistance,
+  milesBetween,
+  nearestMiles,
+  sortByDistance,
+} from './location';
 
 const provo = { lat: 40.2338, lng: -111.6585 };
 const orem = { lat: 40.2969, lng: -111.6946 };
@@ -36,5 +42,12 @@ describe('sortByDistance', () => {
       { id: 'orem', location: { address: '', ...orem } },
     ];
     expect(sortByDistance(items, provo).map((item) => item.id)).toEqual(['provo', 'orem', 'lehi']);
+  });
+});
+
+describe('nearestMiles', () => {
+  it('is the distance to the closest place, and Infinity with none', () => {
+    expect(nearestMiles(provo, [lehi, orem])).toBeCloseTo(milesBetween(provo, orem));
+    expect(nearestMiles(provo, [])).toBe(Infinity);
   });
 });

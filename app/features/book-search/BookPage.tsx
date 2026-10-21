@@ -17,12 +17,13 @@ import {
   visitLength,
 } from '@src/domain/stylists/book-search';
 import type { StylistMatch } from '@src/domain/stylists/book-search';
+import { formatDistance, milesBetween } from '@src/domain/stylists/location';
 import { serviceIdsParam } from '@src/domain/stylists/filter';
 import { openingChips } from '@app/features/scheduling';
 import { useDocumentTitle } from '@app/hooks/usePageBehavior';
 import { profilePath, queryString, readServiceIds } from '@app/lib/links';
 import { stylistCardIdentity, workThumbnails } from '@app/lib/stylist-card';
-import { useSearchEnvironment, useStylists } from '@app/services';
+import { useMyLocation, useSearchEnvironment, useStylists } from '@app/services';
 import {
   Button,
   Chip,
@@ -67,6 +68,7 @@ export function BookPage() {
   const navigate = useNavigate();
   const stylists = useStylists();
   const env = useSearchEnvironment();
+  const myLocation = useMyLocation();
   useDocumentTitle('Book');
 
   const days = searchableDays(env.clock, stylists);
@@ -142,6 +144,7 @@ export function BookPage() {
         key={stylist.id}
         to={profile}
         {...stylistCardIdentity(stylist)}
+        distance={myLocation ? formatDistance(milesBetween(myLocation, stylist.location)) : null}
         price={price}
         photos={workThumbnails(stylist)}
         seeAll={{

@@ -1,3 +1,53 @@
+/* Search, then location, above the list. One column on a phone, side by side from sm. */
+.tools {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  padding: var(--space-3) var(--space-5) 0;
+}
+
+.search {
+  flex: 1;
+  min-width: 0;
+}
+
+.near {
+  display: flex;
+  align-items: flex-end;
+}
+
+.nearText {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.5rem;
+  font-size: var(--fs-body-sm);
+  color: var(--ink-soft);
+}
+
+.nearText svg {
+  width: 1rem;
+  height: 1rem;
+  margin-top: 0.2rem;
+  flex-shrink: 0;
+  color: var(--gold-deep);
+}
+
+.buttonIcon {
+  width: 1rem;
+  height: 1rem;
+  margin-right: 0.4rem;
+}
+
+.result {
+  padding: var(--space-2) var(--space-5) 0;
+  font-size: var(--fs-body-sm);
+  color: var(--ink-soft);
+}
+
+.result:empty {
+  display: none;
+}
+
 .list {
   display: flex;
   flex-direction: column;
@@ -6,6 +56,16 @@
 }
 
 @media (min-width: 640px) {
+  .tools {
+    flex-direction: row;
+    align-items: flex-end;
+    gap: var(--space-4);
+  }
+
+  .near {
+    max-width: 22rem;
+  }
+
   .list {
     display: grid;
     grid-template-columns: repeat(2, minmax(0, 1fr));

@@ -10,10 +10,11 @@ import { formatTime } from '@src/domain/format/time';
 import { SERVICE_IDS } from '@src/domain/models/service';
 import type { ServiceId } from '@src/domain/models/service';
 import { startingPrice, totalDuration, totalPrice } from '@src/domain/pricing/totals';
+import { formatDistance, milesBetween } from '@src/domain/stylists/location';
 import { assetUrl, photoSrcSet } from '@app/config';
 import { useDocumentTitle } from '@app/hooks/usePageBehavior';
 import { bookingPath, readDate, readServiceIds, readStart, safeBackPath } from '@app/lib/links';
-import { useServices, useStylist } from '@app/services';
+import { useMyLocation, useServices, useStylist } from '@app/services';
 import {
   BackLink,
   BookBar,
@@ -53,6 +54,7 @@ export function StylistProfilePage() {
   const location = useLocation();
   const navigate = useNavigate();
   const [detailService, setDetailService] = useState<ServiceId | null>(null);
+  const myLocation = useMyLocation();
   useDocumentTitle(stylist?.name ?? 'Stylist');
 
   if (!stylist) return <Navigate to="/stylists" replace />;
@@ -176,7 +178,12 @@ export function StylistProfilePage() {
           </Tabs.Panel>
 
           <Tabs.Panel value="about-me">
-            <AboutMePanel stylist={stylist} />
+            <AboutMePanel
+              stylist={stylist}
+              distance={
+                myLocation ? formatDistance(milesBetween(myLocation, stylist.location)) : null
+              }
+            />
           </Tabs.Panel>
         </Tabs>
       </ProfileHeader>

@@ -40,3 +40,8 @@ export function sortByDistance<T extends { location: StudioLocation }>(
     .sort((a, b) => a.miles - b.miles || a.index - b.index)
     .map(({ item }) => item);
 }
+
+/** Miles to the closest of these places, or Infinity when there are none. */
+export function nearestMiles(from: GeoPoint, places: readonly GeoPoint[]): number {
+  return places.reduce((best, place) => Math.min(best, milesBetween(from, place)), Infinity);
+}
