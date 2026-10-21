@@ -21,10 +21,11 @@ describe('entry screen', () => {
     renderApp('/');
     await screen.findByRole('heading', { level: 1, name: 'Local Locks' });
     const main = screen.getByRole('main');
-    expect(within(main).getAllByRole('link').map((link) => link.textContent)).toEqual([
-      'Book Now',
-      'Explore Stylists',
-    ]);
+    expect(
+      within(main)
+        .getAllByRole('link')
+        .map((link) => link.textContent),
+    ).toEqual(['Book Now', 'Explore Stylists']);
   });
 
   it('starts either way in with one tap', async () => {
@@ -140,9 +141,7 @@ describe('stylists list', () => {
   it('opens a profile from "See all work", and comes back to the list', async () => {
     const { user } = renderApp('/stylists');
     const list = await screen.findByRole('region', { name: 'Stylists' });
-    await user.click(
-      await within(list).findByRole('link', { name: /See all of London.s work/ }),
-    );
+    await user.click(await within(list).findByRole('link', { name: /See all of London.s work/ }));
     await screen.findByRole('heading', { level: 1, name: 'London' });
     await user.click(screen.getByRole('link', { name: 'Back to stylists' }));
     expect(await screen.findByRole('heading', { level: 1, name: 'Stylists' })).toBeInTheDocument();

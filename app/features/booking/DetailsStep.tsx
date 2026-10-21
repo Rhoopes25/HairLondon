@@ -43,7 +43,7 @@ export function DetailsStep() {
 
   return (
     <>
-      <BookingHeader confirmExit />
+      <BookingHeader confirmExit step={1} />
       <Container>
         <PageIntro title="Your details" titleRef={headingRef} />
 

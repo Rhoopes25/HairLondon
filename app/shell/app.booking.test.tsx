@@ -198,6 +198,23 @@ describe('booking: the whole flow', () => {
     vi.restoreAllMocks();
   });
 
+  it('shows how far along she is with icon steps, from picking a time to booked', async () => {
+    const { user } = renderApp('/book/london?services=haircut');
+    const current = () =>
+      within(screen.getByRole('list', { name: 'Booking progress' }))
+        .getAllByRole('listitem')
+        .find((item) => item.getAttribute('aria-current') === 'step')?.textContent;
+    await chooseHaircutOct8At9(user);
+    expect(current()).toBe('Pick a time');
+    await user.click(continueButton());
+    await screen.findByRole('heading', { level: 1, name: 'Your details' });
+    expect(current()).toBe('Your details');
+    const [first] = within(screen.getByRole('list', { name: 'Booking progress' })).getAllByRole(
+      'listitem',
+    );
+    expect(first).toHaveTextContent('Pick a time (done)');
+  });
+
   it('books an appointment through details, review, and confirmation', async () => {
     const { user, services, router } = renderApp('/book/london?services=haircut');
     await chooseHaircutOct8At9(user);

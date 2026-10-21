@@ -92,7 +92,10 @@ describe('StylistCard', () => {
 
   it('links to the stylist and shows who, where, rating, and price', () => {
     renderWithRouter(<StylistCard {...base} price={{ value: '$35+' }} />);
-    expect(screen.getByRole('link', { name: 'London' })).toHaveAttribute('href', '/stylists/london');
+    expect(screen.getByRole('link', { name: 'London' })).toHaveAttribute(
+      'href',
+      '/stylists/london',
+    );
     const card = screen.getByRole('article');
     expect(card).toHaveTextContent('Hair by London, Provo');
     expect(card).toHaveTextContent('4.5 · 2 reviews');

@@ -15,7 +15,8 @@ export type IconName =
   | 'list'
   | 'search'
   | 'navigation'
-  | 'sparkle';
+  | 'sparkle'
+  | 'phone';
 
 const PATHS: Record<IconName, ReactNode> = {
   scissors: (
@@ -89,6 +90,12 @@ const PATHS: Record<IconName, ReactNode> = {
     </>
   ),
   navigation: <polygon points="3 11 21 3 13 21 11 13 3 11" />,
+  phone: (
+    <>
+      <rect x="6" y="2.5" width="12" height="19" rx="2.5" />
+      <line x1="11" y1="18" x2="13" y2="18" />
+    </>
+  ),
   sparkle: <path d="M12 3l2.3 6.7L21 12l-6.7 2.3L12 21l-2.3-6.7L3 12l6.7-2.3z" />,
 };
 

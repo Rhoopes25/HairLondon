@@ -32,8 +32,19 @@ describe('my appointments', () => {
     expect(screen.getByText('You don’t have anything booked yet.')).toBeInTheDocument();
     expect(screen.getByRole('link', { name: 'Find a stylist' })).toHaveAttribute('href', '/book');
     const past = screen.getByRole('heading', { name: 'Past visits' }).parentElement as HTMLElement;
-    expect(within(past).getByRole('link')).toHaveTextContent('Haircut with London');
-    expect(within(past).getByRole('link')).toHaveTextContent('Completed');
+    const visit = within(past).getByRole('link', { name: /^Haircut with London/ });
+    expect(visit).toHaveTextContent('Completed');
+  });
+
+  it('offers Book again right on a past visit, with the same stylist and service chosen', async () => {
+    const { user, router } = renderApp('/appointments');
+    await screen.findByRole('heading', { level: 1, name: 'My appointments' });
+    await user.click(screen.getByRole('link', { name: 'Book again: Haircut with London' }));
+    await screen.findByRole('heading', { level: 1, name: 'Book Now' });
+    expect(router.state.location.pathname).toBe('/book/london');
+    const params = new URLSearchParams(router.state.location.search);
+    expect(params.get('services')).toBe('haircut');
+    expect(params.get('back')).toBe('/appointments');
   });
 
   it('lists upcoming visits soonest first, with cancelled ones kept separate', async () => {

@@ -1,12 +1,12 @@
 .card {
+  position: relative;
   display: flex;
-  align-items: center;
+  flex-direction: column;
   gap: var(--space-2);
   padding: 0.9rem 1.1rem;
   background: var(--white);
   border: 1.5px solid var(--cream-deep);
   border-radius: var(--radius-md);
-  text-decoration: none;
   color: var(--ink);
   transition: border-color 0.15s ease;
 }
@@ -15,11 +15,36 @@
   border-color: var(--gold-deep);
 }
 
+.top {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+}
+
 .body {
   flex: 1;
   min-width: 0;
   display: flex;
   flex-direction: column;
+  color: var(--ink);
+  text-decoration: none;
+}
+
+/* The link covers the whole card; Book again sits above it and keeps its own tap. */
+.body::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: var(--radius-md);
+}
+
+.body:focus-visible {
+  outline: none;
+}
+
+.body:focus-visible::after {
+  outline: 2px solid var(--gold-deep);
+  outline-offset: 2px;
 }
 
 .who {
@@ -52,4 +77,9 @@
   height: 1rem;
   color: var(--gold-deep);
   flex-shrink: 0;
+}
+
+.again {
+  position: relative;
+  z-index: 1;
 }

@@ -273,8 +273,16 @@ export function DesignLibraryPage() {
             slots={{
               heading: 'Next open',
               items: [
-                { label: 'Today, 1:00 PM', to: '/book/london', ariaLabel: 'Book London, today at 1:00 PM' },
-                { label: 'Tomorrow, 9:30 AM', to: '/book/london', ariaLabel: 'Book London, tomorrow at 9:30 AM' },
+                {
+                  label: 'Today, 1:00 PM',
+                  to: '/book/london',
+                  ariaLabel: 'Book London, today at 1:00 PM',
+                },
+                {
+                  label: 'Tomorrow, 9:30 AM',
+                  to: '/book/london',
+                  ariaLabel: 'Book London, tomorrow at 9:30 AM',
+                },
               ],
             }}
           />

@@ -56,7 +56,7 @@ export function ChooseStep() {
 
   return (
     <>
-      <BookingHeader confirmExit={started} />
+      <BookingHeader confirmExit={started} step={0} />
       <Container>
         <PageIntro title="Book Now" />
 
