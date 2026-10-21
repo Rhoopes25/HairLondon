@@ -18,14 +18,20 @@ export function draftRecapRows(
 ): RecapRow[] {
   const length = totalDuration(catalog, draft.serviceIds);
   return [
-    { label: 'Stylist', value: `${stylist.name}, ${stylist.studio}` },
-    { label: 'Services', value: draft.serviceIds.map((id) => catalog[id].name).join(' + ') },
+    { label: 'Stylist', icon: 'scissors', value: `${stylist.name}, ${stylist.studio}` },
+    {
+      label: 'Services',
+      icon: 'list',
+      value: draft.serviceIds.map((id) => catalog[id].name).join(' + '),
+    },
     {
       label: 'When',
+      icon: 'calendar',
       value: `${formatDay(draft.date)}, ${formatRange(draft.start, addDuration(draft.start, length))}`,
     },
     {
       label: 'Estimated total',
+      icon: 'clock',
       value: `${formatStartingPrice(totalPrice(stylist, draft.serviceIds))}, about ${formatDuration(length)}`,
     },
     ...extra,

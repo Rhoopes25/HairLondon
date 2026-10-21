@@ -3,7 +3,8 @@ import { Link, Navigate, useSearchParams } from 'react-router';
 import { AddToCalendar, servicesText, totalText, whenText } from '@app/features/appointments';
 import { useDocumentTitle, useFocusOnMount } from '@app/hooks/usePageBehavior';
 import { useAppointment, useServices } from '@app/services';
-import { HeaderBar, Icon, LinkButton, Narrow, QuietLink, Recap } from '@app/ui';
+import { HeaderBar, Icon, LinkButton, Narrow, QuietLink, Recap, StepGuide } from '@app/ui';
+import { BOOKING_STEPS } from './BookingHeader';
 import { useBooking } from './BookingProvider';
 import styles from './DoneStep.module.css';
 
@@ -30,6 +31,9 @@ export function DoneStep() {
         <span className={styles.title}>Booked with {stylist.name}</span>
         <span className={styles.spacer} aria-hidden="true" />
       </HeaderBar>
+      <div className={styles.progress}>
+        <StepGuide label="Booking progress" steps={BOOKING_STEPS} current={BOOKING_STEPS.length} />
+      </div>
 
       <Narrow>
         <section className={styles.done}>
@@ -44,11 +48,11 @@ export function DoneStep() {
 
         <Recap
           rows={[
-            { label: 'Stylist', value: `${stylist.name}, ${stylist.studio}` },
-            { label: 'Services', value: servicesText(appointment, catalog) },
-            { label: 'When', value: whenText(appointment) },
-            { label: 'Estimated total', value: totalText(appointment) },
-            { label: 'Name', value: appointment.name },
+            { label: 'Stylist', icon: 'scissors', value: `${stylist.name}, ${stylist.studio}` },
+            { label: 'Services', icon: 'list', value: servicesText(appointment, catalog) },
+            { label: 'When', icon: 'calendar', value: whenText(appointment) },
+            { label: 'Estimated total', icon: 'clock', value: totalText(appointment) },
+            { label: 'Name', icon: 'user', value: appointment.name },
           ]}
         />
 

@@ -51,7 +51,10 @@ export function isTimed(search: BookSearch): boolean {
 }
 
 /** The length of visit the search checks openings for. */
-export function visitLength(catalog: ServiceCatalog, serviceIds: readonly ServiceId[]): DurationMin {
+export function visitLength(
+  catalog: ServiceCatalog,
+  serviceIds: readonly ServiceId[],
+): DurationMin {
   return serviceIds.length ? totalDuration(catalog, serviceIds) : DEFAULT_VISIT;
 }
 

@@ -56,14 +56,23 @@ export function AppointmentDetailPage() {
         rows={[
           {
             label: 'Stylist',
+            icon: 'scissors',
             value: stylist ? <Link to={`/stylists/${stylist.id}`}>{stylist.name}</Link> : name,
           },
-          ...(stylist ? [{ label: 'Studio', value: `${stylist.studio}, ${stylist.city}` }] : []),
-          { label: 'Services', value: servicesText(appointment, catalog) },
-          { label: 'When', value: whenText(appointment) },
-          { label: 'Estimated total', value: totalText(appointment) },
-          { label: 'Name', value: appointment.name },
-          { label: 'Phone', value: appointment.phone },
+          ...(stylist
+            ? [
+                {
+                  label: 'Studio',
+                  icon: 'map-pin' as const,
+                  value: `${stylist.studio}, ${stylist.city}`,
+                },
+              ]
+            : []),
+          { label: 'Services', icon: 'list', value: servicesText(appointment, catalog) },
+          { label: 'When', icon: 'calendar', value: whenText(appointment) },
+          { label: 'Estimated total', icon: 'clock', value: totalText(appointment) },
+          { label: 'Name', icon: 'user', value: appointment.name },
+          { label: 'Phone', icon: 'phone', value: appointment.phone },
         ]}
       />
 

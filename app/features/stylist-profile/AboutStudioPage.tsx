@@ -3,9 +3,10 @@ import { firstName } from '@src/domain/format/name';
 import { formatTime } from '@src/domain/format/time';
 import { describeWorkDays } from '@src/domain/stylists/filter';
 import { SALON_HOURS } from '@src/domain/scheduling/salon-hours';
+import { directionsUrl } from '@src/domain/stylists/location';
 import { useDocumentTitle } from '@app/hooks/usePageBehavior';
 import { useStylist } from '@app/services';
-import { BackLink, Icon, LinkButton, PageIntro, QuietLink } from '@app/ui';
+import { BackLink, Icon, LinkButton, MapCard, PageIntro, QuietLink } from '@app/ui';
 import styles from './AboutStudioPage.module.css';
 
 /** Where and when: the practical facts someone checks before committing to a stylist. */
@@ -44,6 +45,13 @@ export function AboutStudioPage() {
           </span>
         </li>
       </ul>
+
+      <div className={styles.map}>
+        <MapCard
+          address={stylist.location.address}
+          directionsUrl={directionsUrl(stylist.location)}
+        />
+      </div>
 
       <div className={styles.cta}>
         <LinkButton to={`/book/${stylist.id}`} fullWidth>

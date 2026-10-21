@@ -25,9 +25,11 @@ export interface StylistCardProps {
   photoSrcSet?: string;
   studio: string;
   city: string;
+  /** "2.1 mi away", once she has shared where she is. */
+  distance?: string | null;
   average: number | null;
   reviewCount: number;
-  /** "from $65+", or "$185+" with a line under it like "about 3 hr". */
+  /** "$65+" (the plus already says it is a starting price), or "$185+" with a line under it like "about 3 hr". */
   price?: { value: string; note?: string; detail?: string } | null;
   /** Up to three thumbnails of her work. */
   photos?: readonly CardPhoto[];
@@ -61,6 +63,7 @@ export function StylistCard({
   photoSrcSet,
   studio,
   city,
+  distance,
   average,
   reviewCount,
   price,
@@ -83,6 +86,7 @@ export function StylistCard({
           </Link>
           <span className={styles.studio}>
             {studio}, {city}
+            {distance ? <span className={styles.distance}> · {distance}</span> : null}
           </span>
           <RatingLine average={average} count={reviewCount} />
         </div>

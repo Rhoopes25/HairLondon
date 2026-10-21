@@ -1,5 +1,7 @@
 import type { StorageAdapter } from '@src/data/storage/storage-adapter';
+import { AccountRepository } from '@src/data/repositories/account-repository';
 import { AppointmentRepository } from '@src/data/repositories/appointment-repository';
+import { LocationRepository } from '@src/data/repositories/location-repository';
 import { PreferencesRepository } from '@src/data/repositories/preferences-repository';
 import { ReviewRepository } from '@src/data/repositories/review-repository';
 import { SavedStylistRepository } from '@src/data/repositories/saved-stylist-repository';
@@ -23,6 +25,8 @@ export interface Services {
   readonly saved: SavedStylistRepository;
   readonly reviews: ReviewRepository;
   readonly preferences: PreferencesRepository;
+  readonly location: LocationRepository;
+  readonly accounts: AccountRepository;
   /**
    * Availability = sample openings, minus anything the client has booked.
    * When rescheduling, pass the appointment's id so its own slot counts as free.
@@ -50,6 +54,8 @@ export function createServices(
     saved: new SavedStylistRepository(storage),
     reviews: new ReviewRepository(storage, clock),
     preferences: new PreferencesRepository(storage),
+    location: new LocationRepository(storage),
+    accounts: new AccountRepository(storage, clock),
     availabilityFor: (ignoreAppointmentId) =>
       new AppointmentAwareAvailability(
         sample,

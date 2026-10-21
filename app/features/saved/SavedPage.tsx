@@ -3,14 +3,15 @@ import { startingPrice } from '@src/domain/pricing/totals';
 import { useDocumentTitle } from '@app/hooks/usePageBehavior';
 import { profilePath } from '@app/lib/links';
 import { stylistCardIdentity } from '@app/lib/stylist-card';
-import { useSavedIds, useStylists } from '@app/services';
-import { EmptyNote, LinkButton, PageIntro, StylistCard } from '@app/ui';
+import { useAccount, useSavedIds, useStylists } from '@app/services';
+import { EmptyNote, LinkButton, PageIntro, QuietLink, StylistCard } from '@app/ui';
 import styles from './SavedPage.module.css';
 
 /** Stylists the client saved to come back to, in the order they saved them. */
 export function SavedPage() {
   const ids = useSavedIds();
   const stylists = useStylists();
+  const account = useAccount();
   useDocumentTitle('Saved stylists');
 
   const saved = ids
@@ -20,6 +21,12 @@ export function SavedPage() {
   return (
     <>
       <PageIntro title="Saved stylists">The ones you want to come back to.</PageIntro>
+      {account ? null : (
+        <p className={styles.signIn}>
+          Ready to book one? <QuietLink to="/account">Sign in</QuietLink> and your details fill in
+          for you.
+        </p>
+      )}
 
       {saved.length === 0 ? (
         <>
@@ -39,7 +46,7 @@ export function SavedPage() {
                 key={stylist.id}
                 to={profilePath({ stylistId: stylist.id, back: '/saved' })}
                 {...stylistCardIdentity(stylist)}
-                price={lowest === null ? null : { note: 'from', value: formatStartingPrice(lowest) }}
+                price={lowest === null ? null : { value: formatStartingPrice(lowest) }}
               />
             );
           })}

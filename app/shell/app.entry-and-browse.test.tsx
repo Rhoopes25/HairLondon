@@ -1,5 +1,5 @@
 import { screen, within } from '@testing-library/react';
-import { describe, expect, it } from 'vitest';
+import { afterEach, describe, expect, it, vi } from 'vitest';
 import { MemoryStorageAdapter } from '@src/data/storage/memory-storage-adapter';
 import { renderApp } from '@app/test/renderApp';
 
@@ -17,14 +17,35 @@ describe('entry screen', () => {
     );
   });
 
-  it('keeps everything else quiet: the only actions in the page are the two ways in', async () => {
+  it('keeps everything else quiet: two ways in, and only a small sign-in link besides', async () => {
     renderApp('/');
     await screen.findByRole('heading', { level: 1, name: 'Local Locks' });
     const main = screen.getByRole('main');
-    expect(within(main).getAllByRole('link').map((link) => link.textContent)).toEqual([
-      'Book Now',
-      'Explore Stylists',
-    ]);
+    expect(
+      within(main)
+        .getAllByRole('link')
+        .map((link) => link.textContent),
+    ).toEqual(['Book Now', 'Explore Stylists', 'Sign in']);
+  });
+
+  it('shows her next visit under the buttons once she is signed in', async () => {
+    const { services } = renderApp('/');
+    await screen.findByRole('heading', { level: 1, name: 'Local Locks' });
+    services.accounts.create({ name: 'Rachel', phone: '(555) 123-4567', email: 'r@example.com' });
+    expect(await screen.findByText('Nothing booked yet.', { exact: false })).toBeInTheDocument();
+    services.appointments.add({
+      stylistId: 'london',
+      serviceIds: ['haircut'],
+      date: '2026-10-09' as never,
+      start: 600 as never,
+      durationMin: 60 as never,
+      total: 65,
+      name: 'Rachel',
+      phone: '(555) 123-4567',
+    });
+    const card = await screen.findByRole('region', { name: 'Your next visit' });
+    expect(card).toHaveTextContent('Haircut with London');
+    expect(card).toHaveTextContent('Fri, Oct 9 at 10:00 AM');
   });
 
   it('starts either way in with one tap', async () => {
@@ -123,51 +144,112 @@ describe('stylists list', () => {
     );
     expect(london).toHaveTextContent('Hair by London, Provo');
     expect(london).toHaveTextContent('4.7 · 3 reviews');
-    expect(london).toHaveTextContent('from');
+    expect(london).not.toHaveTextContent('from');
     expect(london).toHaveTextContent('$35+');
   });
 
-  it('shows her work and her next three open times on each card', async () => {
+  it('shows her work with a "See all work" tile, and no open times (this page is for browsing)', async () => {
     renderApp('/stylists');
     const list = await screen.findByRole('region', { name: 'Stylists' });
     const [london] = await within(list).findAllByRole('article');
     if (!london) throw new Error('no cards');
     expect(london.querySelectorAll('img[loading="lazy"]')).toHaveLength(3);
-    expect(within(london).getByText('Next open')).toBeInTheDocument();
-    // Wed Oct 7, 8:00 AM, London works Tue to Sat: the first time is Today at 10:00 AM or later
-    // (an hour of notice), and every chip says who and when.
-    const chips = within(london).getAllByRole('link', { name: /^Book London, / });
-    expect(chips).toHaveLength(3);
-    expect(chips[0]).toHaveTextContent(/^Today, /);
+    expect(within(london).queryByText('Next open')).toBeNull();
+    expect(within(london).queryAllByRole('link', { name: /^Book London, / })).toHaveLength(0);
   });
 
-  it('tapping an open time starts a booking with that time held', async () => {
-    const { user, router } = renderApp('/stylists');
-    const list = await screen.findByRole('region', { name: 'Stylists' });
-    const [london] = await within(list).findAllByRole('article');
-    if (!london) throw new Error('no cards');
-    const chip = within(london).getAllByRole('link', { name: /^Book London, / })[0];
-    if (!chip) throw new Error('no chip');
-    await user.click(chip);
-    await screen.findByRole('heading', { level: 1, name: 'Book Now' });
-    expect(router.state.location.pathname).toBe('/book/london');
-    const params = new URLSearchParams(router.state.location.search);
-    expect(params.get('date')).toBe('2026-10-07');
-    expect(params.get('start')).not.toBeNull();
-    expect(params.get('back')).toBe('/stylists');
-    // The held time is already chosen, so Continue is waiting for a service only.
-    expect(screen.getByText(/^Wed, Oct 7 · \d+:\d\d (AM|PM)$/)).toBeInTheDocument();
-  });
-
-  it('opens a profile from the name, and comes back to the list', async () => {
+  it('opens a profile from "See all work", and comes back to the list', async () => {
     const { user } = renderApp('/stylists');
     const list = await screen.findByRole('region', { name: 'Stylists' });
-    const [first] = await within(list).findAllByRole('link', { name: 'View profile' });
-    if (!first) throw new Error('no link');
-    await user.click(first);
+    await user.click(await within(list).findByRole('link', { name: /See all of London.s work/ }));
     await screen.findByRole('heading', { level: 1, name: 'London' });
     await user.click(screen.getByRole('link', { name: 'Back to stylists' }));
     expect(await screen.findByRole('heading', { level: 1, name: 'Stylists' })).toBeInTheDocument();
+  });
+});
+
+/** Pretends the device answered "where am I?" with this point, or refused. */
+function stubGeolocation(answer: { lat: number; lng: number } | 'denied') {
+  Object.defineProperty(navigator, 'geolocation', {
+    configurable: true,
+    value: {
+      getCurrentPosition: (ok: PositionCallback, fail: PositionErrorCallback) => {
+        if (answer === 'denied') {
+          fail({ code: 1, message: 'User denied Geolocation' } as GeolocationPositionError);
+        } else {
+          ok({ coords: { latitude: answer.lat, longitude: answer.lng } } as GeolocationPosition);
+        }
+      },
+    },
+  });
+}
+
+describe('stylists: search', () => {
+  it('filters as she types, by name, city, or specialty, and keeps the search in the address', async () => {
+    const { user, router } = renderApp('/stylists');
+    const field = await screen.findByRole('searchbox', { name: 'Search stylists' });
+    await user.type(field, 'orem');
+    const list = screen.getByRole('region', { name: 'Stylists' });
+    expect(within(list).getAllByRole('article')).toHaveLength(1);
+    expect(within(list).getByRole('link', { name: 'Sadie Morgan' })).toBeInTheDocument();
+    expect(router.state.location.search).toBe('?q=orem');
+  });
+
+  it('still finds her when the spelling is off, and says what it searched for', async () => {
+    renderApp('/stylists?q=londn');
+    const list = await screen.findByRole('region', { name: 'Stylists' });
+    const [first] = within(list).getAllByRole('article');
+    expect(within(first as HTMLElement).getByRole('link', { name: 'London' })).toBeInTheDocument();
+    expect(screen.getByText('Showing results for “london”')).toBeInTheDocument();
+  });
+
+  it('says so, with ideas, when nothing matches', async () => {
+    renderApp('/stylists?q=qwertyuiop');
+    expect(
+      await screen.findByText(/No stylists match “qwertyuiop”\. Try a name, a city like Provo/),
+    ).toBeInTheDocument();
+    expect(screen.queryByRole('region', { name: 'Stylists' })).toBeNull();
+  });
+});
+
+describe('stylists: use my location', () => {
+  afterEach(() => {
+    Reflect.deleteProperty(navigator, 'geolocation');
+    vi.restoreAllMocks();
+  });
+
+  it('sorts nearest first and shows how far each one is', async () => {
+    stubGeolocation({ lat: 40.39, lng: -111.85 }); // Lehi
+    const { user, services } = renderApp('/stylists');
+    await user.click(await screen.findByRole('button', { name: 'Use my location' }));
+    expect(
+      await screen.findByText('Showing how far each stylist is from you.'),
+    ).toBeInTheDocument();
+    const [nearest] = within(screen.getByRole('region', { name: 'Stylists' })).getAllByRole(
+      'article',
+    );
+    expect(within(nearest as HTMLElement).getByRole('link', { name: 'Kai Nakamura' })).toBeTruthy();
+    expect(nearest).toHaveTextContent(/mi away/);
+    expect(services.location.getSnapshot()).toMatchObject({ source: 'device' });
+  });
+
+  it('stands in a sample spot, and says so, when she is far from every stylist', async () => {
+    stubGeolocation({ lat: 51.5, lng: -0.12 }); // London, England
+    const { user } = renderApp('/stylists');
+    await user.click(await screen.findByRole('button', { name: 'Use my location' }));
+    expect(await screen.findByText(/measuring from downtown Provo/)).toBeInTheDocument();
+  });
+
+  it('stays calm when the device will not say, and offers the sample spot', async () => {
+    stubGeolocation('denied');
+    const { user, services } = renderApp('/stylists');
+    await user.click(await screen.findByRole('button', { name: 'Use my location' }));
+    expect(await screen.findByText(/We couldn’t get your location/)).toBeInTheDocument();
+    await user.click(screen.getByRole('button', { name: 'Use a sample spot in Provo' }));
+    expect(services.location.getSnapshot()).toMatchObject({ source: 'sample' });
+    await user.click(screen.getByRole('button', { name: 'Stop using location' }));
+    expect(services.location.getSnapshot()).toBeNull();
+    expect(screen.getByRole('button', { name: 'Use my location' })).toBeInTheDocument();
   });
 });
 

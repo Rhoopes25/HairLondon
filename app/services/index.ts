@@ -1,8 +1,10 @@
 export { createServices } from './create-services';
 export type { Services } from './create-services';
 export {
+  useAccount,
   useAppointment,
   useAppointments,
+  useMyLocation,
   useSavedIds,
   useSearchEnvironment,
   useStore,

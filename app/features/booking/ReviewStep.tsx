@@ -43,15 +43,15 @@ export function ReviewStep() {
 
   return (
     <>
-      <BookingHeader confirmExit />
+      <BookingHeader confirmExit step={2} />
       <Narrow>
         <PageIntro title="Check and confirm" titleRef={headingRef}>
           Everything look right? You can still go back and change it.
         </PageIntro>
         <Recap
           rows={draftRecapRows(draft, stylist, catalog, [
-            { label: 'Name', value: name },
-            { label: 'Phone', value: phone },
+            { label: 'Name', icon: 'user', value: name },
+            { label: 'Phone', icon: 'phone', value: phone },
           ])}
         />
 

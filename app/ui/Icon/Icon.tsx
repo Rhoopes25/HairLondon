@@ -10,7 +10,14 @@ export type IconName =
   | 'calendar'
   | 'clock'
   | 'map-pin'
-  | 'info';
+  | 'info'
+  | 'user'
+  | 'list'
+  | 'search'
+  | 'navigation'
+  | 'sparkle'
+  | 'phone'
+  | 'mail';
 
 const PATHS: Record<IconName, ReactNode> = {
   scissors: (
@@ -61,6 +68,42 @@ const PATHS: Record<IconName, ReactNode> = {
       <line x1="12" y1="8" x2="12.01" y2="8" />
     </>
   ),
+  user: (
+    <>
+      <circle cx="12" cy="8" r="4" />
+      <path d="M4 21c0-4 3.6-6.5 8-6.5s8 2.5 8 6.5" />
+    </>
+  ),
+  list: (
+    <>
+      <line x1="9" y1="6" x2="20" y2="6" />
+      <line x1="9" y1="12" x2="20" y2="12" />
+      <line x1="9" y1="18" x2="20" y2="18" />
+      <circle cx="4.5" cy="6" r="1" />
+      <circle cx="4.5" cy="12" r="1" />
+      <circle cx="4.5" cy="18" r="1" />
+    </>
+  ),
+  search: (
+    <>
+      <circle cx="11" cy="11" r="7" />
+      <line x1="20.5" y1="20.5" x2="16.2" y2="16.2" />
+    </>
+  ),
+  navigation: <polygon points="3 11 21 3 13 21 11 13 3 11" />,
+  mail: (
+    <>
+      <rect x="3" y="5" width="18" height="14" rx="2" />
+      <polyline points="3 7 12 13 21 7" />
+    </>
+  ),
+  phone: (
+    <>
+      <rect x="6" y="2.5" width="12" height="19" rx="2.5" />
+      <line x1="11" y1="18" x2="13" y2="18" />
+    </>
+  ),
+  sparkle: <path d="M12 3l2.3 6.7L21 12l-6.7 2.3L12 21l-2.3-6.7L3 12l6.7-2.3z" />,
 };
 
 export interface IconProps extends Omit<SVGProps<SVGSVGElement>, 'children'> {

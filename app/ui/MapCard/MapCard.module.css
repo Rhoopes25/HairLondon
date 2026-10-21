@@ -1,0 +1,89 @@
+.card {
+  background: var(--white);
+  border: 1.5px solid var(--cream-deep);
+  border-radius: var(--radius-md);
+  overflow: hidden;
+}
+
+.map {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
+.land {
+  fill: var(--cream-deep);
+}
+
+.water {
+  fill: var(--gold-soft);
+}
+
+.park {
+  fill: var(--photo-light);
+}
+
+.roads line {
+  stroke: var(--white);
+  stroke-width: 9;
+}
+
+.pin {
+  fill: var(--gold-ink);
+}
+
+.pinDot {
+  fill: var(--white);
+}
+
+.body {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+  padding: var(--space-2) 1.1rem 1rem;
+}
+
+.address {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.5rem;
+  font-size: var(--fs-label);
+}
+
+.address svg {
+  width: 1.1rem;
+  height: 1.1rem;
+  margin-top: 0.2rem;
+  flex-shrink: 0;
+  color: var(--gold-deep);
+}
+
+.distance {
+  display: block;
+  font-size: var(--fs-body-sm);
+  color: var(--ink-soft);
+}
+
+/* An outline pill, the secondary-action look, since leaving the site is never the main thing. */
+.directions {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 2.75rem;
+  padding: 0.5rem 1.2rem;
+  border: 1.5px solid var(--gold-ink);
+  border-radius: var(--radius-pill);
+  color: var(--gold-ink);
+  font-size: var(--fs-button);
+  font-weight: 500;
+  text-decoration: none;
+}
+
+.directions:hover {
+  background: var(--cream);
+}
+
+.directions:focus-visible {
+  outline: 2px solid var(--gold-deep);
+  outline-offset: 2px;
+}

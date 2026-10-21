@@ -1,3 +1,4 @@
+import type { ReactNode } from 'react';
 import { LinkButton } from '../Button';
 import styles from './Hero.module.css';
 
@@ -17,6 +18,8 @@ export interface HeroProps {
   tagline: string;
   /** The ways in, side by side. Each one is a filled action. */
   actions: readonly HeroAction[];
+  /** Something quieter under the buttons, such as her next visit when she is signed in. */
+  extra?: ReactNode;
 }
 
 /** On a phone the photo is wide as the column; from md it takes half the width (see Hero.module.css). */
@@ -26,7 +29,15 @@ const PHOTO_SIZES = '(min-width: 900px) 45vw, 100vw';
  * The entry photo, then the name, what the site is for, and the ways in. No text sits on the
  * photo, so nothing clashes with the portrait: on a phone the text is below it, on desktop beside it.
  */
-export function Hero({ imageUrl, imageSrcSet, imageLabel, title, tagline, actions }: HeroProps) {
+export function Hero({
+  imageUrl,
+  imageSrcSet,
+  imageLabel,
+  title,
+  tagline,
+  actions,
+  extra,
+}: HeroProps) {
   return (
     <div className={styles.frame}>
       <section className={styles.hero} aria-label={imageLabel}>
@@ -47,6 +58,7 @@ export function Hero({ imageUrl, imageSrcSet, imageLabel, title, tagline, action
               </LinkButton>
             ))}
           </div>
+          {extra ? <div className={styles.extra}>{extra}</div> : null}
         </div>
       </section>
     </div>

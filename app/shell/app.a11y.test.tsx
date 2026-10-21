@@ -22,11 +22,14 @@ async function violations() {
 const SCREENS: [string, string | RegExp][] = [
   ['/', 'Local Locks'],
   ['/book', 'Book'],
-  ['/book?services=color,highlights&time=evening', 'Book'], // nothing fits: the calm notice
+  ['/book?step=who', 'Book'], // part 2: the stylists
+  ['/book?services=color,highlights&time=evening&step=who', 'Book'], // nothing fits: the calm notice
+  ['/stylists?q=londn', 'Stylists'], // a typo, still found
   ['/stylists', 'Stylists'],
   ['/stylists/london', 'London'],
   ['/stylists/london/services', 'London'],
   ['/stylists/london/reviews', 'London'],
+  ['/stylists/london/about-me', 'London'],
   ['/stylists/sadie', 'Sadie Morgan'],
   ['/stylists/london/photos/0', /London’s work, photo 1 of 6/],
   ['/stylists/london/about', 'Hair by London'],
@@ -35,6 +38,9 @@ const SCREENS: [string, string | RegExp][] = [
   ['/appointments/apt_sample_past', 'Past visit'],
   ['/appointments/apt_sample_past/review', 'Review London'],
   ['/help', 'How booking works'],
+  ['/account', 'Sign in'],
+  ['/account/sign-in', 'Welcome back'],
+  ['/account/create', 'Create an account'],
   ['/book/london?services=haircut', 'Book Now'],
   ['/book/london?services=haircut&date=2026-10-08&start=540', 'Book Now'], // a held time
   ['/design-library', 'Design library'],

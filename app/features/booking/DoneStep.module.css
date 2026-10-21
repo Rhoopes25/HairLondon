@@ -65,3 +65,8 @@
   border-bottom: 1px solid var(--gold);
   padding-bottom: 1px;
 }
+
+.progress {
+  display: flex;
+  justify-content: center;
+}

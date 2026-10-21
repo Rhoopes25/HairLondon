@@ -16,7 +16,10 @@ export function BookingFlow() {
   // this stylist really offers and has open.
   const serviceIds = readServiceIds(searchParams);
   const preset = { serviceIds, date: readDate(searchParams), start: readStart(searchParams) };
-  const exitTo = safeBackPath(searchParams.get('back'), profilePath({ stylistId: stylist.id, serviceIds }));
+  const exitTo = safeBackPath(
+    searchParams.get('back'),
+    profilePath({ stylistId: stylist.id, serviceIds }),
+  );
 
   return (
     <BookingProvider stylist={stylist} preset={preset} exitTo={exitTo}>

@@ -24,6 +24,7 @@ import {
   ProfileHeader,
   QuietLink,
   RatingLine,
+  MapCard,
   Recap,
   Reviews,
   Section,
@@ -35,6 +36,7 @@ import {
   SplitLayout,
   StarInput,
   Stars,
+  StepGuide,
   StylistCard,
   TabRow,
   Tabs,
@@ -264,7 +266,8 @@ export function DesignLibraryPage() {
             city="Provo"
             average={4.7}
             reviewCount={3}
-            price={{ note: 'from', value: '$35+' }}
+            distance="2.1 mi away"
+            price={{ value: '$35+' }}
             photos={[
               { src: assetUrl('images/work-1.jpg') },
               { src: assetUrl('images/work-3.jpg') },
@@ -273,8 +276,16 @@ export function DesignLibraryPage() {
             slots={{
               heading: 'Next open',
               items: [
-                { label: 'Today, 1:00 PM', to: '/book/london', ariaLabel: 'Book London, today at 1:00 PM' },
-                { label: 'Tomorrow, 9:30 AM', to: '/book/london', ariaLabel: 'Book London, tomorrow at 9:30 AM' },
+                {
+                  label: 'Today, 1:00 PM',
+                  to: '/book/london',
+                  ariaLabel: 'Book London, today at 1:00 PM',
+                },
+                {
+                  label: 'Tomorrow, 9:30 AM',
+                  to: '/book/london',
+                  ariaLabel: 'Book London, tomorrow at 9:30 AM',
+                },
               ],
             }}
           />
@@ -312,11 +323,33 @@ export function DesignLibraryPage() {
           />
         </Specimen>
 
+        <Specimen name="StepGuide">
+          <StepGuide
+            label="Booking progress"
+            current={1}
+            steps={[
+              { label: 'Pick a time', icon: 'calendar' },
+              { label: 'Your details', icon: 'user' },
+              { label: 'Review', icon: 'list' },
+              { label: 'Booked', icon: 'check' },
+            ]}
+          />
+        </Specimen>
+
+        <Specimen name="MapCard">
+          <MapCard
+            address="184 N University Ave, Provo, UT"
+            directionsUrl="https://www.google.com/maps/dir/?api=1&destination=Provo%2C%20UT"
+            distance="2.1 mi away"
+          />
+        </Specimen>
+
         <Specimen name="Recap, ConfirmBar">
           <Recap
             rows={[
-              { label: 'Stylist', value: 'London' },
-              { label: 'Estimated total', value: '$65+, about 1 hr' },
+              { label: 'Stylist', icon: 'scissors', value: 'London' },
+              { label: 'When', icon: 'calendar', value: 'Fri, Oct 16, 10:00 to 11:00 AM' },
+              { label: 'Estimated total', icon: 'clock', value: '$65+, about 1 hr' },
             ]}
           />
           <ConfirmBar

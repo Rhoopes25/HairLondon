@@ -1,4 +1,4 @@
-import { useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import type { FormEvent } from 'react';
 import { Navigate, useNavigate } from 'react-router';
 import { isComplete } from '@src/domain/booking/draft';
@@ -6,7 +6,9 @@ import type { DetailsErrors } from '@src/domain/booking/validate-details';
 import { validateDetails } from '@src/domain/booking/validate-details';
 import { firstName } from '@src/domain/format/name';
 import { useDocumentTitle, useFocusOnMount } from '@app/hooks/usePageBehavior';
-import { useServices } from '@app/services';
+import { AccountSheet } from '@app/features/account';
+import type { AccountSheetMode } from '@app/features/account';
+import { useAccount, useServices } from '@app/services';
 import { Button, ConfirmBar, Container, PageIntro, Recap, TextButton, TextField } from '@app/ui';
 import { BookingHeader } from './BookingHeader';
 import { useBooking } from './BookingProvider';
@@ -14,10 +16,16 @@ import { draftRecapRows } from './bookingRecap';
 import { ReminderPreviewSheet } from './ReminderPreviewSheet';
 import styles from './DetailsStep.module.css';
 
-/** Step 2: who is coming, and where to send the reminder. */
+/**
+ * Step 2: who is coming, and where to send the reminder. Signed in, her saved details are already
+ * filled in. Signed out, she can sign in or make an account in a sheet (so nothing she picked is
+ * lost), or just keep going as a guest.
+ */
 export function DetailsStep() {
   const { stylist, draft, details, setDetails } = useBooking();
-  const { catalog } = useServices();
+  const { catalog, accounts } = useServices();
+  const account = useAccount();
+  const [sheet, setSheet] = useState<AccountSheetMode | null>(null);
   const navigate = useNavigate();
   const headingRef = useFocusOnMount<HTMLHeadingElement>();
   const nameRef = useRef<HTMLInputElement>(null);
@@ -25,6 +33,17 @@ export function DetailsStep() {
   const [errors, setErrors] = useState<DetailsErrors>({});
   const [previewing, setPreviewing] = useState(false);
   useDocumentTitle('Your details');
+
+  // Signing in (now, or before she started) fills in her saved details. They stay editable, and
+  // coming back to this step does not overwrite what she already changed.
+  const filledFor = useRef<string | null>(
+    account && (details.name || details.phone) ? account.id : null,
+  );
+  useEffect(() => {
+    if (!account || filledFor.current === account.id) return;
+    filledFor.current = account.id;
+    setDetails({ name: account.name, phone: account.phone });
+  }, [account, setDetails]);
 
   // Arrived without finishing step 1 (e.g. by typing the address): send them back to choose.
   if (!isComplete(draft)) return <Navigate to={`/book/${stylist.id}`} replace />;
@@ -43,7 +62,7 @@ export function DetailsStep() {
 
   return (
     <>
-      <BookingHeader confirmExit />
+      <BookingHeader confirmExit step={1} />
       <Container>
         <PageIntro title="Your details" titleRef={headingRef} />
 
@@ -53,6 +72,27 @@ export function DetailsStep() {
           </div>
 
           <form id="details-form" className={styles.form} onSubmit={onSubmit} noValidate>
+            {account ? (
+              <p className={styles.who}>
+                Booking as <strong>{account.name}</strong>.{' '}
+                <TextButton onClick={() => accounts.signOut()}>Not you? Sign out</TextButton>
+              </p>
+            ) : (
+              <div className={styles.who}>
+                <p>Have an account? Sign in and your details fill in. Or keep going as a guest.</p>
+                <div className={styles.whoActions}>
+                  <Button
+                    type="button"
+                    variant="outline"
+                    size="sm"
+                    onClick={() => setSheet('sign-in')}
+                  >
+                    Sign in
+                  </Button>
+                  <TextButton onClick={() => setSheet('create')}>Create an account</TextButton>
+                </div>
+              </div>
+            )}
             <TextField
               label="Name"
               name="name"
@@ -92,6 +132,13 @@ export function DetailsStep() {
             </ConfirmBar>
           </div>
         </div>
+
+        <AccountSheet
+          mode={sheet}
+          onModeChange={setSheet}
+          onClose={() => setSheet(null)}
+          guestDetails={details}
+        />
 
         <ReminderPreviewSheet
           open={previewing}

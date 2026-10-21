@@ -10,10 +10,11 @@ import { formatTime } from '@src/domain/format/time';
 import { SERVICE_IDS } from '@src/domain/models/service';
 import type { ServiceId } from '@src/domain/models/service';
 import { startingPrice, totalDuration, totalPrice } from '@src/domain/pricing/totals';
+import { formatDistance, milesBetween } from '@src/domain/stylists/location';
 import { assetUrl, photoSrcSet } from '@app/config';
 import { useDocumentTitle } from '@app/hooks/usePageBehavior';
 import { bookingPath, readDate, readServiceIds, readStart, safeBackPath } from '@app/lib/links';
-import { useServices, useStylist } from '@app/services';
+import { useMyLocation, useServices, useStylist } from '@app/services';
 import {
   BackLink,
   BookBar,
@@ -26,11 +27,12 @@ import {
   TabRow,
   Tabs,
 } from '@app/ui';
+import { AboutMePanel } from './AboutMePanel';
 import { SaveButton } from './SaveButton';
 import { ServiceDetailSheet } from './ServiceDetailSheet';
 import styles from './StylistProfilePage.module.css';
 
-const TABS = ['portfolio', 'services', 'reviews'] as const;
+const TABS = ['portfolio', 'services', 'reviews', 'about-me'] as const;
 type Tab = (typeof TABS)[number];
 
 function isTab(value: string | undefined): value is Tab {
@@ -52,6 +54,7 @@ export function StylistProfilePage() {
   const location = useLocation();
   const navigate = useNavigate();
   const [detailService, setDetailService] = useState<ServiceId | null>(null);
+  const myLocation = useMyLocation();
   useDocumentTitle(stylist?.name ?? 'Stylist');
 
   if (!stylist) return <Navigate to="/stylists" replace />;
@@ -112,6 +115,7 @@ export function StylistProfilePage() {
               <Tabs.Tab value="portfolio">Portfolio</Tabs.Tab>
               <Tabs.Tab value="services">Services</Tabs.Tab>
               <Tabs.Tab value="reviews">Reviews</Tabs.Tab>
+              <Tabs.Tab value="about-me">About me</Tabs.Tab>
             </Tabs.List>
           </TabRow>
 
@@ -169,6 +173,15 @@ export function StylistProfilePage() {
                   Reviews come from clients after their visit. Booked with {first} before? Open the
                   visit in <QuietLink to="/appointments">My appointments</QuietLink> to review it.
                 </p>
+              }
+            />
+          </Tabs.Panel>
+
+          <Tabs.Panel value="about-me">
+            <AboutMePanel
+              stylist={stylist}
+              distance={
+                myLocation ? formatDistance(milesBetween(myLocation, stylist.location)) : null
               }
             />
           </Tabs.Panel>

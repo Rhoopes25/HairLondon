@@ -32,8 +32,15 @@ import styles from './ChooseStep.module.css';
 
 /** Step 1: services, day, time. Everything on one screen so the choices stay in view together. */
 export function ChooseStep() {
-  const { stylist, draft, droppedStart, arrivedWithServices, toggleService, selectDate, selectStart } =
-    useBooking();
+  const {
+    stylist,
+    draft,
+    droppedStart,
+    arrivedWithServices,
+    toggleService,
+    selectDate,
+    selectStart,
+  } = useBooking();
   const { catalog } = useServices();
   const navigate = useNavigate();
   const listId = useId();
@@ -49,7 +56,7 @@ export function ChooseStep() {
 
   return (
     <>
-      <BookingHeader confirmExit={started} />
+      <BookingHeader confirmExit={started} step={0} />
       <Container>
         <PageIntro title="Book Now" />
 

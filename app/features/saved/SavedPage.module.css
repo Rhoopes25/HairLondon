@@ -18,3 +18,9 @@
     gap: var(--space-3);
   }
 }
+
+.signIn {
+  padding: 0 var(--space-5);
+  font-size: var(--fs-body-sm);
+  color: var(--ink-soft);
+}

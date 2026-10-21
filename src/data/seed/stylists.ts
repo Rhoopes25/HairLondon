@@ -13,6 +13,11 @@ export const STYLISTS: readonly Stylist[] = [
     city: 'Provo',
     photo: 'images/home.jpg',
     bio: 'Lived-in blondes, soft color, and cuts that grow out well. Relaxed chair, no pressure.',
+    story:
+      'I started doing hair in my mom’s kitchen and never stopped. I love color that still looks good three months later, so you are not stuck coming back every few weeks. I’m a mom too, so if you need to bring a baby in a car seat, that’s fine.',
+    yearsDoingHair: 8,
+    specialties: ['Lived-in blonde', 'Soft color', 'Low-upkeep cuts'],
+    location: { address: '184 N University Ave, Provo, UT', lat: 40.2361, lng: -111.6585 },
     workDays: [2, 3, 4, 5, 6],
     prices: {
       haircut: 65,
@@ -64,6 +69,11 @@ export const STYLISTS: readonly Stylist[] = [
     city: 'Orem',
     photo: null,
     bio: 'Color specialist. Rich brunettes, soft pastels, and gray coverage that looks natural.',
+    story:
+      'Color is my favorite part of the job. I’ll talk through what you want before we start, show you swatches, and tell you honestly how long it will last. Gray coverage that looks like your own hair is my specialty.',
+    yearsDoingHair: 6,
+    specialties: ['Brunettes', 'Gray coverage', 'Pastels'],
+    location: { address: '620 S State St, Orem, UT', lat: 40.2881, lng: -111.6946 },
     workDays: [1, 3, 4, 5, 6],
     prices: { haircut: 55, color: 110, highlights: 165, 'root-touch-up': 75, blowout: 40 },
     portfolio: [
@@ -98,6 +108,11 @@ export const STYLISTS: readonly Stylist[] = [
     city: 'Lehi',
     photo: null,
     bio: 'Short cuts, bobs, and shapes that are easy to style at home in five minutes.',
+    story:
+      'I keep things simple: a cut you can style in five minutes with what you already own. Most of my clients are in and out in under an hour, and I’ll show you how to do it yourself at home.',
+    yearsDoingHair: 4,
+    specialties: ['Short cuts', 'Bobs', 'Quick visits'],
+    location: { address: '350 W Main St, Lehi, UT', lat: 40.3916, lng: -111.8566 },
     workDays: [1, 2, 3, 4, 5],
     prices: { haircut: 45, color: 95, blowout: 35, 'deep-conditioning': 30 },
     portfolio: [
@@ -127,6 +142,11 @@ export const STYLISTS: readonly Stylist[] = [
     city: 'Springville',
     photo: null,
     bio: 'Blonding and dimensional highlights. I plan your color so you can go longer between visits.',
+    story:
+      'I plan your color around your life, not the other way around. We’ll pick a look that grows out softly so you can go longer between visits, which is good for your hair and your schedule.',
+    yearsDoingHair: 10,
+    specialties: ['Dimensional highlights', 'Blonding', 'Grow-out plans'],
+    location: { address: '95 S Main St, Springville, UT', lat: 40.1638, lng: -111.6107 },
     workDays: [3, 4, 5, 6],
     prices: {
       haircut: 60,

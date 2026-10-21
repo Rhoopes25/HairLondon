@@ -29,7 +29,10 @@ export function ServiceDetailSheet({
       title={service?.name ?? ''}
       footer={
         service ? (
-          <LinkButton to={bookingPath({ stylistId: stylist.id, serviceIds: [service.id] })} fullWidth>
+          <LinkButton
+            to={bookingPath({ stylistId: stylist.id, serviceIds: [service.id] })}
+            fullWidth
+          >
             Book {service.name}
           </LinkButton>
         ) : null

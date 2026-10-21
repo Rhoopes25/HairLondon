@@ -2,16 +2,32 @@ import { useState } from 'react';
 import { Link, useNavigate } from 'react-router';
 import { firstName } from '@src/domain/format/name';
 import { assetUrl, photoSrcSet } from '@app/config';
-import { Avatar, ConfirmDialog, HeaderBar, Icon } from '@app/ui';
+import { Avatar, ConfirmDialog, HeaderBar, Icon, StepGuide } from '@app/ui';
+import type { GuideStep } from '@app/ui';
 import { useBooking } from './BookingProvider';
 import styles from './BookingHeader.module.css';
+
+/** The whole booking at a glance, so she always knows how close she is to done. */
+export const BOOKING_STEPS: readonly GuideStep[] = [
+  { label: 'Pick a time', icon: 'calendar' },
+  { label: 'Your details', icon: 'user' },
+  { label: 'Review', icon: 'list' },
+  { label: 'Booked', icon: 'check' },
+];
 
 /**
  * Exit on the left, who you are booking with in the middle, and the logo home on the right. Both
  * ways out ask first once you have started, so a stray tap cannot lose your choices; leaving an
  * empty booking just goes.
  */
-export function BookingHeader({ confirmExit }: { confirmExit: boolean }) {
+export function BookingHeader({
+  confirmExit,
+  step,
+}: {
+  confirmExit: boolean;
+  /** Index into BOOKING_STEPS. */
+  step: number;
+}) {
   const { stylist, exitTo } = useBooking();
   const navigate = useNavigate();
   const [leavingTo, setLeavingTo] = useState<string | null>(null);
@@ -45,6 +61,9 @@ export function BookingHeader({ confirmExit }: { confirmExit: boolean }) {
           <Icon name="scissors" />
         </Link>
       </HeaderBar>
+      <div className={styles.progress}>
+        <StepGuide label="Booking progress" steps={BOOKING_STEPS} current={step} />
+      </div>
 
       <ConfirmDialog
         open={leavingTo !== null}
