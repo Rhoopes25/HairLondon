@@ -328,27 +328,42 @@ describe('Book: clearing', () => {
 });
 
 describe('Book: starting a booking from a result', () => {
-  it('holds the tapped time, with the services she searched for', async () => {
+  it('skips Pick a time: a tapped time opens Your details with it held', async () => {
     const { user, router } = renderApp('/book?services=haircut&day=2026-10-08&step=who');
     await ready();
     const first = within(results()).getAllByRole('link', { name: /^Book / })[0];
     if (!first) throw new Error('no time to tap');
     const label = first.getAttribute('aria-label') ?? '';
     await user.click(first);
-    await screen.findByRole('heading', { level: 1, name: 'Book Now' });
+    await screen.findByRole('heading', { level: 1, name: 'Your details' });
 
     const params = new URLSearchParams(router.state.location.search);
-    expect(router.state.location.pathname).toMatch(/^\/book\//);
+    expect(router.state.location.pathname).toMatch(/^\/book\/[^/]+\/details$/);
     expect(params.get('services')).toBe('haircut');
     expect(params.get('date')).toBe('2026-10-08');
     expect(params.get('back')).toBe('/book?services=haircut&day=2026-10-08&step=who');
-    expect(screen.getByRole('button', { name: 'Thu, Oct 8' })).toHaveAttribute(
-      'aria-pressed',
-      'true',
-    );
     expect(label).toMatch(/Thu, Oct 8/);
-    // Day, time, and a service: nothing is left to pick.
-    expect(screen.getByRole('button', { name: 'Continue' })).toBeEnabled();
+    expect(screen.getByText(/Thu, Oct 8/)).toBeInTheDocument();
+  });
+
+  it('goes Back from Your details to the same results, not to Pick a time', async () => {
+    const { user, router } = renderApp('/book?services=haircut&day=2026-10-08&step=who');
+    await ready();
+    const first = within(results()).getAllByRole('link', { name: /^Book / })[0];
+    if (!first) throw new Error('no time to tap');
+    await user.click(first);
+    await screen.findByRole('heading', { level: 1, name: 'Your details' });
+    await user.click(screen.getByRole('button', { name: 'Back' }));
+    await ready();
+    expect(router.state.location.search).toBe('?services=haircut&day=2026-10-08&step=who');
+  });
+
+  it('has a Back link on part 2 that returns to part 1 with her picks', async () => {
+    const { user, router } = renderApp('/book?services=color&time=morning&step=who');
+    await ready();
+    await user.click(screen.getByRole('link', { name: 'Back' }));
+    await screen.findByRole('button', { name: 'See who can fit me in' });
+    expect(router.state.location.search).toBe('?services=color&time=morning');
   });
 
   it('comes back to the same search from the X, and from the profile', async () => {
@@ -357,7 +372,7 @@ describe('Book: starting a booking from a result', () => {
     const [first] = cards();
     if (!first) throw new Error('no cards');
     await user.click(within(first).getAllByRole('link', { name: /^Book / })[0] as HTMLElement);
-    await screen.findByRole('heading', { level: 1, name: 'Book Now' });
+    await screen.findByRole('heading', { level: 1, name: 'Your details' });
 
     await user.click(screen.getByRole('link', { name: 'Exit booking' }));
     await user.click(await screen.findByRole('button', { name: 'Leave' }));

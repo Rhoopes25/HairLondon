@@ -1,4 +1,4 @@
-import { Navigate, Outlet, useParams, useSearchParams } from 'react-router';
+import { Navigate, Outlet, useLocation, useParams, useSearchParams } from 'react-router';
 import { useStylist } from '@app/services';
 import { profilePath, readDate, readServiceIds, readStart, safeBackPath } from '@app/lib/links';
 import { BookingProvider } from './BookingProvider';
@@ -8,6 +8,7 @@ export function BookingFlow() {
   const { id } = useParams();
   const stylist = useStylist(id);
   const [searchParams] = useSearchParams();
+  const { pathname } = useLocation();
 
   if (!stylist) return <Navigate to="/stylists" replace />;
 
@@ -22,7 +23,12 @@ export function BookingFlow() {
   );
 
   return (
-    <BookingProvider stylist={stylist} preset={preset} exitTo={exitTo}>
+    <BookingProvider
+      stylist={stylist}
+      preset={preset}
+      exitTo={exitTo}
+      arrivedAtDetails={pathname.endsWith('/details')}
+    >
       <Outlet />
     </BookingProvider>
   );
