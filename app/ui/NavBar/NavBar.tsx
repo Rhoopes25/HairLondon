@@ -2,19 +2,17 @@ import type { ReactNode } from 'react';
 import { Link, NavLink } from 'react-router';
 import { cx } from '@app/lib/cx';
 import { Icon } from '../Icon';
-import { Container } from '../Layout';
 import styles from './NavBar.module.css';
 
 /**
- * The sticky header band. It is full width; its content sits in the page container so it lines up
- * with the page below. Content goes in slots so other headers (booking) can reuse it.
+ * The sticky header band. Its content spans the whole window (logo at the far left, account at the
+ * far right, where people look for them), not the 1200px page column. Content goes in slots so
+ * other headers (booking) can reuse it.
  */
 export function HeaderBar({ children, className }: { children: ReactNode; className?: string }) {
   return (
     <header className={cx(styles.header, className)}>
-      <Container>
-        <div className={styles.inner}>{children}</div>
-      </Container>
+      <div className={styles.inner}>{children}</div>
     </header>
   );
 }
