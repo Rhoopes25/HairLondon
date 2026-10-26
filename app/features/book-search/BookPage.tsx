@@ -25,6 +25,7 @@ import { profilePath, queryString, readServiceIds } from '@app/lib/links';
 import { stylistCardIdentity, workThumbnails } from '@app/lib/stylist-card';
 import { useMyLocation, useSearchEnvironment, useStylists } from '@app/services';
 import {
+  BackLink,
   Button,
   Chip,
   ChipRow,
@@ -196,6 +197,9 @@ export function BookPage() {
 
   return (
     <Narrow>
+      {showingResults ? (
+        <BackLink to={`${location.pathname}${searchFor(filters)}`}>Back</BackLink>
+      ) : null}
       <PageIntro title="Book">
         Pick what you want done and when. We&rsquo;ll show who can fit you in.
       </PageIntro>

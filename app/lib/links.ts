@@ -32,10 +32,19 @@ export interface BookingLink {
   start?: MinuteOfDay | null;
   /** Where the X goes: the search or profile she came from. */
   back?: string;
+  /** Open straight on Your details, for a time she already picked (the Book page's time chips). */
+  toDetails?: boolean;
 }
 
-export function bookingPath({ stylistId, serviceIds, date, start, back }: BookingLink): string {
-  return `/book/${stylistId}${queryString({
+export function bookingPath({
+  stylistId,
+  serviceIds,
+  date,
+  start,
+  back,
+  toDetails,
+}: BookingLink): string {
+  return `/book/${stylistId}${toDetails ? '/details' : ''}${queryString({
     services: serviceIds?.length ? serviceIdsParam(serviceIds) : undefined,
     date: date ?? undefined,
     start: start === null || start === undefined ? undefined : String(start),

@@ -27,6 +27,8 @@ export function openingChips(
       date: opening.date,
       start: opening.start,
       back: options.back,
+      // She already chose the stylist, day and time here, so booking opens on Your details.
+      toDetails: true,
     }),
   }));
 }

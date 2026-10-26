@@ -22,7 +22,7 @@ import styles from './DetailsStep.module.css';
  * lost), or just keep going as a guest.
  */
 export function DetailsStep() {
-  const { stylist, draft, details, setDetails } = useBooking();
+  const { stylist, draft, details, setDetails, skippedChoose, exitTo } = useBooking();
   const { catalog, accounts } = useServices();
   const account = useAccount();
   const [sheet, setSheet] = useState<AccountSheetMode | null>(null);
@@ -126,7 +126,10 @@ export function DetailsStep() {
               <Button type="submit" form="details-form" fullWidth>
                 Continue
               </Button>
-              <TextButton className={styles.back} onClick={() => navigate(`/book/${stylist.id}`)}>
+              <TextButton
+                className={styles.back}
+                onClick={() => navigate(skippedChoose ? exitTo : `/book/${stylist.id}`)}
+              >
                 Back
               </TextButton>
             </ConfirmBar>
