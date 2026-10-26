@@ -43,7 +43,7 @@ The rubric asks for roughly 20 to 30+ screens, and overlays count. Counted from 
 | Kind | Screens | Count |
 | --- | --- | --- |
 | Pages | Home (signed out, and signed in with your next visit); Book part 1 (what and when); Book part 2 (who can fit you in); Stylists (with search and location); Profile (Portfolio, Services, Reviews, About me tabs); Photo viewer; About the studio; Booking (choose, details, review, confirmation); My appointments; Appointment detail; Reschedule; Leave a review; Saved stylists; Account (signed out); Your account (signed in); Sign in; Create an account; How booking works; Not found | 26 |
-| Overlays | Early-prototype notice; Service detail sheet; Leave-booking confirmation; Sample reminder text; Calendar file saved; Cancel confirmation; Sign-in sheet (during booking); Create-account sheet (during booking) | 8 |
+| Overlays | Early-prototype notice; Service detail sheet; Leave-booking confirmation; Calendar file saved; Cancel confirmation; Sign-in sheet (during booking); Create-account sheet (during booking) | 7 |
 | Empty states | Nobody offers that combination; No exact matches (with other times); No upcoming appointments; Nobody saved yet; No openings that day; No stylists match the search; Couldn't get your location | 7 |
 
 That is **34 distinct screens, or 41 counting empty states**. The hidden design-library page (`/#/design-library`) is not counted.

@@ -1,4 +1,4 @@
-import { screen, waitFor, within } from '@testing-library/react';
+import { act, screen, waitFor, within } from '@testing-library/react';
 import type { UserEvent } from '@testing-library/user-event';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import { renderApp } from '@app/test/renderApp';
@@ -294,31 +294,17 @@ describe('booking: the whole flow', () => {
   });
 
   it('keeps what was typed when going back and forward', async () => {
-    const { user } = renderApp('/book/london?services=haircut');
+    const { user, router } = renderApp('/book/london?services=haircut');
     await chooseHaircutOct8At9(user);
     await user.click(continueButton());
     await screen.findByRole('heading', { name: 'Your details' });
     await asGuest(user);
     await fillDetails(user);
-    await user.click(screen.getByRole('button', { name: 'Back' }));
+    await act(() => router.navigate(-1)); // the browser's back button
+    await screen.findByRole('heading', { level: 1, name: 'Book Now' });
     expect(continueButton()).toBeEnabled(); // choices survived on step 1
     await user.click(continueButton());
     expect(await screen.findByLabelText('Name')).toHaveValue('Maren');
-  });
-
-  it('previews the reminder text without sending anything', async () => {
-    const { user } = renderApp('/book/london?services=haircut');
-    await chooseHaircutOct8At9(user);
-    await user.click(continueButton());
-    await screen.findByRole('heading', { name: 'Your details' });
-    await asGuest(user);
-    await user.type(screen.getByLabelText('Name'), 'Maren Thompson');
-    await user.click(screen.getByRole('button', { name: 'See a sample reminder' }));
-    const sheet = await screen.findByRole('dialog', { name: 'Your reminder text' });
-    expect(sheet).toHaveTextContent(
-      'Hi Maren, a reminder that you’re booked with London at Hair by London tomorrow (Thu, Oct 8) at 9:00 AM.',
-    );
-    expect(sheet).toHaveTextContent('No texts are sent from this prototype.');
   });
 
   it('sends people who skip ahead back to the start of the flow', async () => {

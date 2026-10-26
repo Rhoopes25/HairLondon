@@ -2,7 +2,7 @@ import { createContext, useCallback, useContext, useMemo, useReducer, useState }
 import type { ReactNode } from 'react';
 import { createBookingReducer, initialBookingState } from '@src/domain/booking/booking-state';
 import type { BookingState } from '@src/domain/booking/booking-state';
-import { isComplete, presetDraft } from '@src/domain/booking/draft';
+import { presetDraft } from '@src/domain/booking/draft';
 import type { DraftPreset } from '@src/domain/booking/draft';
 import type { ServiceId } from '@src/domain/models/service';
 import type { Stylist } from '@src/domain/models/stylist';
@@ -16,8 +16,6 @@ interface BookingContextValue extends BookingState {
   exitTo: string;
   /** She came in with services already picked, so step 1 shows them as one line. */
   arrivedWithServices: boolean;
-  /** She picked the day and time before booking (a Book page time chip), so step 1 was skipped. */
-  skippedChoose: boolean;
   toggleService: (id: ServiceId) => void;
   selectDate: (date: IsoDate) => void;
   selectStart: (start: MinuteOfDay) => void;
@@ -32,14 +30,11 @@ export function BookingProvider({
   stylist,
   preset,
   exitTo,
-  arrivedAtDetails = false,
   children,
 }: {
   stylist: Stylist;
   preset?: DraftPreset;
   exitTo: string;
-  /** The link opened on Your details. Only counts if the held time is still open. */
-  arrivedAtDetails?: boolean;
   children: ReactNode;
 }) {
   const { clock, catalog, availabilityFor } = useServices();
@@ -70,7 +65,6 @@ export function BookingProvider({
   });
   // Decided once, on arrival: later toggles must not make the summary line appear or vanish.
   const [arrivedWithServices] = useState(() => state.draft.serviceIds.length > 0);
-  const [skippedChoose] = useState(() => arrivedAtDetails && isComplete(state.draft));
 
   const toggleService = useCallback((id: ServiceId) => dispatch({ type: 'toggleService', id }), []);
   const selectDate = useCallback((date: IsoDate) => dispatch({ type: 'selectDate', date }), []);
@@ -90,7 +84,6 @@ export function BookingProvider({
       stylist,
       exitTo,
       arrivedWithServices,
-      skippedChoose,
       toggleService,
       selectDate,
       selectStart,
@@ -102,7 +95,6 @@ export function BookingProvider({
       stylist,
       exitTo,
       arrivedWithServices,
-      skippedChoose,
       toggleService,
       selectDate,
       selectStart,
