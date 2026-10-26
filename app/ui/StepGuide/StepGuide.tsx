@@ -14,6 +14,8 @@ export interface StepGuideProps {
   steps: readonly GuideStep[];
   /** Index of the step she is on. Steps before it show as done. */
   current: number;
+  /** Indexes of earlier, optional steps she passed without doing, so they are not checked off. */
+  skipped?: readonly number[];
 }
 
 /**
@@ -21,11 +23,13 @@ export interface StepGuideProps {
  * is this going to take?" before she has to ask, which keeps the flow calm. It is not navigation;
  * the steps are not links.
  */
-export function StepGuide({ label, steps, current }: StepGuideProps) {
+export function StepGuide({ label, steps, current, skipped = [] }: StepGuideProps) {
   return (
     <ol className={styles.guide} aria-label={label}>
       {steps.map((step, index) => {
-        const state = index < current ? 'done' : index === current ? 'now' : 'next';
+        const state =
+          index === current ? 'now' : index > current || skipped.includes(index) ? 'next' : 'done';
+        const wasSkipped = index < current && skipped.includes(index);
         return (
           <li
             key={step.label}
@@ -38,6 +42,7 @@ export function StepGuide({ label, steps, current }: StepGuideProps) {
             <span className={styles.label}>
               {step.label}
               {state === 'done' ? <span className="visually-hidden"> (done)</span> : null}
+              {wasSkipped ? <span className="visually-hidden"> (skipped)</span> : null}
             </span>
           </li>
         );

@@ -204,6 +204,22 @@ describe('Book: services', () => {
 });
 
 describe('Book: day and time', () => {
+  it('leaves Pick a day unchecked when she goes on without a day', async () => {
+    renderApp('/book?services=color&step=who');
+    await ready();
+    const guide = screen.getByRole('list', { name: 'How booking works' });
+    expect(within(guide).getByText(/Pick services/)).toHaveTextContent('(done)');
+    expect(within(guide).getByText(/Pick a day/)).toHaveTextContent('(skipped)');
+    expect(within(guide).getByText(/Pick a day/)).not.toHaveTextContent('(done)');
+  });
+
+  it('checks off Pick a day once she has picked one', async () => {
+    renderApp('/book?services=color&day=2026-10-09&step=who');
+    await ready();
+    const guide = screen.getByRole('list', { name: 'How booking works' });
+    expect(within(guide).getByText(/Pick a day/)).toHaveTextContent('(done)');
+  });
+
   it('starts with no day picked and Any time', async () => {
     renderApp('/book');
     await ready();
