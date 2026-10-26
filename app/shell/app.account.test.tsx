@@ -98,8 +98,13 @@ describe('account while booking', () => {
   it('lets a guest keep going without signing in', async () => {
     const { user } = renderApp('/book/london?services=haircut');
     await toDetails(user);
-    expect(screen.getByText(/keep going as a guest/)).toBeInTheDocument();
+    expect(
+      screen.getByRole('heading', { name: 'How would you like to book?' }),
+    ).toBeInTheDocument();
+    expect(screen.queryByLabelText('Name')).not.toBeInTheDocument();
+    await user.click(screen.getByRole('button', { name: 'Continue as guest' }));
     expect(screen.getByLabelText('Name')).toHaveValue('');
+    expect(screen.getByRole('button', { name: 'Continue' })).toBeInTheDocument();
   });
 
   it('signs in from a sheet without losing the booking, and fills in her details', async () => {
@@ -118,12 +123,14 @@ describe('account while booking', () => {
     expect(screen.getByText('Thu, Oct 8, 9:00 to 10:00 AM')).toBeInTheDocument();
     expect(screen.getByLabelText('Name')).toHaveValue('Rachel');
     expect(screen.getByLabelText('Phone')).toHaveValue('(801) 555-0142');
-    expect(screen.getByText(/Booking as/)).toHaveTextContent('Booking as Rachel.');
+    expect(screen.getByText(/Booking as/)).toHaveTextContent(/^Booking as Rachel$/);
+    expect(screen.queryByRole('button', { name: /Not you/ })).not.toBeInTheDocument();
   });
 
   it('creates an account from the sheet with what she already typed as a guest', async () => {
     const { user, services } = renderApp('/book/london?services=haircut');
     await toDetails(user);
+    await user.click(screen.getByRole('button', { name: 'Continue as guest' }));
     await user.type(screen.getByLabelText('Name'), 'Maren');
     await user.type(screen.getByLabelText('Phone'), '5551234567');
 
@@ -142,9 +149,9 @@ describe('account while booking', () => {
     services.accounts.create(rachel);
     await toDetails(user);
     expect(screen.getByLabelText('Name')).toHaveValue('Rachel');
-    await user.click(screen.getByRole('button', { name: 'Not you? Sign out' }));
-    expect(services.accounts.current()).toBeNull();
-    expect(screen.getByRole('button', { name: 'Sign in' })).toBeInTheDocument();
+    // Signed in already: no sign in or guest choice to make.
+    expect(screen.queryByRole('button', { name: 'Continue as guest' })).not.toBeInTheDocument();
+    expect(services.accounts.current()?.name).toBe('Rachel');
   });
 });
 

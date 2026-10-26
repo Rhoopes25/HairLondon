@@ -23,7 +23,7 @@ import styles from './DetailsStep.module.css';
  */
 export function DetailsStep() {
   const { stylist, draft, details, setDetails, skippedChoose, exitTo } = useBooking();
-  const { catalog, accounts } = useServices();
+  const { catalog } = useServices();
   const account = useAccount();
   const [sheet, setSheet] = useState<AccountSheetMode | null>(null);
   const navigate = useNavigate();
@@ -32,6 +32,10 @@ export function DetailsStep() {
   const phoneRef = useRef<HTMLInputElement>(null);
   const [errors, setErrors] = useState<DetailsErrors>({});
   const [previewing, setPreviewing] = useState(false);
+  // Signed out, she first chooses: sign in, or go on as a guest. Coming back with details already
+  // typed counts as having chosen guest.
+  const [asGuest, setAsGuest] = useState(() => Boolean(details.name || details.phone));
+  const showForm = Boolean(account) || asGuest;
   useDocumentTitle('Your details');
 
   // Signing in (now, or before she started) fills in her saved details. They stay editable, and
@@ -73,59 +77,78 @@ export function DetailsStep() {
 
           <form id="details-form" className={styles.form} onSubmit={onSubmit} noValidate>
             {account ? (
-              <p className={styles.who}>
-                Booking as <strong>{account.name}</strong>.{' '}
-                <TextButton onClick={() => accounts.signOut()}>Not you? Sign out</TextButton>
+              <p className={styles.signedIn}>
+                Booking as <strong>{account.name}</strong>
               </p>
-            ) : (
-              <div className={styles.who}>
-                <p>Have an account? Sign in and your details fill in. Or keep going as a guest.</p>
-                <div className={styles.whoActions}>
+            ) : asGuest ? null : (
+              <div className={styles.choice}>
+                <h2 className={styles.choiceTitle}>How would you like to book?</h2>
+                <p>Sign in and your details fill in, or keep going as a guest.</p>
+                <div className={styles.choiceActions}>
+                  <Button type="button" onClick={() => setSheet('sign-in')}>
+                    Sign in
+                  </Button>
                   <Button
                     type="button"
                     variant="outline"
-                    size="sm"
-                    onClick={() => setSheet('sign-in')}
+                    onClick={() => {
+                      setAsGuest(true);
+                      // Straight to the first field, so the choice is one tap, not two.
+                      requestAnimationFrame(() => nameRef.current?.focus());
+                    }}
                   >
-                    Sign in
+                    Continue as guest
                   </Button>
-                  <TextButton onClick={() => setSheet('create')}>Create an account</TextButton>
                 </div>
+                <TextButton onClick={() => setSheet('create')}>
+                  New here? Create an account
+                </TextButton>
               </div>
             )}
-            <TextField
-              label="Name"
-              name="name"
-              autoComplete="name"
-              required
-              value={details.name}
-              onChange={(event) => setDetails({ name: event.target.value })}
-              error={errors.name}
-              inputRef={nameRef}
-            />
-            <TextField
-              label="Phone"
-              name="phone"
-              type="tel"
-              inputMode="tel"
-              autoComplete="tel"
-              required
-              value={details.phone}
-              onChange={(event) => setDetails({ phone: event.target.value })}
-              hint="For a reminder text the day before."
-              error={errors.phone}
-              inputRef={phoneRef}
-            />
-            <TextButton className={styles.preview} onClick={() => setPreviewing(true)}>
-              See a sample reminder
-            </TextButton>
+            {showForm ? (
+              <>
+                <TextField
+                  label="Name"
+                  name="name"
+                  autoComplete="name"
+                  required
+                  value={details.name}
+                  onChange={(event) => setDetails({ name: event.target.value })}
+                  error={errors.name}
+                  inputRef={nameRef}
+                />
+                <TextField
+                  label="Phone"
+                  name="phone"
+                  type="tel"
+                  inputMode="tel"
+                  autoComplete="tel"
+                  required
+                  value={details.phone}
+                  onChange={(event) => setDetails({ phone: event.target.value })}
+                  hint="For a reminder text the day before."
+                  error={errors.phone}
+                  inputRef={phoneRef}
+                />
+                <TextButton className={styles.preview} onClick={() => setPreviewing(true)}>
+                  See a sample reminder
+                </TextButton>
+                {account ? null : (
+                  <TextButton className={styles.preview} onClick={() => setSheet('create')}>
+                    Create an account
+                  </TextButton>
+                )}
+              </>
+            ) : null}
           </form>
 
           <div className={styles.bar}>
             <ConfirmBar sticky>
-              <Button type="submit" form="details-form" fullWidth>
-                Continue
-              </Button>
+              {showForm ? (
+                <Button type="submit" form="details-form" fullWidth>
+                  Continue
+                </Button>
+              ) : null}
               <TextButton
                 className={styles.back}
                 onClick={() => navigate(skippedChoose ? exitTo : `/book/${stylist.id}`)}
