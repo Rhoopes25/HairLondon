@@ -1,0 +1,128 @@
+/* Header account control: 44px targets, gold-ink for text, gold-deep only for icons and rings. */
+.wrap {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.signIn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.4rem;
+  min-width: 2.75rem;
+  min-height: 2.75rem;
+  color: var(--gold-ink);
+  font-size: var(--fs-nav);
+  font-weight: 500;
+  text-decoration: none;
+}
+
+.signIn svg {
+  width: 1.2rem;
+  height: 1.2rem;
+  color: var(--gold-deep);
+}
+
+.signInText {
+  display: none;
+}
+
+.avatar {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 2.75rem;
+  height: 2.75rem;
+  border-radius: var(--radius-round);
+  border: 1.5px solid var(--gold-deep);
+  background: var(--white);
+  color: var(--gold-ink);
+  font-family: var(--font-sans);
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.avatar[aria-expanded='true'] {
+  background: var(--gold-soft);
+}
+
+.signIn:focus-visible,
+.avatar:focus-visible,
+.item:focus-visible {
+  outline: 2px solid var(--gold-deep);
+  outline-offset: 2px;
+}
+
+.menu {
+  position: absolute;
+  top: calc(100% + var(--space-1));
+  right: 0;
+  z-index: 30;
+  min-width: 13rem;
+  padding: var(--space-2);
+  background: var(--white);
+  border: 1px solid var(--gold-soft);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-card);
+}
+
+.name {
+  padding: 0 var(--space-1);
+  font-weight: 500;
+  color: var(--ink);
+}
+
+.meta {
+  padding: 0 var(--space-1) var(--space-1);
+  margin-bottom: var(--space-1);
+  font-size: var(--fs-caption);
+  color: var(--ink-soft);
+  border-bottom: 1px solid var(--cream-deep);
+}
+
+.item {
+  display: flex;
+  align-items: center;
+  width: 100%;
+  min-height: 2.75rem;
+  padding: 0 var(--space-1);
+  border: none;
+  border-radius: var(--radius-sm);
+  background: none;
+  color: var(--ink);
+  font: inherit;
+  font-size: var(--fs-body-sm);
+  text-align: left;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.item:hover {
+  background: var(--cream);
+}
+
+/* A quiet confirmation under the control after sign out; empty otherwise. */
+.note {
+  position: absolute;
+  top: calc(100% + var(--space-1));
+  right: 0;
+  white-space: nowrap;
+  font-size: var(--fs-caption);
+  color: var(--gold-ink);
+}
+
+.note:empty {
+  display: none;
+}
+
+@media (min-width: 900px) {
+  .signInText {
+    display: inline;
+  }
+
+  .signIn {
+    padding-inline: var(--space-1);
+  }
+}

@@ -40,6 +40,13 @@
 .nav {
   display: flex;
   gap: 1.1rem;
+  margin-left: auto;
+}
+
+.end {
+  display: flex;
+  align-items: center;
+  flex-shrink: 0;
 }
 
 .link {
@@ -65,7 +72,15 @@
   text-underline-offset: 6px;
 }
 
+.fromSm {
+  display: none;
+}
+
 @media (min-width: 640px) {
+  .fromSm {
+    display: inline-flex;
+  }
+
   .logo {
     width: auto;
     margin-left: 0;

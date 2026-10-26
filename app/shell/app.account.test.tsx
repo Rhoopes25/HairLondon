@@ -1,4 +1,4 @@
-import { screen, within } from '@testing-library/react';
+import { act, screen, within } from '@testing-library/react';
 import type { UserEvent } from '@testing-library/user-event';
 import { describe, expect, it } from 'vitest';
 import { renderApp } from '@app/test/renderApp';
@@ -145,5 +145,48 @@ describe('account while booking', () => {
     await user.click(screen.getByRole('button', { name: 'Not you? Sign out' }));
     expect(services.accounts.current()).toBeNull();
     expect(screen.getByRole('button', { name: 'Sign in' })).toBeInTheDocument();
+  });
+});
+
+describe('account control in the header', () => {
+  const header = () => within(screen.getByRole('banner'));
+
+  it('offers Sign in at the top right, and comes back to the same screen after', async () => {
+    const { user, router, services } = renderApp('/stylists');
+    await screen.findByRole('heading', { level: 1, name: 'Stylists' });
+    services.accounts.create(rachel);
+    act(() => services.accounts.signOut());
+    await user.click(header().getByRole('link', { name: 'Sign in' }));
+    await screen.findByRole('heading', { level: 1, name: 'Welcome back' });
+    expect(new URLSearchParams(router.state.location.search).get('back')).toBe('/stylists');
+  });
+
+  it('shows her initials when signed in, with My account and Sign out', async () => {
+    const { user, services } = renderApp('/stylists');
+    await screen.findByRole('heading', { level: 1, name: 'Stylists' });
+    act(() => {
+      services.accounts.create(rachel);
+    });
+    const avatar = await header().findByRole('button', { name: 'Account: Rachel' });
+    expect(avatar).toHaveAttribute('aria-expanded', 'false');
+    await user.click(avatar);
+    expect(avatar).toHaveAttribute('aria-expanded', 'true');
+    expect(header().getByRole('link', { name: 'My account' })).toHaveAttribute('href', '/account');
+
+    await user.click(header().getByRole('button', { name: 'Sign out' }));
+    expect(services.accounts.current()).toBeNull();
+    expect(header().getByText('Signed out')).toBeInTheDocument();
+    expect(header().getByRole('link', { name: 'Sign in' })).toBeInTheDocument();
+  });
+
+  it('closes the menu with Escape', async () => {
+    const { user, services } = renderApp('/stylists');
+    await screen.findByRole('heading', { level: 1, name: 'Stylists' });
+    act(() => {
+      services.accounts.create(rachel);
+    });
+    await user.click(await header().findByRole('button', { name: 'Account: Rachel' }));
+    await user.keyboard('{Escape}');
+    expect(header().queryByRole('button', { name: 'Sign out' })).not.toBeInTheDocument();
   });
 });

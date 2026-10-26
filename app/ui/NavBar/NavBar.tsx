@@ -24,6 +24,8 @@ export interface NavLinkItem {
   label: string;
   /** Match only this exact path (Home), not everything under it. */
   end?: boolean;
+  /** Hidden on phones, where the logo already does the same job (Home), to make room. */
+  fromSm?: boolean;
 }
 
 export interface NavBarProps {
@@ -31,10 +33,12 @@ export interface NavBarProps {
   links: readonly NavLinkItem[];
   /** The landmark's name. Only needs changing if a second navigation is on the same page. */
   label?: string;
+  /** Sits at the far right, after the links: the sign in / account control. */
+  end?: ReactNode;
 }
 
 /** Logo that links home, plus the main links. The current one is marked with aria-current. */
-export function NavBar({ homeTo, links, label = 'Main' }: NavBarProps) {
+export function NavBar({ homeTo, links, label = 'Main', end }: NavBarProps) {
   return (
     <HeaderBar>
       <Link to={homeTo} className={styles.logo} aria-label="Local Locks, home">
@@ -50,12 +54,15 @@ export function NavBar({ homeTo, links, label = 'Main' }: NavBarProps) {
             key={link.to}
             to={link.to}
             end={link.end}
-            className={({ isActive }) => cx(styles.link, isActive && styles.active)}
+            className={({ isActive }) =>
+              cx(styles.link, isActive && styles.active, link.fromSm && styles.fromSm)
+            }
           >
             {link.label}
           </NavLink>
         ))}
       </nav>
+      {end ? <div className={styles.end}>{end}</div> : null}
     </HeaderBar>
   );
 }
