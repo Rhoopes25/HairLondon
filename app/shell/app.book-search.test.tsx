@@ -346,18 +346,6 @@ describe('Book: starting a booking from a result', () => {
     expect(screen.getByText(/Thu, Oct 8/)).toBeInTheDocument();
   });
 
-  it('goes Back from Your details to the same results, not to Pick a time', async () => {
-    const { user, router } = renderApp('/book?services=haircut&day=2026-10-08&step=who');
-    await ready();
-    const first = within(results()).getAllByRole('link', { name: /^Book / })[0];
-    if (!first) throw new Error('no time to tap');
-    await user.click(first);
-    await screen.findByRole('heading', { level: 1, name: 'Your details' });
-    await user.click(screen.getByRole('button', { name: 'Back' }));
-    await ready();
-    expect(router.state.location.search).toBe('?services=haircut&day=2026-10-08&step=who');
-  });
-
   it('has a Back link on part 2 that returns to part 1 with her picks', async () => {
     const { user, router } = renderApp('/book?services=color&time=morning&step=who');
     await ready();

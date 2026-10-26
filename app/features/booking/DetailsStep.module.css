@@ -44,11 +44,6 @@
   align-self: flex-start;
 }
 
-.back {
-  display: block;
-  margin: var(--space-3) auto 0;
-}
-
 /* One column on a phone: summary, form, then the action. On desktop the form is on the left and
    the summary and action share a column on the right, in the same order a keyboard moves through. */
 @media (min-width: 900px) {

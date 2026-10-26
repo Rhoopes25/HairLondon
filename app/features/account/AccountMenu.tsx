@@ -5,21 +5,19 @@ import { queryString } from '@app/lib/links';
 import { useAccount, useServices } from '@app/services';
 import { Icon } from '@app/ui';
 import styles from './AccountMenu.module.css';
-
-/** How long the "Signed out" note stays, so she can see sign out worked without a dialog. */
-const SIGNED_OUT_NOTE_MS = 3000;
+import { SignOutDialog } from './SignOutDialog';
 
 /**
  * Top right of the header, where people look for an account. Signed out: a Sign in link that
  * returns her to this screen. Signed in: her initials, opening a small menu with her account and
- * Sign out. Booking never needs either; this only saves typing.
+ * Sign out, which asks first. Booking never needs either; this only saves typing.
  */
 export function AccountMenu() {
   const account = useAccount();
   const { accounts } = useServices();
   const location = useLocation();
   const [open, setOpen] = useState(false);
-  const [signedOut, setSignedOut] = useState(false);
+  const [confirming, setConfirming] = useState(false);
   const wrapRef = useRef<HTMLDivElement>(null);
   const buttonRef = useRef<HTMLButtonElement>(null);
   const menuId = useId();
@@ -44,12 +42,6 @@ export function AccountMenu() {
     };
   }, [open]);
 
-  useEffect(() => {
-    if (!signedOut) return;
-    const timer = window.setTimeout(() => setSignedOut(false), SIGNED_OUT_NOTE_MS);
-    return () => window.clearTimeout(timer);
-  }, [signedOut]);
-
   // Close the menu when she moves to another screen from it.
   const [path, setPath] = useState(location.pathname);
   if (path !== location.pathname) {
@@ -71,9 +63,6 @@ export function AccountMenu() {
             Sign in
           </span>
         </Link>
-        <p className={styles.note} aria-live="polite">
-          {signedOut ? 'Signed out' : ''}
-        </p>
       </div>
     );
   }
@@ -102,15 +91,22 @@ export function AccountMenu() {
             type="button"
             className={styles.item}
             onClick={() => {
-              accounts.signOut();
               setOpen(false);
-              setSignedOut(true);
+              setConfirming(true);
             }}
           >
             Sign out
           </button>
         </div>
       ) : null}
+      <SignOutDialog
+        open={confirming}
+        onCancel={() => setConfirming(false)}
+        onConfirm={() => {
+          setConfirming(false);
+          accounts.signOut();
+        }}
+      />
     </div>
   );
 }

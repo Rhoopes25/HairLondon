@@ -13,7 +13,6 @@ import { Button, ConfirmBar, Container, PageIntro, Recap, TextButton, TextField 
 import { BookingHeader } from './BookingHeader';
 import { useBooking } from './BookingProvider';
 import { draftRecapRows } from './bookingRecap';
-import { ReminderPreviewSheet } from './ReminderPreviewSheet';
 import styles from './DetailsStep.module.css';
 
 /**
@@ -22,7 +21,7 @@ import styles from './DetailsStep.module.css';
  * lost), or just keep going as a guest.
  */
 export function DetailsStep() {
-  const { stylist, draft, details, setDetails, skippedChoose, exitTo } = useBooking();
+  const { stylist, draft, details, setDetails } = useBooking();
   const { catalog } = useServices();
   const account = useAccount();
   const [sheet, setSheet] = useState<AccountSheetMode | null>(null);
@@ -31,7 +30,6 @@ export function DetailsStep() {
   const nameRef = useRef<HTMLInputElement>(null);
   const phoneRef = useRef<HTMLInputElement>(null);
   const [errors, setErrors] = useState<DetailsErrors>({});
-  const [previewing, setPreviewing] = useState(false);
   // Signed out, she first chooses: sign in, or go on as a guest. Coming back with details already
   // typed counts as having chosen guest.
   const [asGuest, setAsGuest] = useState(() => Boolean(details.name || details.phone));
@@ -130,9 +128,6 @@ export function DetailsStep() {
                   error={errors.phone}
                   inputRef={phoneRef}
                 />
-                <TextButton className={styles.preview} onClick={() => setPreviewing(true)}>
-                  See a sample reminder
-                </TextButton>
                 {account ? null : (
                   <TextButton className={styles.preview} onClick={() => setSheet('create')}>
                     Create an account
@@ -142,21 +137,15 @@ export function DetailsStep() {
             ) : null}
           </form>
 
-          <div className={styles.bar}>
-            <ConfirmBar sticky>
-              {showForm ? (
+          {showForm ? (
+            <div className={styles.bar}>
+              <ConfirmBar sticky>
                 <Button type="submit" form="details-form" fullWidth>
                   Continue
                 </Button>
-              ) : null}
-              <TextButton
-                className={styles.back}
-                onClick={() => navigate(skippedChoose ? exitTo : `/book/${stylist.id}`)}
-              >
-                Back
-              </TextButton>
-            </ConfirmBar>
-          </div>
+              </ConfirmBar>
+            </div>
+          ) : null}
         </div>
 
         <AccountSheet
@@ -164,14 +153,6 @@ export function DetailsStep() {
           onModeChange={setSheet}
           onClose={() => setSheet(null)}
           guestDetails={details}
-        />
-
-        <ReminderPreviewSheet
-          open={previewing}
-          onClose={() => setPreviewing(false)}
-          draft={draft}
-          stylist={stylist}
-          clientName={details.name}
         />
       </Container>
     </>

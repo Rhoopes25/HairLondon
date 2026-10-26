@@ -206,17 +206,6 @@ const SCENARIOS: Scenario[] = [
       await page.getByRole('link', { name: 'Exit booking' }).click();
     },
   },
-  {
-    name: 'overlay-sample-reminder',
-    path: '/book/london',
-    overlay: true,
-    act: async (page) => {
-      await pickServiceDayAndTime(page);
-      await continueTo(page, 'Continue');
-      await fillDetails(page);
-      await page.getByRole('button', { name: 'See a sample reminder' }).click();
-    },
-  },
 ];
 
 // ---------- checks (run inside the page, so they are source strings: this tooling has no DOM types) ----------
