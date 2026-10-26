@@ -16,12 +16,17 @@
   color: var(--ink-soft);
 }
 
-/* Part 1: the choices on the left and, from md, the count and the one action in a sticky panel. */
+/* One centered column on every screen: the choices, then the one action under them. */
+.filters {
+  padding-bottom: var(--space-6);
+}
+
 .next {
   display: flex;
   flex-direction: column;
   align-items: center;
   gap: var(--space-1);
+  padding: var(--space-5) var(--space-5) 0;
 }
 
 .next .count {
@@ -77,21 +82,4 @@
 
 .results {
   padding-bottom: var(--space-6);
-}
-
-@media (min-width: 900px) {
-  .list {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-    gap: var(--space-3);
-  }
-
-  .summary {
-    max-width: var(--container-narrow);
-  }
-}
-
-@media (min-width: 1200px) {
-  .list {
-    grid-template-columns: repeat(3, minmax(0, 1fr));
-  }
 }

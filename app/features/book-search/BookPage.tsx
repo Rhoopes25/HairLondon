@@ -28,13 +28,12 @@ import {
   Button,
   Chip,
   ChipRow,
-  ConfirmBar,
   EmptyNote,
+  Narrow,
   Notice,
   PageIntro,
   Section,
   SlotPicker,
-  SplitLayout,
   StepGuide,
   StylistCard,
   TextButton,
@@ -193,7 +192,7 @@ export function BookPage() {
   const guideStep = showingResults ? 2 : filters.serviceIds.length ? 1 : 0;
 
   return (
-    <>
+    <Narrow>
       <PageIntro title="Book">
         Pick what you want done and when. We&rsquo;ll show who can fit you in.
       </PageIntro>
@@ -243,27 +242,7 @@ export function BookPage() {
           </Section>
         </section>
       ) : (
-        <SplitLayout
-          aside={
-            <ConfirmBar sticky summary={summary}>
-              <div className={styles.next}>
-                <p className={styles.count} aria-live="polite">
-                  {countText}
-                </p>
-                <Button onClick={showResults} fullWidth>
-                  See who can fit me in
-                </Button>
-                {activeCount ? (
-                  <TextButton
-                    onClick={() => update({ serviceIds: [], day: undefined, timeOfDay: undefined })}
-                  >
-                    Clear filters ({activeCount})
-                  </TextButton>
-                ) : null}
-              </div>
-            </ConfirmBar>
-          }
-        >
+        <div className={styles.filters}>
           <Section title="What do you need?">
             <p className={styles.hint}>Pick as many as you like.</p>
             <ChipRow label="Services" wrap>
@@ -292,10 +271,6 @@ export function BookPage() {
               onSelect={(id) =>
                 update({ ...filters, day: filters.day === id ? undefined : (id as IsoDate) })
               }
-              any={{
-                selected: filters.day === undefined,
-                onSelect: () => update({ ...filters, day: undefined }),
-              }}
             />
           </Section>
 
@@ -320,8 +295,23 @@ export function BookPage() {
               ))}
             </ChipRow>
           </Section>
-        </SplitLayout>
+          <div className={styles.next}>
+            <p className={styles.count} aria-live="polite">
+              {countText}
+            </p>
+            <Button onClick={showResults} fullWidth>
+              See who can fit me in
+            </Button>
+            {activeCount ? (
+              <TextButton
+                onClick={() => update({ serviceIds: [], day: undefined, timeOfDay: undefined })}
+              >
+                Clear filters ({activeCount})
+              </TextButton>
+            ) : null}
+          </div>
+        </div>
       )}
-    </>
+    </Narrow>
   );
 }

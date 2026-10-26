@@ -20,6 +20,11 @@ const londonCard = () => {
 const chip = (name: string) => screen.getByRole('button', { name });
 const pressed = (name: string) => chip(name).getAttribute('aria-pressed') === 'true';
 
+/** Day is optional: until she taps one, no day chip is highlighted. */
+const noDayPicked = () =>
+  within(screen.getByRole('group', { name: 'Day' })).queryAllByRole('button', { pressed: true })
+    .length === 0;
+
 async function ready() {
   await screen.findByRole('heading', { level: 1, name: 'Book' });
 }
@@ -199,10 +204,10 @@ describe('Book: services', () => {
 });
 
 describe('Book: day and time', () => {
-  it('starts on Any day and Any time', async () => {
+  it('starts with no day picked and Any time', async () => {
     renderApp('/book');
     await ready();
-    expect(pressed('Any day')).toBe(true);
+    expect(noDayPicked()).toBe(true);
     expect(pressed('Any time')).toBe(true);
     expect(screen.queryByRole('button', { name: /Clear filters/ })).not.toBeInTheDocument();
   });
@@ -211,9 +216,8 @@ describe('Book: day and time', () => {
     renderApp('/book');
     await ready();
     const days = within(screen.getByRole('group', { name: 'Day' })).getAllByRole('button');
-    expect(days[0]).toHaveAccessibleName('Any day');
-    expect(days[1]).toHaveAccessibleName('Wed, Oct 7');
-    expect(days).toHaveLength(15); // Any day, then up to 14 days
+    expect(days[0]).toHaveAccessibleName('Wed, Oct 7');
+    expect(days).toHaveLength(14); // up to 14 days, none picked until she taps one
   });
 
   it('filters to one day, and taps again to clear it', async () => {
@@ -221,7 +225,6 @@ describe('Book: day and time', () => {
     await ready();
     await user.click(chip('Fri, Oct 9'));
     expect(pressed('Fri, Oct 9')).toBe(true);
-    expect(pressed('Any day')).toBe(false);
     expect(router.state.location.search).toBe('?day=2026-10-09');
     await seeWho(user);
     for (const card of cards()) {
@@ -231,7 +234,7 @@ describe('Book: day and time', () => {
     }
     await user.click(screen.getByRole('link', { name: 'Edit your search' }));
     await user.click(await screen.findByRole('button', { name: 'Fri, Oct 9' }));
-    expect(pressed('Any day')).toBe(true);
+    expect(noDayPicked()).toBe(true);
   });
 
   it('filters to a part of the day', async () => {
@@ -260,7 +263,7 @@ describe('Book: day and time', () => {
   it('ignores a day that is not in the strip', async () => {
     renderApp('/book?day=2026-10-11'); // a Sunday: nobody works it
     await ready();
-    expect(pressed('Any day')).toBe(true);
+    expect(noDayPicked()).toBe(true);
     expect(screen.getByText('4 stylists')).toBeInTheDocument();
   });
 });
@@ -294,7 +297,7 @@ describe('Book: clearing', () => {
     await user.click(clear);
     expect(router.state.location.search).toBe('');
     expect(screen.queryByRole('button', { name: /Clear filters/ })).not.toBeInTheDocument();
-    expect(pressed('Any day')).toBe(true);
+    expect(noDayPicked()).toBe(true);
     expect(pressed('Any time')).toBe(true);
     expect(pressed('Color')).toBe(false);
   });
