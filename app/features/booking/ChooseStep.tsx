@@ -1,117 +1,57 @@
-import { useId, useState } from 'react';
 import { useNavigate } from 'react-router';
-import {
-  bookingProgress,
-  isComplete,
-  summaryLine,
-  timeNote,
-  totalLine,
-} from '@src/domain/booking/draft';
+import { isComplete, summaryLine, timeNote, totalLine } from '@src/domain/booking/draft';
 import { formatDuration } from '@src/domain/format/duration';
 import { firstName } from '@src/domain/format/name';
 import { formatStartingPrice } from '@src/domain/format/price';
 import { SERVICE_IDS } from '@src/domain/models/service';
-import { totalDuration, totalPrice } from '@src/domain/pricing/totals';
+import { totalDuration } from '@src/domain/pricing/totals';
 import { SlotSelector } from '@app/features/scheduling';
 import { useDocumentTitle } from '@app/hooks/usePageBehavior';
-import { cx } from '@app/lib/cx';
 import { useServices } from '@app/services';
-import {
-  Button,
-  ConfirmBar,
-  Container,
-  PageIntro,
-  Section,
-  ServiceOption,
-  ServiceSummary,
-  SplitLayout,
-} from '@app/ui';
+import { Button, Chip, ChipRow, Container, Narrow, PageIntro, Section } from '@app/ui';
 import { BookingHeader } from './BookingHeader';
 import { useBooking } from './BookingProvider';
 import styles from './ChooseStep.module.css';
 
-/** Step 1: services, day, time. Everything on one screen so the choices stay in view together. */
+/** Step 1: services, day, time, laid out like the Book page so both ways in feel the same. */
 export function ChooseStep() {
-  const {
-    stylist,
-    draft,
-    droppedStart,
-    arrivedWithServices,
-    toggleService,
-    selectDate,
-    selectStart,
-  } = useBooking();
+  const { stylist, draft, droppedStart, toggleService, selectDate, selectStart } = useBooking();
   const { catalog } = useServices();
   const navigate = useNavigate();
-  const listId = useId();
-  const [changing, setChanging] = useState(false);
   useDocumentTitle(`Book with ${stylist.name}`);
 
   const started = draft.serviceIds.length > 0 || draft.date !== null;
   const picked = draft.serviceIds.length > 0;
-  // She arrived with services chosen: show them as one line, and the list only if she asks.
-  // With nothing chosen there is nothing to summarize, so the list stays open.
-  const showList = !arrivedWithServices || changing || !picked;
-  const summarized = arrivedWithServices && picked;
+  const offered = SERVICE_IDS.filter((id) => stylist.prices[id] !== undefined);
 
+  // Same shape as the Book page: one centered column, chips for services, the day strip, then
+  // the one action under it all. Only the times differ: here she picks an exact time.
   return (
     <>
       <BookingHeader confirmExit={started} step={0} />
       <Container>
-        <PageIntro title="Book Now" />
+        <Narrow>
+          <PageIntro title="Book Now" />
 
-        <SplitLayout
-          aside={
-            <ConfirmBar
-              sticky
-              progress={bookingProgress(draft)}
-              summary={summaryLine(draft, catalog)}
-              total={{ label: 'Estimated total', value: totalLine(draft, stylist, catalog) }}
-              note={
-                picked
-                  ? `Starting price. Longer or thicker hair can cost more, and ${firstName(stylist.name)} will confirm it with you.`
-                  : undefined
-              }
-            >
-              <Button
-                fullWidth
-                disabled={!isComplete(draft)}
-                onClick={() => navigate(`/book/${stylist.id}/details`)}
-              >
-                Continue
-              </Button>
-            </ConfirmBar>
-          }
-        >
-          <Section title={arrivedWithServices ? 'Your services' : 'Choose your services'}>
-            {summarized ? (
-              <ServiceSummary
-                names={draft.serviceIds.map((id) => catalog[id].name).join(' + ')}
-                meta={`${formatStartingPrice(totalPrice(stylist, draft.serviceIds))} · about ${formatDuration(totalDuration(catalog, draft.serviceIds))}`}
-                expanded={showList}
-                onToggle={() => setChanging(!changing)}
-                controls={listId}
-              />
+          <Section title="What do you need?">
+            <p className={styles.hint}>Pick as many as you like.</p>
+            <ChipRow label="Services" wrap>
+              {offered.map((id) => (
+                <Chip
+                  key={id}
+                  selected={draft.serviceIds.includes(id)}
+                  onClick={() => toggleService(id)}
+                >
+                  {catalog[id].name} {formatStartingPrice(stylist.prices[id] ?? 0)}
+                </Chip>
+              ))}
+            </ChipRow>
+            {picked ? (
+              <p className={styles.estimate}>
+                {draft.serviceIds.length > 1 ? 'Together these take about ' : 'Takes about '}
+                {formatDuration(totalDuration(catalog, draft.serviceIds))}.
+              </p>
             ) : null}
-            <div
-              id={listId}
-              className={cx(styles.services, summarized && styles.afterSummary)}
-              hidden={!showList}
-            >
-              {SERVICE_IDS.filter((id) => stylist.prices[id] !== undefined).map((id) => {
-                const service = catalog[id];
-                return (
-                  <ServiceOption
-                    key={id}
-                    name={service.name}
-                    description={service.description}
-                    meta={`${formatDuration(service.durationMin)} · ${formatStartingPrice(stylist.prices[id] ?? 0)}`}
-                    checked={draft.serviceIds.includes(id)}
-                    onChange={() => toggleService(id)}
-                  />
-                );
-              })}
-            </div>
           </Section>
 
           <SlotSelector
@@ -123,7 +63,31 @@ export function ChooseStep() {
             onSelectStart={selectStart}
             note={timeNote(draft, catalog, droppedStart)}
           />
-        </SplitLayout>
+
+          <div className={styles.next}>
+            <p className={styles.summary} aria-live="polite">
+              {summaryLine(draft, catalog)}
+            </p>
+            {picked ? (
+              <p className={styles.total}>
+                Estimated total <strong>{totalLine(draft, stylist, catalog)}</strong>
+              </p>
+            ) : null}
+            {picked ? (
+              <p className={styles.fine}>
+                Starting price. Longer or thicker hair can cost more, and {firstName(stylist.name)}{' '}
+                will confirm it with you.
+              </p>
+            ) : null}
+            <Button
+              fullWidth
+              disabled={!isComplete(draft)}
+              onClick={() => navigate(`/book/${stylist.id}/details`)}
+            >
+              Continue
+            </Button>
+          </div>
+        </Narrow>
       </Container>
     </>
   );

@@ -1,15 +1,45 @@
-.services {
+.hint {
+  font-size: 0.8rem;
+  color: var(--ink-soft);
+  margin: -0.4rem 0 0.7rem;
+}
+
+.estimate {
+  margin-top: 0.75rem;
+  font-size: 0.85rem;
+  color: var(--gold-ink);
+}
+
+/* The one action under the choices, as on the Book page. */
+.next {
   display: flex;
   flex-direction: column;
-  gap: 0.65rem;
+  gap: var(--space-1);
+  padding: var(--space-5) var(--space-5) var(--space-6);
 }
 
-/* `display: flex` above would otherwise beat the hidden attribute, and the list would never close. */
-.services[hidden] {
-  display: none;
+.summary {
+  font-size: var(--fs-body-sm);
+  color: var(--ink-soft);
+  text-align: center;
 }
 
-/* The summary line and the list it opens sit one above the other. */
-.afterSummary {
-  margin-top: 0.65rem;
+.total {
+  display: flex;
+  justify-content: space-between;
+  gap: var(--space-2);
+  padding-top: var(--space-1);
+  border-top: 1px solid var(--cream-deep);
+  font-size: var(--fs-body-sm);
+  color: var(--ink);
+}
+
+.total strong {
+  font-weight: 500;
+}
+
+.fine {
+  font-size: var(--fs-caption);
+  color: var(--ink-soft);
+  margin-bottom: var(--space-1);
 }

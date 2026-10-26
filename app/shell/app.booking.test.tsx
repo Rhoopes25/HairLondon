@@ -21,10 +21,9 @@ async function chooseHaircutOct8At9(user: UserEvent) {
   await user.click(timeButton('9:00 AM'));
 }
 
-/** Services that arrive chosen are one line; the full list opens with Change. */
-async function openServices(user: UserEvent) {
-  await user.click(screen.getByRole('button', { name: 'Change' }));
-}
+/** Service chips, the same control as on the Book page. */
+const services = () => within(screen.getByRole('group', { name: 'Services' }));
+const serviceChip = (name: RegExp) => services().getByRole('button', { name });
 
 async function fillDetails(user: UserEvent) {
   await user.type(screen.getByLabelText('Name'), 'Maren');
@@ -32,15 +31,10 @@ async function fillDetails(user: UserEvent) {
 }
 
 describe('booking: choose services, day, and time', () => {
-  it('arrives with the service chosen as one line, and needs a day and a time before continuing', async () => {
+  it('arrives with the service chosen, and needs a day and a time before continuing', async () => {
     const { user } = renderApp('/book/london?services=haircut');
     await screen.findByRole('heading', { level: 1, name: 'Book Now' });
-    const change = screen.getByRole('button', { name: 'Change' });
-    expect(change).toHaveAttribute('aria-expanded', 'false');
-    expect(screen.queryByRole('checkbox', { name: /Haircut/ })).not.toBeInTheDocument();
-    await user.click(change);
-    expect(screen.getByRole('checkbox', { name: /Haircut/ })).toBeChecked();
-    expect(screen.getByRole('button', { name: 'Done' })).toHaveAttribute('aria-expanded', 'true');
+    expect(serviceChip(/^Haircut/)).toHaveAttribute('aria-pressed', 'true');
     expect(continueButton()).toBeDisabled();
     expect(screen.getByText('Select a day to see available times')).toBeInTheDocument();
 
@@ -50,31 +44,36 @@ describe('booking: choose services, day, and time', () => {
     expect(continueButton()).toBeEnabled();
   });
 
+  it('starts with no day picked, like the Book page', async () => {
+    renderApp('/book/london');
+    await screen.findByRole('heading', { level: 1, name: 'Book Now' });
+    expect(days().every((day) => day.getAttribute('aria-pressed') !== 'true')).toBe(true);
+    expect(screen.queryByRole('progressbar')).not.toBeInTheDocument();
+  });
+
   it('still understands the older single ?service= link', async () => {
     renderApp('/book/london?service=color');
     await screen.findByRole('heading', { level: 1, name: 'Book Now' });
-    expect(screen.getByRole('button', { name: 'Change' })).toBeInTheDocument();
-    // The one-line summary and the bar below both show it: $120+ for about 2 hr.
-    expect(screen.getAllByText('$120+ · about 2 hr')).toHaveLength(2);
+    expect(serviceChip(/^Color/)).toHaveAttribute('aria-pressed', 'true');
+    expect(screen.getByText('$120+ · about 2 hr')).toBeInTheDocument();
   });
 
   it('ignores a service the stylist does not offer', async () => {
     renderApp('/book/kai?services=highlights');
     await screen.findByRole('heading', { level: 1, name: 'Book Now' });
-    expect(screen.queryByRole('checkbox', { name: /Highlights/ })).not.toBeInTheDocument();
-    expect(screen.getAllByRole('checkbox').every((box) => !(box as HTMLInputElement).checked)).toBe(
-      true,
-    );
+    expect(services().queryByRole('button', { name: /Highlights/ })).not.toBeInTheDocument();
+    expect(
+      services()
+        .getAllByRole('button')
+        .every((chip) => chip.getAttribute('aria-pressed') === 'false'),
+    ).toBe(true);
   });
 
-  it('lists only the services she offers, with duration and price', async () => {
+  it('lists only the services she offers, each with her starting price', async () => {
     renderApp('/book/kai');
     await screen.findByRole('heading', { level: 1, name: 'Book Now' });
-    const boxes = screen.getAllByRole('checkbox');
-    expect(boxes).toHaveLength(4);
-    expect(screen.getByRole('checkbox', { name: /Haircut/ }).closest('label')).toHaveTextContent(
-      '1 hr · $45+',
-    );
+    expect(services().getAllByRole('button')).toHaveLength(4);
+    expect(serviceChip(/^Haircut/)).toHaveTextContent('Haircut $45+');
   });
 
   it('shows only the days she works, over the next three weeks, starting today', async () => {
@@ -128,18 +127,17 @@ describe('booking: choose services, day, and time', () => {
     await user.click(days()[5] as HTMLElement); // Wed, Oct 14: the morning is open after 9:00
     await user.click(timeButton('10:00 AM'));
     expect(screen.getByText('Haircut · Wed, Oct 14 · 10:00 to 11:00 AM')).toBeInTheDocument();
-    expect(screen.getAllByText('$65+ · about 1 hr')).toHaveLength(2); // the services line and the bar
+    expect(screen.getByText('$65+ · about 1 hr')).toBeInTheDocument();
     expect(screen.getByText('You’ll be done by about 11:00 AM.')).toBeInTheDocument();
     expect(
       screen.getByText(/Starting price\. Longer or thicker hair can cost more, and London will/),
     ).toBeInTheDocument();
 
-    await openServices(user);
-    await user.click(screen.getByRole('checkbox', { name: /Blowout/ }));
+    await user.click(serviceChip(/^Blowout/));
     expect(
       screen.getByText('Haircut + Blowout · Wed, Oct 14 · 10:00 to 11:45 AM'),
     ).toBeInTheDocument();
-    expect(screen.getAllByText('$110+ · about 1 hr 45 min')).toHaveLength(2);
+    expect(screen.getByText('$110+ · about 1 hr 45 min')).toBeInTheDocument();
     expect(screen.getByText('You’ll be done by about 11:45 AM.')).toBeInTheDocument();
   });
 
@@ -148,8 +146,7 @@ describe('booking: choose services, day, and time', () => {
     await chooseHaircutOct8At9(user);
     expect(continueButton()).toBeEnabled();
     // Highlights make it 3.5 hours, running into the sample 10:30 booking that day.
-    await openServices(user);
-    await user.click(screen.getByRole('checkbox', { name: /Highlights/ }));
+    await user.click(serviceChip(/^Highlights/));
     expect(timeButton('9:00 AM')).toHaveAttribute('aria-pressed', 'false');
     expect(continueButton()).toBeDisabled();
     // She is told why, instead of the time quietly vanishing.
@@ -161,26 +158,6 @@ describe('booking: choose services, day, and time', () => {
     await user.click(timeButton('11:00 AM'));
     expect(screen.queryByText(/doesn’t leave enough time/)).not.toBeInTheDocument();
     expect(continueButton()).toBeEnabled();
-  });
-
-  it('shows how far along she is, a third at a time', async () => {
-    const { user } = renderApp('/book/london');
-    await screen.findByRole('heading', { level: 1, name: 'Book Now' });
-    const progress = () => screen.getByRole('progressbar', { name: 'Booking progress' });
-    expect(progress()).toHaveAttribute('aria-valuenow', '0');
-    expect(progress()).toHaveAttribute('aria-valuetext', 'Pick your services');
-
-    await user.click(screen.getByRole('checkbox', { name: /Haircut/ }));
-    expect(progress()).toHaveAttribute('aria-valuenow', '33');
-    expect(progress()).toHaveAttribute('aria-valuetext', 'Add your day');
-
-    await user.click(days()[1] as HTMLElement);
-    expect(progress()).toHaveAttribute('aria-valuenow', '67');
-    expect(progress()).toHaveAttribute('aria-valuetext', 'Choose a time');
-
-    await user.click(timeButton('9:00 AM'));
-    expect(progress()).toHaveAttribute('aria-valuenow', '100');
-    expect(progress()).toHaveAttribute('aria-valuetext', 'Ready to continue');
   });
 
   it('clears the time when a new day is picked, and the day when it is picked again', async () => {
@@ -391,7 +368,7 @@ describe('booking: the whole flow', () => {
     await user.click(screen.getByRole('link', { name: 'London' }));
     await user.click(await screen.findByRole('link', { name: 'Book with London' }));
     await screen.findByRole('heading', { level: 1, name: 'Book Now' });
-    await user.click(screen.getByRole('checkbox', { name: /Haircut/ }));
+    await user.click(serviceChip(/^Haircut/));
     await user.click(days()[1] as HTMLElement);
     expect(timeButton('9:00 AM')).toBeDisabled();
     expect(timeButton('9:30 AM')).toBeDisabled(); // a 1 hour visit at 9:30 would overlap
@@ -421,9 +398,7 @@ describe('booking: leaving', () => {
     await user.click(within(dialog).getByRole('button', { name: 'Keep booking' }));
     expect(screen.queryByRole('dialog')).not.toBeInTheDocument();
     expect(router.state.location.pathname).toBe('/book/london');
-    expect(screen.getByRole('button', { name: 'Change' })).toBeInTheDocument();
-    await user.click(screen.getByRole('button', { name: 'Change' }));
-    expect(screen.getByRole('checkbox', { name: /Haircut/ })).toBeChecked();
+    expect(serviceChip(/^Haircut/)).toHaveAttribute('aria-pressed', 'true');
   });
 
   it('leaves for the stylist profile once confirmed', async () => {
@@ -440,8 +415,7 @@ describe('booking: leaving', () => {
     const fromServices = renderApp('/stylists/london/services');
     await fromServices.user.click(await screen.findByRole('link', { name: /^Blowout/ }));
     await screen.findByRole('heading', { level: 1, name: 'Book Now' });
-    await fromServices.user.click(screen.getByRole('button', { name: 'Change' }));
-    expect(screen.getByRole('checkbox', { name: /Blowout/ })).toBeChecked();
+    expect(serviceChip(/^Blowout/)).toHaveAttribute('aria-pressed', 'true');
     fromServices.unmount();
 
     // From a photo in the portfolio.
