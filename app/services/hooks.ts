@@ -54,8 +54,12 @@ export function useSearchEnvironment(): SearchEnvironment {
   return { catalog, clock, strategy: availabilityFor() };
 }
 
+/** The signed-in account's saved stylist ids; a guest has none. */
 export function useSavedIds(): readonly string[] {
-  return useStore(useServices().saved);
+  const { saved } = useServices();
+  const account = useAccount();
+  useStore(saved);
+  return saved.idsFor(account?.id ?? null);
 }
 
 /** Where she is, if she has shared it (or the sample spot standing in for it). */

@@ -44,6 +44,15 @@ export function createServices(
   stylists: readonly Stylist[] = STYLISTS,
 ): Services {
   const appointments = new AppointmentRepository(storage, clock, seedAppointments(clock));
+  const saved = new SavedStylistRepository(storage);
+  const accounts = new AccountRepository(storage, clock);
+  // Saves belong to accounts: whoever signs in first on this device inherits any older device saves.
+  const adopt = () => {
+    const current = accounts.current();
+    if (current) saved.adoptDeviceSaves(current.id);
+  };
+  adopt();
+  accounts.subscribe(adopt);
   const sample = new SeededAvailability();
 
   return {
@@ -51,11 +60,11 @@ export function createServices(
     catalog: SERVICES,
     stylists: new StylistRepository(stylists),
     appointments,
-    saved: new SavedStylistRepository(storage),
+    saved,
     reviews: new ReviewRepository(storage, clock),
     preferences: new PreferencesRepository(storage),
     location: new LocationRepository(storage),
-    accounts: new AccountRepository(storage, clock),
+    accounts,
     availabilityFor: (ignoreAppointmentId) =>
       new AppointmentAwareAvailability(
         sample,

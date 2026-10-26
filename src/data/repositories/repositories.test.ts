@@ -131,10 +131,10 @@ describe('AppointmentRepository', () => {
 describe('SavedStylistRepository', () => {
   it('toggles a stylist saved and unsaved', () => {
     const repo = new SavedStylistRepository(new MemoryStorageAdapter());
-    repo.toggle('kai');
-    expect(repo.isSaved('kai')).toBe(true);
-    repo.toggle('kai');
-    expect(repo.isSaved('kai')).toBe(false);
+    repo.toggle('acc_a', 'kai');
+    expect(repo.isSaved('acc_a', 'kai')).toBe(true);
+    repo.toggle('acc_a', 'kai');
+    expect(repo.isSaved('acc_a', 'kai')).toBe(false);
   });
 });
 
