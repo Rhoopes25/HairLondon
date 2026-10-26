@@ -47,6 +47,9 @@ const GUIDE: readonly GuideStep[] = [
   { label: 'Tap a stylist’s time', icon: 'clock' },
 ];
 
+/** The optional day step, which stays unchecked if she goes on without picking a day. */
+const DAY_STEP = 1;
+
 /** `?step=who` is part 2, the stylists who can fit her in. Without it she is on part 1, choosing. */
 const RESULTS_STEP = 'who';
 
@@ -196,7 +199,12 @@ export function BookPage() {
       <PageIntro title="Book">
         Pick what you want done and when. We&rsquo;ll show who can fit you in.
       </PageIntro>
-      <StepGuide label="How booking works" steps={GUIDE} current={guideStep} />
+      <StepGuide
+        label="How booking works"
+        steps={GUIDE}
+        current={guideStep}
+        skipped={guideStep > DAY_STEP && !filters.day ? [DAY_STEP] : []}
+      />
 
       {showingResults ? (
         <section className={styles.results} aria-label="Stylists who can fit you in">
