@@ -103,20 +103,6 @@
   background: var(--cream);
 }
 
-/* A quiet confirmation under the control after sign out; empty otherwise. */
-.note {
-  position: absolute;
-  top: calc(100% + var(--space-1));
-  right: 0;
-  white-space: nowrap;
-  font-size: var(--fs-caption);
-  color: var(--gold-ink);
-}
-
-.note:empty {
-  display: none;
-}
-
 @media (min-width: 900px) {
   .signInText {
     display: inline;

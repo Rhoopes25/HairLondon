@@ -1,8 +1,10 @@
+import { useState } from 'react';
 import { useDocumentTitle } from '@app/hooks/usePageBehavior';
 import { useAccount, useServices } from '@app/services';
 import { Button, LinkButton, Narrow, PageIntro, QuietLink, Recap } from '@app/ui';
 import { NextVisitCard } from './NextVisitCard';
 import { PretendNote } from './PretendNote';
+import { SignOutDialog } from './SignOutDialog';
 import styles from './AccountPage.module.css';
 
 /**
@@ -12,6 +14,7 @@ import styles from './AccountPage.module.css';
 export function AccountPage() {
   const account = useAccount();
   const { accounts } = useServices();
+  const [confirming, setConfirming] = useState(false);
   useDocumentTitle(account ? 'Your account' : 'Sign in');
 
   if (!account) {
@@ -48,9 +51,17 @@ export function AccountPage() {
       />
       <div className={styles.actions}>
         <NextVisitCard account={account} />
-        <Button variant="outline" fullWidth onClick={() => accounts.signOut()}>
+        <Button variant="outline" fullWidth onClick={() => setConfirming(true)}>
           Sign out
         </Button>
+        <SignOutDialog
+          open={confirming}
+          onCancel={() => setConfirming(false)}
+          onConfirm={() => {
+            setConfirming(false);
+            accounts.signOut();
+          }}
+        />
         <PretendNote />
       </div>
     </Narrow>

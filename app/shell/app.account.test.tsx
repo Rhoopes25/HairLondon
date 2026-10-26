@@ -48,6 +48,8 @@ describe('account pages', () => {
     expect(services.accounts.current()?.email).toBe(rachel.email);
 
     await user.click(screen.getByRole('button', { name: 'Sign out' }));
+    const dialog = await screen.findByRole('dialog', { name: 'Sign out?' });
+    await user.click(within(dialog).getByRole('button', { name: 'Sign out' }));
     await screen.findByRole('heading', { level: 1, name: 'Sign in' });
     expect(services.accounts.current()).toBeNull();
   });
@@ -181,8 +183,17 @@ describe('account control in the header', () => {
     expect(header().getByRole('link', { name: 'My account' })).toHaveAttribute('href', '/account');
 
     await user.click(header().getByRole('button', { name: 'Sign out' }));
+    // Asks first; Stay signed in changes nothing.
+    let dialog = await screen.findByRole('dialog', { name: 'Sign out?' });
+    await user.click(within(dialog).getByRole('button', { name: 'Stay signed in' }));
+    expect(services.accounts.current()?.name).toBe('Rachel');
+
+    await user.click(header().getByRole('button', { name: 'Account: Rachel' }));
+    await user.click(header().getByRole('button', { name: 'Sign out' }));
+    dialog = await screen.findByRole('dialog', { name: 'Sign out?' });
+    await user.click(within(dialog).getByRole('button', { name: 'Sign out' }));
     expect(services.accounts.current()).toBeNull();
-    expect(header().getByText('Signed out')).toBeInTheDocument();
+    expect(screen.queryByText('Signed out')).not.toBeInTheDocument();
     expect(header().getByRole('link', { name: 'Sign in' })).toBeInTheDocument();
   });
 
