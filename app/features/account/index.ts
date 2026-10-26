@@ -1,3 +1,4 @@
+export { AccountMenu } from './AccountMenu';
 export { AccountPage } from './AccountPage';
 export { AccountSheet } from './AccountSheet';
 export type { AccountSheetMode } from './AccountSheet';

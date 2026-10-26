@@ -1,5 +1,6 @@
 import { useEffect } from 'react';
 import { Outlet } from 'react-router';
+import { AccountMenu } from '@app/features/account';
 import { NavBar } from '@app/ui';
 import type { NavLinkItem } from '@app/ui';
 import { Frame } from './Frame';
@@ -10,7 +11,8 @@ import { Frame } from './Frame';
  * fit a 360px phone, so the NavBar tightens its gaps on narrow screens.
  */
 const NAV_LINKS: readonly NavLinkItem[] = [
-  { to: '/', label: 'Home', end: true },
+  // On a phone the logo is Home, which leaves room for Sign in at the right.
+  { to: '/', label: 'Home', end: true, fromSm: true },
   { to: '/book', label: 'Book' },
   { to: '/stylists', label: 'Stylists' },
   { to: '/appointments', label: 'Appointments' },
@@ -41,7 +43,7 @@ function prefetchBooking() {
 export function MainLayout() {
   useEffect(prefetchBooking, []);
   return (
-    <Frame header={<NavBar homeTo="/" links={NAV_LINKS} />}>
+    <Frame header={<NavBar homeTo="/" links={NAV_LINKS} end={<AccountMenu />} />}>
       <Outlet />
     </Frame>
   );
