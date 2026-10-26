@@ -247,7 +247,10 @@ describe('reviewing a past visit', () => {
     const { user } = renderApp('/appointments/apt_sample_past');
     await user.click(await screen.findByRole('link', { name: 'Book again' }));
     await screen.findByRole('heading', { level: 1, name: 'Book Now' });
-    await user.click(screen.getByRole('button', { name: 'Change' }));
-    expect(screen.getByRole('checkbox', { name: /Haircut/ })).toBeChecked();
+    expect(
+      within(screen.getByRole('group', { name: 'Services' })).getByRole('button', {
+        name: /^Haircut/,
+      }),
+    ).toHaveAttribute('aria-pressed', 'true');
   });
 });
