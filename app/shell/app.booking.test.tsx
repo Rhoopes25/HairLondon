@@ -9,6 +9,12 @@ const times = () => within(screen.getByRole('group', { name: 'Time' }));
 const timeButton = (label: string) => times().getByRole('button', { name: label });
 const continueButton = () => screen.getByRole('button', { name: 'Continue' });
 
+/** Signed out, Your details opens on a choice; these flows book as a guest. */
+async function asGuest(user: UserEvent) {
+  const guest = screen.queryByRole('button', { name: 'Continue as guest' });
+  if (guest) await user.click(guest);
+}
+
 async function chooseHaircutOct8At9(user: UserEvent) {
   await screen.findByRole('heading', { level: 1, name: 'Book Now' });
   await user.click(days()[1] as HTMLElement); // Thu, Oct 8
@@ -208,6 +214,7 @@ describe('booking: the whole flow', () => {
     expect(current()).toBe('Pick a time');
     await user.click(continueButton());
     await screen.findByRole('heading', { level: 1, name: 'Your details' });
+    await asGuest(user);
     expect(current()).toBe('Your details');
     const [first] = within(screen.getByRole('list', { name: 'Booking progress' })).getAllByRole(
       'listitem',
@@ -223,6 +230,7 @@ describe('booking: the whole flow', () => {
     // Details
     const heading = await screen.findByRole('heading', { level: 1, name: 'Your details' });
     await waitFor(() => expect(heading).toHaveFocus());
+    await asGuest(user);
     expect(screen.getByText('Thu, Oct 8, 9:00 to 10:00 AM')).toBeInTheDocument();
     await fillDetails(user);
     await user.click(screen.getByRole('button', { name: 'Continue' }));
@@ -263,6 +271,7 @@ describe('booking: the whole flow', () => {
     await chooseHaircutOct8At9(first.user);
     await first.user.click(continueButton());
     await screen.findByRole('heading', { name: 'Your details' });
+    await asGuest(first.user);
     await fillDetails(first.user);
     await first.user.click(screen.getByRole('button', { name: 'Continue' }));
     await first.user.click(await screen.findByRole('button', { name: 'Confirm booking' }));
@@ -279,6 +288,7 @@ describe('booking: the whole flow', () => {
     await chooseHaircutOct8At9(user);
     await user.click(continueButton());
     await screen.findByRole('heading', { name: 'Your details' });
+    await asGuest(user);
 
     await user.click(screen.getByRole('button', { name: 'Continue' }));
     expect(screen.getByText('Enter your name so London knows who’s coming.')).toBeInTheDocument();
@@ -299,6 +309,7 @@ describe('booking: the whole flow', () => {
     await chooseHaircutOct8At9(user);
     await user.click(continueButton());
     await screen.findByRole('heading', { name: 'Your details' });
+    await asGuest(user);
     await user.type(screen.getByLabelText('Name'), 'Maren');
     await user.type(screen.getByLabelText('Phone'), '+1 555 123 4567');
     await user.click(screen.getByRole('button', { name: 'Continue' }));
@@ -310,6 +321,7 @@ describe('booking: the whole flow', () => {
     await chooseHaircutOct8At9(user);
     await user.click(continueButton());
     await screen.findByRole('heading', { name: 'Your details' });
+    await asGuest(user);
     await fillDetails(user);
     await user.click(screen.getByRole('button', { name: 'Back' }));
     expect(continueButton()).toBeEnabled(); // choices survived on step 1
@@ -322,6 +334,7 @@ describe('booking: the whole flow', () => {
     await chooseHaircutOct8At9(user);
     await user.click(continueButton());
     await screen.findByRole('heading', { name: 'Your details' });
+    await asGuest(user);
     await user.type(screen.getByLabelText('Name'), 'Maren Thompson');
     await user.click(screen.getByRole('button', { name: 'See a sample reminder' }));
     const sheet = await screen.findByRole('dialog', { name: 'Your reminder text' });
@@ -345,6 +358,7 @@ describe('booking: the whole flow', () => {
     await chooseHaircutOct8At9(user);
     await user.click(continueButton());
     await screen.findByRole('heading', { name: 'Your details' });
+    await asGuest(user);
     await user.type(screen.getByLabelText('Name'), 'Maren');
     // Phone left empty, then jump straight to review by URL.
     const visited: string[] = [];
@@ -366,6 +380,7 @@ describe('booking: the whole flow', () => {
     await chooseHaircutOct8At9(user);
     await user.click(continueButton());
     await screen.findByRole('heading', { name: 'Your details' });
+    await asGuest(user);
     await fillDetails(user);
     await user.click(screen.getByRole('button', { name: 'Continue' }));
     await user.click(await screen.findByRole('button', { name: 'Confirm booking' }));
@@ -462,6 +477,7 @@ describe('booking: add to calendar', () => {
     await chooseHaircutOct8At9(user);
     await user.click(continueButton());
     await screen.findByRole('heading', { name: 'Your details' });
+    await asGuest(user);
     await fillDetails(user);
     await user.click(screen.getByRole('button', { name: 'Continue' }));
     await user.click(await screen.findByRole('button', { name: 'Confirm booking' }));

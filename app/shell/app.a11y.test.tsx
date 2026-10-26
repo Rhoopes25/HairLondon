@@ -68,6 +68,8 @@ describe('accessibility: the booking steps', () => {
 
     await user.click(screen.getByRole('button', { name: 'Continue' }));
     await screen.findByRole('heading', { name: 'Your details' });
+    expect(await violations()).toEqual([]); // the sign in or guest choice
+    await user.click(screen.getByRole('button', { name: 'Continue as guest' }));
     await user.click(screen.getByRole('button', { name: 'Continue' })); // shows both errors
     expect(await violations()).toEqual([]);
 
