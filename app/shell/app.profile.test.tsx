@@ -1,4 +1,4 @@
-import { screen, within } from '@testing-library/react';
+import { act, screen, within } from '@testing-library/react';
 import { describe, expect, it } from 'vitest';
 import { STYLISTS } from '@src/data/seed/stylists';
 import { renderApp } from '@app/test/renderApp';
@@ -246,9 +246,14 @@ describe('photo viewer', () => {
   });
 });
 
+const rachel = { name: 'Rachel', phone: '(801) 555-0142', email: 'rachel@example.com' };
+
 describe('saving a stylist', () => {
   it('toggles, announces its state, and lists her under Saved', async () => {
-    const { user } = renderApp('/stylists/kai');
+    const { user, services } = renderApp('/stylists/kai');
+    act(() => {
+      services.accounts.create(rachel);
+    });
     const save = await screen.findByRole('button', { name: 'Save Kai' });
     expect(save).toHaveAttribute('aria-pressed', 'false');
     await user.click(save);
@@ -288,5 +293,55 @@ describe('about the studio', () => {
     expect(screen.getByText('184 N University Ave, Provo, UT')).toBeInTheDocument();
     expect(screen.getByRole('link', { name: /Get directions/ })).toBeInTheDocument();
     expect(screen.getByRole('link', { name: 'Book with London' })).toBeInTheDocument();
+  });
+});
+
+describe('saving needs an account', () => {
+  it('asks a guest to sign in from Saved, instead of showing a list', async () => {
+    renderApp('/saved');
+    await screen.findByRole('heading', { level: 1, name: 'Saved stylists' });
+    expect(screen.getByText(/Sign in to see your saved stylists/)).toBeInTheDocument();
+    const main = within(screen.getByRole('main'));
+    expect(main.getByRole('link', { name: 'Sign in' })).toHaveAttribute(
+      'href',
+      '/account/sign-in?back=%2Fsaved',
+    );
+    expect(main.getByRole('link', { name: 'Create an account' })).toBeInTheDocument();
+  });
+
+  it('opens sign in when a guest taps Save, then saves once she is in', async () => {
+    const { user, services } = renderApp('/stylists/kai');
+    act(() => {
+      services.accounts.create(rachel);
+      services.accounts.signOut();
+    });
+    await user.click(await screen.findByRole('button', { name: 'Save Kai' }));
+    const sheet = await screen.findByRole('dialog', { name: 'Sign in' });
+    await user.type(within(sheet).getByLabelText('Email'), rachel.email);
+    await user.click(within(sheet).getByRole('button', { name: 'Sign in' }));
+    expect(await screen.findByRole('button', { name: 'Save Kai' })).toHaveAttribute(
+      'aria-pressed',
+      'true',
+    );
+  });
+
+  it('hides her saves when she signs out, and each account has its own', async () => {
+    const { user, services } = renderApp('/stylists/kai');
+    act(() => {
+      services.accounts.create(rachel);
+    });
+    await user.click(await screen.findByRole('button', { name: 'Save Kai' }));
+    act(() => services.accounts.signOut());
+    expect(screen.getByRole('button', { name: 'Save Kai' })).toHaveAttribute(
+      'aria-pressed',
+      'false',
+    );
+    act(() => {
+      services.accounts.create({ ...rachel, name: 'Maren', email: 'maren@example.com' });
+    });
+    expect(screen.getByRole('button', { name: 'Save Kai' })).toHaveAttribute(
+      'aria-pressed',
+      'false',
+    );
   });
 });

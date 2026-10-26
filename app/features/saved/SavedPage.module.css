@@ -19,8 +19,27 @@
   }
 }
 
-.signIn {
-  padding: 0 var(--space-5);
-  font-size: var(--fs-body-sm);
+/* Signed out: one calm card saying why the list is empty and the two ways in. */
+.signedOut {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  margin: var(--space-4) var(--space-5) var(--space-6);
+  padding: var(--space-4);
+  background: var(--white);
+  border: 1.5px solid var(--cream-deep);
+  border-radius: var(--radius-md);
   color: var(--ink-soft);
+}
+
+.actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+}
+
+@media (min-width: 900px) {
+  .signedOut {
+    max-width: var(--container-narrow);
+  }
 }
