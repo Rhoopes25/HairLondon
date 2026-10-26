@@ -33,30 +33,32 @@ export function AppointmentsPage() {
     <>
       <PageIntro title="My appointments">Your upcoming and past visits.</PageIntro>
 
-      <Section title="Upcoming">
-        {grouped.upcoming.length ? (
-          <List appointments={grouped.upcoming} phase="upcoming" />
-        ) : (
-          <>
-            <EmptyNote>You don&rsquo;t have anything booked yet.</EmptyNote>
-            <div className={styles.cta}>
-              <LinkButton to="/book">Find a stylist</LinkButton>
-            </div>
-          </>
-        )}
-      </Section>
-
-      {grouped.past.length ? (
-        <Section title="Past visits">
-          <List appointments={grouped.past} phase="past" />
+      <div className={styles.columns}>
+        <Section title="Upcoming">
+          {grouped.upcoming.length ? (
+            <List appointments={grouped.upcoming} phase="upcoming" />
+          ) : (
+            <>
+              <EmptyNote>You don&rsquo;t have anything booked yet.</EmptyNote>
+              <div className={styles.cta}>
+                <LinkButton to="/book">Find a stylist</LinkButton>
+              </div>
+            </>
+          )}
         </Section>
-      ) : null}
 
-      {grouped.cancelled.length ? (
-        <Section title="Cancelled">
-          <List appointments={grouped.cancelled} phase="cancelled" />
-        </Section>
-      ) : null}
+        {grouped.past.length ? (
+          <Section title="Past visits">
+            <List appointments={grouped.past} phase="past" />
+          </Section>
+        ) : null}
+
+        {grouped.cancelled.length ? (
+          <Section title="Cancelled">
+            <List appointments={grouped.cancelled} phase="cancelled" />
+          </Section>
+        ) : null}
+      </div>
     </>
   );
 }

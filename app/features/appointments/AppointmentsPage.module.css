@@ -10,10 +10,21 @@
   padding-bottom: var(--space-5);
 }
 
+/*
+ * From md the groups sit side by side (Upcoming, Past visits, Cancelled), so the page fills the
+ * width however many visits she has. A group on its own spans the row and its cards flow across.
+ */
 @media (min-width: 900px) {
+  .columns {
+    display: grid;
+    grid-auto-flow: column;
+    grid-auto-columns: minmax(0, 1fr);
+    align-items: start;
+  }
+
   .list {
     display: grid;
-    grid-template-columns: repeat(2, minmax(0, 1fr));
+    grid-template-columns: repeat(auto-fill, minmax(22rem, 1fr));
     gap: var(--space-3);
   }
 }
