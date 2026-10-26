@@ -28,11 +28,13 @@ import {
   Button,
   Chip,
   ChipRow,
+  ConfirmBar,
   EmptyNote,
   Notice,
   PageIntro,
   Section,
   SlotPicker,
+  SplitLayout,
   StepGuide,
   StylistCard,
   TextButton,
@@ -93,7 +95,11 @@ export function BookPage() {
 
   function update(next: Filters) {
     // Replace, not push: every tap on a filter would otherwise be a step the back button must undo.
-    navigate({ pathname: location.pathname, search: searchFor(next) }, { replace: true });
+    // Keep her place on the page: a filter tap is not a new screen, so it must not scroll to the top.
+    navigate(
+      { pathname: location.pathname, search: searchFor(next) },
+      { replace: true, preventScrollReset: true },
+    );
   }
 
   function showResults() {
@@ -237,7 +243,27 @@ export function BookPage() {
           </Section>
         </section>
       ) : (
-        <div className={styles.filters}>
+        <SplitLayout
+          aside={
+            <ConfirmBar sticky summary={summary}>
+              <div className={styles.next}>
+                <p className={styles.count} aria-live="polite">
+                  {countText}
+                </p>
+                <Button onClick={showResults} fullWidth>
+                  See who can fit me in
+                </Button>
+                {activeCount ? (
+                  <TextButton
+                    onClick={() => update({ serviceIds: [], day: undefined, timeOfDay: undefined })}
+                  >
+                    Clear filters ({activeCount})
+                  </TextButton>
+                ) : null}
+              </div>
+            </ConfirmBar>
+          }
+        >
           <Section title="What do you need?">
             <p className={styles.hint}>Pick as many as you like.</p>
             <ChipRow label="Services" wrap>
@@ -294,23 +320,7 @@ export function BookPage() {
               ))}
             </ChipRow>
           </Section>
-
-          <div className={styles.next}>
-            <p className={styles.count} aria-live="polite">
-              {countText}
-            </p>
-            <Button onClick={showResults} fullWidth>
-              See who can fit me in
-            </Button>
-            {activeCount ? (
-              <TextButton
-                onClick={() => update({ serviceIds: [], day: undefined, timeOfDay: undefined })}
-              >
-                Clear filters ({activeCount})
-              </TextButton>
-            ) : null}
-          </div>
-        </div>
+        </SplitLayout>
       )}
     </>
   );

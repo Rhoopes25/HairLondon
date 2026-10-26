@@ -16,18 +16,12 @@
   color: var(--ink-soft);
 }
 
-/* Part 1 reads top to bottom in one column on every screen, ending in the one action. */
-.filters {
-  max-width: var(--container-narrow);
-  padding-bottom: var(--space-6);
-}
-
+/* Part 1: the choices on the left and, from md, the count and the one action in a sticky panel. */
 .next {
   display: flex;
   flex-direction: column;
   align-items: center;
   gap: var(--space-1);
-  padding: var(--space-5) var(--space-5) 0;
 }
 
 .next .count {

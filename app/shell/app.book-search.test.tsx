@@ -1,5 +1,5 @@
 import { screen, waitFor, within } from '@testing-library/react';
-import { describe, expect, it } from 'vitest';
+import { describe, expect, it, vi } from 'vitest';
 import { STYLISTS } from '@src/data/seed/stylists';
 import { renderApp } from '@app/test/renderApp';
 
@@ -31,6 +31,15 @@ async function seeWho(user: { click: (element: Element) => Promise<void> }) {
 }
 
 describe('Book: the page', () => {
+  it('keeps her place on the page when she taps a filter', async () => {
+    const { user } = renderApp('/book');
+    await ready();
+    vi.mocked(window.scrollTo).mockClear();
+    await user.click(chip('Haircut'));
+    await waitFor(() => expect(pressed('Haircut')).toBe(true));
+    expect(window.scrollTo).not.toHaveBeenCalled();
+  });
+
   it('leads with what she needs, and marks day and time as optional', async () => {
     renderApp('/book');
     await ready();
