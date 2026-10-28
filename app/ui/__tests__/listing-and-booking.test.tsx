@@ -381,6 +381,22 @@ describe('Hero', () => {
       screen.getByRole('region', { name: 'A stylist holding her shears' }),
     ).toBeInTheDocument();
   });
+  it('fills only the primary action, so two buttons never compete', () => {
+    renderWithRouter(
+      <Hero
+        imageUrl="/images/home.jpg"
+        imageLabel="A stylist holding her shears"
+        title="Local Locks"
+        tagline="Local stylists you can trust."
+        actions={[
+          { label: 'Explore Stylists', to: '/stylists' },
+          { label: 'Book Now', to: '/book', variant: 'outline' },
+        ]}
+      />,
+    );
+    expect(screen.getByRole('link', { name: 'Explore Stylists' }).className).toMatch(/primary/);
+    expect(screen.getByRole('link', { name: 'Book Now' }).className).toMatch(/outline/);
+  });
 });
 
 describe('NavBar', () => {

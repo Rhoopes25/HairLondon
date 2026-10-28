@@ -135,8 +135,8 @@ export function DesignLibraryPage() {
             title="Local Locks"
             tagline="Local stylists you can trust."
             actions={[
-              { label: 'Book Now', to: '/book' },
               { label: 'Explore Stylists', to: '/stylists' },
+              { label: 'Book Now', to: '/book', variant: 'outline' },
             ]}
           />
         </Specimen>

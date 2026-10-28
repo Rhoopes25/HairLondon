@@ -2,7 +2,7 @@ import { describe, expect, it } from 'vitest';
 import { fixedClock } from '../clock';
 import type { Appointment } from '../models/appointment';
 import type { DurationMin, IsoDate, MinuteOfDay } from '../models/time';
-import { isValidEmail, nextVisit, validateNewAccount } from './account';
+import { isValidEmail, latestBooking, nextVisit, validateNewAccount } from './account';
 
 const account = { id: 'a', name: 'Rachel', phone: '(801) 555-0142', email: 'r@example.com' };
 const visit = (
@@ -53,5 +53,25 @@ describe('nextVisit', () => {
     ];
     expect(nextVisit(account, all, clock)?.id).toBe('soonest');
     expect(nextVisit(account, [], clock)).toBeNull();
+  });
+});
+
+describe('latestBooking', () => {
+  it('is her latest booked visit by date, past or upcoming, skipping cancelled and others', () => {
+    const all = [
+      visit('past', '2026-10-01'),
+      visit('upcoming', '2026-10-20'),
+      visit('cancelled', '2026-11-02', '8015550142', 'cancelled'),
+      visit('someone-else', '2026-11-05', '5551234567'),
+    ];
+    expect(latestBooking(account, all)?.id).toBe('upcoming');
+    expect(latestBooking(account, [visit('past', '2026-10-01')])?.id).toBe('past');
+  });
+
+  it('is null when she has never booked, or only cancelled', () => {
+    expect(latestBooking(account, [])).toBeNull();
+    expect(
+      latestBooking(account, [visit('cancelled', '2026-10-08', '8015550142', 'cancelled')]),
+    ).toBeNull();
   });
 });
