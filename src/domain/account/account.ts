@@ -1,7 +1,7 @@
 import { formatPhone, isValidPhone, phoneDigits } from '../format/phone';
 import type { Appointment } from '../models/appointment';
 import type { Clock } from '../clock';
-import { appointmentPhase, byStartAscending } from '../booking/appointments';
+import { appointmentPhase, byStartAscending, byStartDescending } from '../booking/appointments';
 
 /**
  * A pretend account: it lives only on this device, so it holds what saves her typing (name,
@@ -60,6 +60,25 @@ export function validateNewAccount(input: NewAccountInput): NewAccountResult {
 /** Her visits are the ones booked with her phone number. */
 export function isAccountsAppointment(account: Account, appointment: Appointment): boolean {
   return phoneDigits(account.phone) === phoneDigits(appointment.phone);
+}
+
+/**
+ * The visit she booked most recently by date, past or upcoming, or null. Having one is what
+ * "booked before" means on Home, and it is the visit "Book again" copies. Cancelled visits
+ * don't count: she chose not to go.
+ */
+export function latestBooking(
+  account: Account,
+  appointments: readonly Appointment[],
+): Appointment | null {
+  return (
+    appointments
+      .filter(
+        (appointment) =>
+          isAccountsAppointment(account, appointment) && appointment.status === 'booked',
+      )
+      .sort(byStartDescending)[0] ?? null
+  );
 }
 
 /** Her soonest upcoming visit, or null. */

@@ -1,4 +1,4 @@
-import { screen, within } from '@testing-library/react';
+import { screen, waitFor, within } from '@testing-library/react';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import { MemoryStorageAdapter } from '@src/data/storage/memory-storage-adapter';
 import { renderApp } from '@app/test/renderApp';
@@ -17,22 +17,37 @@ describe('entry screen', () => {
     );
   });
 
-  it('keeps everything else quiet: two ways in, and only a small sign-in link besides', async () => {
+  it('leads a first-time visitor to the stylists, with Book Now one tap away and nothing else', async () => {
     renderApp('/');
     await screen.findByRole('heading', { level: 1, name: 'Local Locks' });
     const main = screen.getByRole('main');
+    // Order is the hierarchy: the filled action comes first.
     expect(
       within(main)
         .getAllByRole('link')
         .map((link) => link.textContent),
-    ).toEqual(['Book Now', 'Explore Stylists', 'Sign in']);
+    ).toEqual(['Explore Stylists', 'Book Now']);
   });
 
-  it('shows her next visit under the buttons once she is signed in', async () => {
+  it('treats a signed-in client who has never booked like a first visit', async () => {
     const { services } = renderApp('/');
     await screen.findByRole('heading', { level: 1, name: 'Local Locks' });
     services.accounts.create({ name: 'Rachel', phone: '(555) 123-4567', email: 'r@example.com' });
-    expect(await screen.findByText('Nothing booked yet.', { exact: false })).toBeInTheDocument();
+    const main = screen.getByRole('main');
+    await waitFor(() =>
+      expect(
+        within(main)
+          .getAllByRole('link')
+          .map((link) => link.textContent),
+      ).toEqual(['Explore Stylists', 'Book Now']),
+    );
+    expect(screen.queryByText('Nothing booked yet.', { exact: false })).not.toBeInTheDocument();
+  });
+
+  it('leads with Book Again once she has booked, and shows her next visit under the buttons', async () => {
+    const { services } = renderApp('/');
+    await screen.findByRole('heading', { level: 1, name: 'Local Locks' });
+    services.accounts.create({ name: 'Rachel', phone: '(555) 123-4567', email: 'r@example.com' });
     services.appointments.add({
       stylistId: 'london',
       serviceIds: ['haircut'],
@@ -43,9 +58,38 @@ describe('entry screen', () => {
       name: 'Rachel',
       phone: '(555) 123-4567',
     });
-    const card = await screen.findByRole('region', { name: 'Your next visit' });
+    const again = await screen.findByRole('link', { name: 'Book again: Haircut with London' });
+    expect(again).toHaveTextContent('Book Again');
+    expect(again).toHaveAttribute('href', '/book/london?services=haircut&back=%2F');
+    expect(screen.getByRole('link', { name: 'Explore Stylists' })).toBeInTheDocument();
+    expect(screen.queryByRole('link', { name: 'Book Now' })).not.toBeInTheDocument();
+    const card = screen.getByRole('region', { name: 'Your next visit' });
     expect(card).toHaveTextContent('Haircut with London');
     expect(card).toHaveTextContent('Fri, Oct 9 at 10:00 AM');
+  });
+
+  it('points to her past visits when nothing is coming up', async () => {
+    const { services } = renderApp('/');
+    await screen.findByRole('heading', { level: 1, name: 'Local Locks' });
+    services.accounts.create({ name: 'Rachel', phone: '(555) 123-4567', email: 'r@example.com' });
+    services.appointments.add({
+      stylistId: 'london',
+      serviceIds: ['haircut', 'color'],
+      date: '2026-09-15' as never,
+      start: 600 as never,
+      durationMin: 180 as never,
+      total: 185,
+      name: 'Rachel',
+      phone: '(555) 123-4567',
+    });
+    expect(
+      await screen.findByRole('link', { name: 'Book again: Haircut + Color with London' }),
+    ).toBeInTheDocument();
+    expect(screen.getByRole('link', { name: 'See past visits' })).toHaveAttribute(
+      'href',
+      '/appointments',
+    );
+    expect(screen.queryByRole('region', { name: 'Your next visit' })).not.toBeInTheDocument();
   });
 
   it('starts either way in with one tap', async () => {

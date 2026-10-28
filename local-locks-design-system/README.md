@@ -30,7 +30,7 @@ The happy path, and the one loud thing on each screen (the code for each compone
 
 | Screen | The one loud thing | Everything else |
 | --- | --- | --- |
-| Home | "Book Now" and "Explore Stylists" buttons | Logo, the nav links |
+| Home | "Explore Stylists" (filled); once she has booked, "Book Again" (filled) | The other way in as an outline button, logo, the nav links |
 | Book, part 1 | "See who can fit me in" | The three icon steps, day and time filters marked optional and smaller |
 | Book, part 2 | Time chips on each card | Summary of her picks with Edit |
 | Stylists | The cards, each with her work and "See all work" | Search, Use my location |

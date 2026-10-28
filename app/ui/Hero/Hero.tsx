@@ -5,6 +5,13 @@ import styles from './Hero.module.css';
 export interface HeroAction {
   label: string;
   to: string;
+  /** For a screen reader, when the label alone would be vague (e.g. which visit "Book Again" copies). */
+  ariaLabel?: string;
+  /**
+   * One action is filled (`primary`) and the rest are `outline`, so two side-by-side buttons
+   * never compete. Defaults to `primary`.
+   */
+  variant?: 'primary' | 'outline';
 }
 
 export interface HeroProps {
@@ -16,7 +23,7 @@ export interface HeroProps {
   title: string;
   /** One plain line saying what this is for. */
   tagline: string;
-  /** The ways in, side by side. Each one is a filled action. */
+  /** The ways in, side by side. Make exactly one `primary`; the others are `outline`. */
   actions: readonly HeroAction[];
   /** Something quieter under the buttons, such as her next visit when she is signed in. */
   extra?: ReactNode;
@@ -53,7 +60,12 @@ export function Hero({
           <p>{tagline}</p>
           <div className={styles.actions}>
             {actions.map((action) => (
-              <LinkButton key={action.to} to={action.to}>
+              <LinkButton
+                key={action.to}
+                to={action.to}
+                variant={action.variant ?? 'primary'}
+                aria-label={action.ariaLabel}
+              >
                 {action.label}
               </LinkButton>
             ))}

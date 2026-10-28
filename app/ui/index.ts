@@ -11,7 +11,7 @@ export type { ChipProps } from './Chip';
 export { ConfirmBar } from './ConfirmBar';
 export type { ConfirmBarProps } from './ConfirmBar';
 export { Hero } from './Hero';
-export type { HeroProps } from './Hero';
+export type { HeroAction, HeroProps } from './Hero';
 export { Icon } from './Icon';
 export type { IconName, IconProps } from './Icon';
 export { Container, EmptyNote, Narrow, PageIntro, Section, SplitLayout } from './Layout';
