@@ -20,7 +20,7 @@
 .chip {
   flex: 0 0 auto;
   font-family: var(--font-sans);
-  font-size: 0.82rem;
+  font-size: var(--fs-label);
   line-height: 1.6;
   color: var(--ink);
   background: var(--white);

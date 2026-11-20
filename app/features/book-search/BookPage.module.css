@@ -1,5 +1,5 @@
 .hint {
-  font-size: 0.8rem;
+  font-size: var(--fs-body);
   color: var(--ink-soft);
   margin: -0.4rem 0 0.7rem;
 }
