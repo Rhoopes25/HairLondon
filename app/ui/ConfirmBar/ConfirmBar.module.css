@@ -42,28 +42,35 @@
 
 .total {
   display: flex;
+  flex-wrap: wrap;
   align-items: baseline;
   justify-content: space-between;
-  font-size: var(--fs-body-sm);
+  gap: 0.15rem var(--space-2);
+  font-size: var(--fs-body);
   color: var(--ink-soft);
   margin-bottom: 1.1rem;
 }
 
+/* A long total ("$270+ · about 4 hr 30 min") drops under its label rather than splitting in two. */
 .total strong {
+  margin-left: auto;
   color: var(--ink);
   font-weight: 500;
-  font-size: 0.95rem;
+  font-size: 1.25rem;
+  text-align: right;
+  white-space: nowrap;
 }
 
 .note {
   margin: -0.6rem 0 1.1rem;
-  font-size: 0.72rem;
+  font-size: var(--fs-body-sm);
   color: var(--ink-soft);
 }
 
 .totalLabel {
   font-weight: 500;
   color: var(--ink);
+  white-space: nowrap;
 }
 
 @media (min-width: 640px) {

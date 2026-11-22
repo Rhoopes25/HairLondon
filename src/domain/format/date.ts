@@ -58,3 +58,15 @@ export function formatDay(iso: IsoDate): string {
   const { weekday, dayNum, month } = dayParts(iso);
   return `${weekday}, ${month} ${dayNum}`;
 }
+
+/**
+ * "Oct 2026": the month is plenty for a review, and a vague date reads as calmer than an exact
+ * one. Takes any yyyy-mm-dd text, and returns null for anything else, so an old saved review
+ * without a date simply shows none.
+ */
+export function formatMonthYear(iso: string | undefined): string | null {
+  if (iso === undefined || !/^\d{4}-\d{2}-\d{2}$/.test(iso)) return null;
+  const [year = 0, month = 1] = iso.split('-').map(Number);
+  const name = MONTHS[month - 1];
+  return name ? `${name} ${year}` : null;
+}

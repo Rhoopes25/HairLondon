@@ -23,6 +23,8 @@ export interface HeroProps {
   title: string;
   /** One plain line saying what this is for. */
   tagline: string;
+  /** A second, quieter line saying who it is for. */
+  welcome?: string;
   /** The ways in, side by side. Make exactly one `primary`; the others are `outline`. */
   actions: readonly HeroAction[];
   /** Something quieter under the buttons, such as her next visit when she is signed in. */
@@ -42,6 +44,7 @@ export function Hero({
   imageLabel,
   title,
   tagline,
+  welcome,
   actions,
   extra,
 }: HeroProps) {
@@ -57,12 +60,14 @@ export function Hero({
         />
         <div className={styles.text}>
           <h1>{title}</h1>
-          <p>{tagline}</p>
+          <p className={styles.tagline}>{tagline}</p>
+          {welcome ? <p className={styles.welcome}>{welcome}</p> : null}
           <div className={styles.actions}>
             {actions.map((action) => (
               <LinkButton
                 key={action.to}
                 to={action.to}
+                size="lg"
                 variant={action.variant ?? 'primary'}
                 aria-label={action.ariaLabel}
               >

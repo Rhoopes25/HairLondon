@@ -1,13 +1,13 @@
 .list {
   display: flex;
-  gap: 1.35rem;
+  gap: 1.25rem;
   overflow-x: auto;
   scrollbar-width: none;
 }
 
 .tab {
   font-family: var(--font-sans);
-  font-size: var(--fs-nav);
+  font-size: 1.05rem;
   line-height: 1.6;
   color: var(--ink-soft);
   background: none;

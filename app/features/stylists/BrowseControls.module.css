@@ -1,0 +1,62 @@
+/* Sort and filter: one quiet button that opens the choices, so the list stays the first thing she sees. */
+.controls {
+  padding: var(--space-2) var(--space-5) 0;
+}
+
+.toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  min-height: 3rem;
+  padding: 0.5rem 1.25rem;
+  font-family: var(--font-sans);
+  font-size: 1.05rem;
+  font-weight: 500;
+  color: var(--gold-ink);
+  background: var(--white);
+  border: 1.5px solid var(--gold-ink);
+  border-radius: var(--radius-pill);
+  cursor: pointer;
+}
+
+.toggle:hover {
+  background: var(--cream-deep);
+  color: var(--ink);
+}
+
+.chevron {
+  width: 1.1rem;
+  height: 1.1rem;
+  transition: transform 0.15s ease;
+}
+
+.toggleOpen .chevron {
+  transform: rotate(180deg);
+}
+
+.panel {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--space-3);
+  margin-top: var(--space-3);
+  padding: var(--space-4);
+  background: var(--white);
+  border: 1.5px solid var(--cream-deep);
+  border-radius: var(--radius-md);
+}
+
+.panel[hidden] {
+  display: none;
+}
+
+.group {
+  width: 100%;
+}
+
+.groupLabel {
+  margin-bottom: 0.4rem;
+  font-size: var(--fs-body);
+  font-weight: 500;
+  color: var(--ink);
+}

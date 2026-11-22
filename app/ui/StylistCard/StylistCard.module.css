@@ -38,7 +38,7 @@
   min-height: 2.75rem;
   margin-block: -0.6rem;
   font-family: var(--font-display);
-  font-size: 1.2rem;
+  font-size: 1.5rem;
   font-weight: 600;
   line-height: 1.25;
   color: var(--ink);
@@ -62,13 +62,48 @@
 }
 
 .studio {
-  font-size: 0.8rem;
+  font-size: 0.98rem;
   color: var(--ink-soft);
 }
 
 .distance {
+  font-size: 0.98rem;
   color: var(--gold-ink);
   font-weight: 500;
+}
+
+/* Rating, then "Read reviews", on a row of their own. They sit above the card-wide link (z-index). */
+.meta {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  column-gap: var(--space-3);
+  /* "Read reviews" is a full 44px tap target; the negative margin gives the height back. */
+  margin-block: -0.3rem;
+}
+
+.reviewsLink {
+  display: inline-flex;
+  align-items: center;
+  min-height: 2.75rem;
+  font-size: var(--fs-body);
+  font-weight: 500;
+  color: var(--gold-ink);
+  text-decoration: underline;
+  text-decoration-color: var(--gold);
+  text-underline-offset: 4px;
+}
+
+.reviewsLink:hover {
+  color: var(--ink);
+}
+
+.reviewsLink:focus-visible {
+  outline: 2px solid var(--gold-deep);
+  outline-offset: 2px;
 }
 
 .price {
@@ -81,14 +116,14 @@
 
 .priceValue {
   font-family: var(--font-display);
-  font-size: 1.3rem;
+  font-size: 1.6rem;
   font-weight: 600;
   line-height: 1.1;
   color: var(--ink);
 }
 
 .priceNote {
-  font-size: 0.72rem;
+  font-size: 0.85rem;
   color: var(--ink-soft);
 }
 
@@ -125,7 +160,7 @@
   text-align: center;
   background: rgba(43, 36, 32, 0.6);
   color: var(--white);
-  font-size: 0.8rem;
+  font-size: 0.95rem;
   font-weight: 600;
   line-height: 1.3;
   text-decoration: none;
@@ -152,7 +187,7 @@
 }
 
 .slotsHeading {
-  font-size: 0.8rem;
+  font-size: 0.95rem;
   font-weight: 600;
   color: var(--ink);
 }
@@ -168,7 +203,7 @@
   display: inline-flex;
   align-items: center;
   min-height: 2.75rem;
-  font-size: 0.82rem;
+  font-size: 0.98rem;
   color: var(--gold-ink);
   background: var(--cream);
   border: 1.5px solid var(--gold-soft);
@@ -185,6 +220,99 @@
 .slot:focus-visible {
   outline: 2px solid var(--gold-deep);
   outline-offset: 2px;
+}
+
+/* Quick look: opens in place, so two stylists can be compared without leaving the list. */
+.previewArea {
+  position: relative;
+  z-index: 1;
+  border-top: 1px solid var(--cream-deep);
+}
+
+.toggle {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.4rem;
+  width: 100%;
+  min-height: 2.75rem;
+  margin-top: 0.15rem;
+  padding: 0.4rem 0.5rem;
+  font-family: var(--font-sans);
+  font-size: var(--fs-body);
+  font-weight: 500;
+  color: var(--gold-ink);
+  background: none;
+  border: 0;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+}
+
+.toggle:hover {
+  color: var(--ink);
+}
+
+.toggle:focus-visible {
+  outline: 2px solid var(--gold-deep);
+  outline-offset: -2px;
+}
+
+.chevron {
+  width: 1.1rem;
+  height: 1.1rem;
+  transition: transform 0.15s ease;
+}
+
+.toggleOpen .chevron {
+  transform: rotate(180deg);
+}
+
+.preview {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--space-3);
+  padding: var(--space-1) 0 0.2rem;
+}
+
+.preview[hidden] {
+  display: none;
+}
+
+.facts {
+  display: grid;
+  gap: var(--space-2);
+  margin: 0;
+  width: 100%;
+}
+
+.facts dt {
+  font-size: var(--fs-body-sm);
+  color: var(--ink-soft);
+}
+
+.facts dd {
+  margin: 0;
+  font-size: var(--fs-body);
+  color: var(--ink);
+}
+
+.pills {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+  list-style: none;
+  margin: 0.2rem 0 0;
+  padding: 0;
+}
+
+.pills li {
+  padding: 0.2rem 0.75rem;
+  font-size: var(--fs-label);
+  color: var(--ink);
+  background: var(--cream);
+  border: 1.5px solid var(--gold-soft);
+  border-radius: var(--radius-pill);
 }
 
 .footer {

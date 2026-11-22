@@ -20,8 +20,28 @@
   display: flex;
   align-items: flex-start;
   gap: 0.5rem;
+  font-size: var(--fs-body);
+  color: var(--ink-soft);
+}
+
+/* The button, with a quiet line saying where the distances are measured from until she shares. */
+.nearIdle {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.35rem;
+}
+
+.originNote {
   font-size: var(--fs-body-sm);
   color: var(--ink-soft);
+}
+
+.none {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding-bottom: var(--space-6);
 }
 
 .nearText svg {
@@ -40,7 +60,7 @@
 
 .result {
   padding: var(--space-2) var(--space-5) 0;
-  font-size: var(--fs-body-sm);
+  font-size: var(--fs-body);
   color: var(--ink-soft);
 }
 
@@ -70,6 +90,8 @@
     display: grid;
     grid-template-columns: repeat(2, minmax(0, 1fr));
     gap: var(--space-3);
+    /* A card that opens its quick look grows on its own, instead of stretching its neighbor. */
+    align-items: start;
   }
 }
 

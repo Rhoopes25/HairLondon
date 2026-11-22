@@ -10,15 +10,15 @@ import { Hero, QuietLink } from '@app/ui';
 import type { HeroAction } from '@app/ui';
 
 /**
- * The entry screen. The first and biggest thing says what this is for (local stylists you can
- * trust, with real work to look at). Two ways in sit under it, and only one is filled, so they
- * never compete. Which one leads depends on where she is with trust:
+ * The entry screen. The first and biggest thing says what this is for (local stylists and barbers
+ * you can trust) and who it is for (everyone). Two large ways in sit under it, and only one is
+ * filled, so they never compete. Booking leads, because user testing found people wanted to get
+ * to a time faster:
  *
- * - Never booked (a guest, or signed in with no visits): Explore Stylists leads, because she
- *   won't book someone she hasn't seen work from. Book Now stays one tap away for anyone who
- *   already trusts a stylist.
- * - Booked before: she already trusts someone, so Book Again leads and opens booking with the
- *   same stylist and services, exactly like "Book again" on a past visit.
+ * - Never booked (a guest, or signed in with no visits): Book Now leads. Explore Stylists stays
+ *   one tap away for anyone who wants to see the work and read reviews before choosing.
+ * - Booked before: Book Again leads and opens booking with the same stylist and services, exactly
+ *   like "Book again" on a past visit.
  *
  * Under the buttons, at most one quiet thing: her next visit if one is coming up, or a link to
  * her past visits. Nothing at all when she has never booked.
@@ -38,8 +38,8 @@ export function HomePage() {
         { label: 'Explore Stylists', to: '/stylists', variant: 'outline' },
       ]
     : [
-        { label: 'Explore Stylists', to: '/stylists' },
-        { label: 'Book Now', to: '/book', variant: 'outline' },
+        { label: 'Book Now', to: '/book' },
+        { label: 'Explore Stylists', to: '/stylists', variant: 'outline' },
       ];
 
   return (
@@ -48,7 +48,8 @@ export function HomePage() {
       imageSrcSet={photoSrcSet('images/home.jpg')}
       imageLabel="A stylist holding her shears"
       title="Local Locks"
-      tagline="Local stylists you can trust."
+      tagline="Local stylists and barbers you can trust."
+      welcome="Haircuts, color, and beard trims for everyone: women, men, and kids."
       actions={actions}
       extra={
         account && upcoming ? (

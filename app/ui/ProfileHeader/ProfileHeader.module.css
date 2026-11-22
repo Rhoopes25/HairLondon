@@ -16,13 +16,21 @@
 .who h1 {
   font-family: var(--font-display);
   font-weight: 500;
-  font-size: var(--fs-display-lg);
+  font-size: 2.1rem;
   line-height: 1.2;
 }
 
 .studio {
-  font-size: var(--fs-body-sm);
+  font-size: var(--fs-body);
   color: var(--ink-soft);
+}
+
+/* The rating, then the way into the reviews; on a narrow phone the link drops to its own line. */
+.rating {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  column-gap: var(--space-3);
 }
 
 .aside {
@@ -30,7 +38,8 @@
 }
 
 .bio {
-  font-size: 0.9rem;
+  font-size: 1.1rem;
+  line-height: 1.5;
   color: var(--ink-soft);
   margin: var(--space-2) 0 0;
   max-width: 38ch;
@@ -64,10 +73,14 @@
     align-self: center;
   }
 
+  .who h1 {
+    font-size: 2.6rem;
+  }
+
   .bio {
     grid-column: 2 / 4;
     max-width: 60ch;
-    font-size: var(--fs-label);
+    font-size: 1.2rem;
   }
 
   .tabRow {

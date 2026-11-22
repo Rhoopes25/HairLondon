@@ -10,3 +10,10 @@ A `white` card, `radius-md`, 1.5px `cream-deep` border. Top row: the Avatar (pho
 - The name link also stretches over the whole card, so a tap anywhere opens the profile. SlotChips and See all work sit above it and keep their own taps.
 - Each SlotChip carries a full `aria-label` ("Book London, Sat, Oct 10 at 1:00 PM").
 - Prices always show with a plus; they're starting prices.
+
+## Round 2: reviews, distance, and a quick look
+
+- **Rating and "Read reviews".** The rating line (stars, average, count) and a "Read reviews" link share one row under the name, studio, and distance, so neither is squeezed beside the price. The link goes straight to her Reviews tab and is named for her (`aria-label` "Read reviews for London").
+- **Distance** ("2.1 mi away", `gold-ink`) is on every card, on its own line under the studio. Until she shares where she is, it is measured from downtown Provo and the page says so.
+- **Quick look** is a quiet "Quick look" button at the bottom of the card (`aria-expanded`, rotating chevron). It opens in place with only what the card does not already show: years of experience, what she is known for as pills, and "View full profile". Her photos and rating are already on the card, so they are not repeated. Several cards can be open at once, to compare. Stylists page only.
+- Text is larger than before (name 1.5rem, studio and distance 0.98rem), per user testing.

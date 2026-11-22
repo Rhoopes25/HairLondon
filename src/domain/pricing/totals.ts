@@ -23,6 +23,17 @@ export function totalDuration(catalog: ServiceCatalog, ids: readonly ServiceId[]
   return sumDurations(ids.map((id) => catalog[id].durationMin));
 }
 
+/**
+ * A visit longer than four hours gets a gentle heads-up, so a long total is never a surprise
+ * (arranging childcare, a lunch, or a ride takes more than a moment's notice).
+ */
+export const LONG_VISIT_MIN = 4 * 60;
+
+/** True when a visit is longer than four hours. Exactly four hours is not. */
+export function isLongVisit(length: number): boolean {
+  return length > LONG_VISIT_MIN;
+}
+
 /** Her lowest price, or null if she lists no services yet. */
 export function startingPrice(stylist: Pick<Stylist, 'prices'>): number | null {
   const prices = Object.values(stylist.prices).filter((p): p is number => p !== undefined);

@@ -7,14 +7,17 @@ export function PageIntro({
   title,
   children,
   titleRef,
+  large,
 }: {
   title: string;
   children?: ReactNode;
   /** Booking steps move focus to the new heading. */
   titleRef?: Ref<HTMLHeadingElement>;
+  /** Bigger title and line, for the stylist pages. */
+  large?: boolean;
 }) {
   return (
-    <section className={styles.intro}>
+    <section className={cx(styles.intro, large && styles.introLarge)}>
       <h1 ref={titleRef} tabIndex={titleRef ? -1 : undefined}>
         {title}
       </h1>
@@ -60,23 +63,28 @@ export function SplitLayout({ aside, children }: { aside: ReactNode; children: R
 
 /**
  * A titled block of a screen, e.g. "Choose a day". `step` numbers it (the happy path reads 1, 2),
- * and `optional` marks a block she can skip, which also sits back visually.
+ * and `optional` marks a block she can skip, which also sits back visually. `large` is the
+ * Book page's bigger heading.
  */
 export function Section({
   title,
   step,
   optional,
+  large,
   children,
   className,
 }: {
   title: string;
   step?: number;
   optional?: boolean;
+  large?: boolean;
   children: ReactNode;
   className?: string;
 }) {
   return (
-    <section className={cx(styles.section, optional && styles.optional, className)}>
+    <section
+      className={cx(styles.section, optional && styles.optional, large && styles.large, className)}
+    >
       <h2>
         {step !== undefined ? (
           <span className={styles.step} aria-hidden="true">

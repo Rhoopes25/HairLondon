@@ -1,11 +1,12 @@
 import { Navigate, useNavigate } from 'react-router';
-import { isComplete } from '@src/domain/booking/draft';
+import { isComplete, totalLine } from '@src/domain/booking/draft';
 import { validateDetails } from '@src/domain/booking/validate-details';
 import { firstName } from '@src/domain/format/name';
-import { totalDuration, totalPrice } from '@src/domain/pricing/totals';
+import { formatDuration } from '@src/domain/format/duration';
+import { isLongVisit, totalDuration, totalPrice } from '@src/domain/pricing/totals';
 import { useDocumentTitle, useFocusOnMount } from '@app/hooks/usePageBehavior';
 import { useServices } from '@app/services';
-import { Button, ConfirmBar, Narrow, PageIntro, Recap, TextButton } from '@app/ui';
+import { Button, ConfirmBar, LongVisitNotice, Narrow, PageIntro, Recap, TextButton } from '@app/ui';
 import { BookingHeader } from './BookingHeader';
 import { useBooking } from './BookingProvider';
 import { draftRecapRows } from './bookingRecap';
@@ -23,6 +24,7 @@ export function ReviewStep() {
   if (!isComplete(draft)) return <Navigate to={`/book/${stylist.id}`} replace />;
   if (!validated.ok) return <Navigate to={`/book/${stylist.id}/details`} replace />;
   const { name, phone } = validated.value;
+  const minutes = totalDuration(catalog, draft.serviceIds);
 
   function confirm() {
     if (!isComplete(draft)) return;
@@ -49,13 +51,28 @@ export function ReviewStep() {
           Everything look right? You can still go back and change it.
         </PageIntro>
         <Recap
-          rows={draftRecapRows(draft, stylist, catalog, [
-            { label: 'Name', icon: 'user', value: name },
-            { label: 'Phone', icon: 'phone', value: phone },
-          ])}
+          rows={draftRecapRows(
+            draft,
+            stylist,
+            catalog,
+            [
+              { label: 'Name', icon: 'user', value: name },
+              { label: 'Phone', icon: 'phone', value: phone },
+            ],
+            { withTotal: false },
+          )}
         />
 
-        <ConfirmBar>
+        {isLongVisit(minutes) ? (
+          <div className={styles.notice}>
+            <LongVisitNotice duration={formatDuration(minutes)} />
+          </div>
+        ) : null}
+
+        <ConfirmBar
+          total={{ label: 'Estimated total', value: totalLine(draft, stylist, catalog) }}
+          note={`Starting price. Longer or thicker hair can cost more, and ${firstName(stylist.name)} will confirm it with you.`}
+        >
           <Button fullWidth onClick={confirm}>
             Confirm booking
           </Button>

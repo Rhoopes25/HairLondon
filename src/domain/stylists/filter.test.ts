@@ -6,7 +6,14 @@ const ids = (list: readonly { id: string }[]) => list.map((s) => s.id);
 
 describe('stylistsOffering', () => {
   it('returns everyone when no service is chosen', () => {
-    expect(ids(stylistsOffering(STYLISTS, []))).toEqual(['london', 'sadie', 'kai', 'brooke']);
+    expect(ids(stylistsOffering(STYLISTS, []))).toEqual([
+      'london',
+      'sadie',
+      'kai',
+      'brooke',
+      'marcus',
+      'diego',
+    ]);
   });
 
   it('keeps stylists who offer a service', () => {

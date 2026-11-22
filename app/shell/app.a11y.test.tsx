@@ -31,7 +31,7 @@ const SCREENS: [string, string | RegExp][] = [
   ['/stylists/london/reviews', 'London'],
   ['/stylists/london/about-me', 'London'],
   ['/stylists/sadie', 'Sadie Morgan'],
-  ['/stylists/london/photos/0', /London’s work, photo 1 of 6/],
+  ['/stylists/london/photos/0', /London’s work, photo 1 of 8/],
   ['/stylists/london/about', 'Hair by London'],
   ['/saved', 'Saved stylists'],
   ['/appointments', 'My appointments'],

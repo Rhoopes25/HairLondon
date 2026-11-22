@@ -4,6 +4,7 @@ export {
   useAccount,
   useAppointment,
   useAppointments,
+  useDistanceOrigin,
   useMyLocation,
   useSavedIds,
   useSearchEnvironment,

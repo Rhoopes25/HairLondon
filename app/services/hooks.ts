@@ -1,5 +1,6 @@
 import { useMemo, useSyncExternalStore } from 'react';
 import type { MyLocation } from '@src/data/repositories/location-repository';
+import { SAMPLE_LOCATION } from '@src/data/seed/sample-location';
 import type { Account } from '@src/domain/account/account';
 import type { Appointment } from '@src/domain/models/appointment';
 import type { Stylist } from '@src/domain/models/stylist';
@@ -65,6 +66,21 @@ export function useSavedIds(): readonly string[] {
 /** Where she is, if she has shared it (or the sample spot standing in for it). */
 export function useMyLocation(): MyLocation | null {
   return useStore(useServices().location);
+}
+
+const SAMPLE_ORIGIN: MyLocation = {
+  lat: SAMPLE_LOCATION.lat,
+  lng: SAMPLE_LOCATION.lng,
+  source: 'sample',
+};
+
+/**
+ * Where distances are measured from. Where she is, once she has shared it; until then the sample
+ * spot in downtown Provo, so every stylist still shows how far away she is (the pages say where
+ * from). Use `useMyLocation` instead to know whether she has actually shared it.
+ */
+export function useDistanceOrigin(): MyLocation {
+  return useMyLocation() ?? SAMPLE_ORIGIN;
 }
 
 /** The signed-in pretend account, or null for a guest. */

@@ -1,13 +1,15 @@
 .stars {
   color: var(--gold-deep);
-  font-size: 0.8rem;
+  font-size: 1rem;
   letter-spacing: 1px;
 }
 
 .line {
   display: inline-flex;
+  flex-wrap: wrap;
   align-items: center;
-  gap: 0.5rem;
-  font-size: var(--fs-body-sm);
+  column-gap: 0.5rem;
+  white-space: nowrap;
+  font-size: var(--fs-body);
   color: var(--ink-soft);
 }

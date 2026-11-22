@@ -108,8 +108,8 @@ describe('Book: the page', () => {
   it('shows every stylist and her next three open times when nothing is chosen', async () => {
     renderApp('/book?step=who');
     await ready();
-    expect(cards()).toHaveLength(4);
-    expect(screen.getByText('4 stylists')).toBeInTheDocument();
+    expect(cards()).toHaveLength(6);
+    expect(screen.getByText('6 stylists')).toBeInTheDocument();
     for (const card of cards()) {
       expect(within(card).getAllByRole('link', { name: /^Book .*, .* at / })).toHaveLength(3);
       expect(within(card).getByText('Next open')).toBeInTheDocument();
@@ -280,7 +280,7 @@ describe('Book: day and time', () => {
     renderApp('/book?day=2026-10-11'); // a Sunday: nobody works it
     await ready();
     expect(noDayPicked()).toBe(true);
-    expect(screen.getByText('4 stylists')).toBeInTheDocument();
+    expect(screen.getByText('6 stylists')).toBeInTheDocument();
   });
 });
 

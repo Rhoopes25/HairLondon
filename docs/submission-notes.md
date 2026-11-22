@@ -22,7 +22,7 @@ On first load a plain-English notice says this is just an early prototype, that 
 
 Our discovery research found that the person we are designing for will not book a stylist she does not already trust, and that she has only short, interrupted windows to do it. So the prototype is built around three things, in this order: **seeing the work, reading what clients say, and booking a time that fits.**
 
-- **Seeing the work.** The home screen leads with a real photo, the name, and two actions, "Book Now" and "Explore Stylists". A stylist's profile opens on her portfolio, and any photo opens larger with next and previous.
+- **Seeing the work.** The home screen leads with a real photo, the name, who it is for (women, men, and kids), and two large actions, "Book Now" (filled) and "Explore Stylists". A stylist's profile opens on her portfolio, and any photo opens larger with next and previous.
 - **Reading what clients say.** Ratings appear on every stylist card, and the Reviews tab is one tap from the profile. After a visit a client can add a review, which then appears on that stylist's profile, so the trust loop is real.
 - **Booking a time that fits.** The Book page comes in two parts so there is one decision at a time: first what she needs and (optionally) when, then the stylists who can fit her in, under a summary of her picks with an Edit link. Three icon steps at the top say how it works. Inside a booking, icon steps show how far along she is (Pick a time, Your details, Review, Booked), and the recap rows carry icons so they can be scanned at a glance.
 - **Knowing who she's sitting down with.** Each profile has an About me tab: a few lines in the stylist's own voice, years doing hair, specialties, days and hours, and a simple map with a Get directions link.
@@ -65,3 +65,19 @@ There is no single path. Booking can start from Home ("Book Now"), a time chip o
 Functional: browsing, typo-friendly search, sorting by distance, filtering, saving, signing in and out, booking (with availability that updates when you book, move, or cancel), changing and cancelling appointments, leaving reviews, calendar export. Data lives in the browser, so it survives a reload on the same device.
 
 Pretend (and the screens say so): the stylists, reviews, and studio addresses are samples, accounts have no password and never leave the device, no text message is sent, and there is no payment. These need a backend that cannot reasonably be built for a prototype.
+
+
+## Round 2: revisions from the Vagaro user tests
+
+Branch `revisions-round-2`. No screens were added or removed (the inventory above is unchanged); these are changes inside existing screens.
+
+| Finding | What changed |
+| --- | --- |
+| Trust: too few reviews | Every stylist card shows stars, the average, and the count, plus a "Read reviews" link to the full list. Reviews moved up to the second tab on a profile, with a "Read reviews" link under her name. Each stylist has 50+ sample reviews (mostly 4 and 5 stars, a few 3s, names as first name and last initial, dated over two years), shown a page at a time. |
+| Trust: thin galleries | Every stylist has at least six photos, each captioned with the hair and the service. Photos that are not really hers are marked `placeholder: true` in the seed. |
+| Quickness: back and forth | "Quick look" on each Stylists card opens her years of experience and specialties in place. Her photos and rating are already on the card, so the preview does not repeat them. |
+| Quickness: finding Book | A large Book Now leads Home and sits at the top of the other main pages. Text is larger on Home and the stylist pages. |
+| Quickness: comparing | Distance on every card, sort by nearest or price, and filters for price, distance, and specialty. |
+| Calm: small Book-page text | Larger helper text, headings, "optional" labels, chips, and day and time buttons (all at least 48px tall). |
+| Calm: surprise totals | A running price and time while she picks services, the total repeated above Confirm, and a gentle notice over four hours. |
+| Team: not for everyone | Men's haircut, beard trim, and kids' cut; two barbers; men's and kids' cut photos in some galleries; Home says it is for everyone. |

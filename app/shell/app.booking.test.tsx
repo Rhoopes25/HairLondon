@@ -55,7 +55,9 @@ describe('booking: choose services, day, and time', () => {
     renderApp('/book/london?service=color');
     await screen.findByRole('heading', { level: 1, name: 'Book Now' });
     expect(serviceChip(/^Color/)).toHaveAttribute('aria-pressed', 'true');
-    expect(screen.getByText('$120+ · about 2 hr')).toBeInTheDocument();
+    // The running total: the price and how long it takes.
+    expect(screen.getByText('$120+')).toBeInTheDocument();
+    expect(screen.getByText('about 2 hr')).toBeInTheDocument();
   });
 
   it('ignores a service the stylist does not offer', async () => {
@@ -72,8 +74,12 @@ describe('booking: choose services, day, and time', () => {
   it('lists only the services she offers, each with her starting price', async () => {
     renderApp('/book/kai');
     await screen.findByRole('heading', { level: 1, name: 'Book Now' });
-    expect(services().getAllByRole('button')).toHaveLength(4);
+    // Haircut, color, blowout, deep conditioning, and the men's, beard, and kids' services she added.
+    expect(services().getAllByRole('button')).toHaveLength(7);
     expect(serviceChip(/^Haircut/)).toHaveTextContent('Haircut $45+');
+    expect(serviceChip(/^Men’s Haircut/)).toHaveTextContent('Men’s Haircut $38+');
+    expect(serviceChip(/^Beard Trim/)).toHaveTextContent('Beard Trim $20+');
+    expect(serviceChip(/^Kids’ Cut/)).toHaveTextContent('Kids’ Cut $28+');
   });
 
   it('shows only the days she works, over the next three weeks, starting today', async () => {
@@ -127,7 +133,8 @@ describe('booking: choose services, day, and time', () => {
     await user.click(days()[5] as HTMLElement); // Wed, Oct 14: the morning is open after 9:00
     await user.click(timeButton('10:00 AM'));
     expect(screen.getByText('Haircut · Wed, Oct 14 · 10:00 to 11:00 AM')).toBeInTheDocument();
-    expect(screen.getByText('$65+ · about 1 hr')).toBeInTheDocument();
+    expect(screen.getByText('$65+')).toBeInTheDocument();
+    expect(screen.getByText('about 1 hr')).toBeInTheDocument();
     expect(screen.getByText('You’ll be done by about 11:00 AM.')).toBeInTheDocument();
     expect(
       screen.getByText(/Starting price\. Longer or thicker hair can cost more, and London will/),
@@ -137,7 +144,9 @@ describe('booking: choose services, day, and time', () => {
     expect(
       screen.getByText('Haircut + Blowout · Wed, Oct 14 · 10:00 to 11:45 AM'),
     ).toBeInTheDocument();
-    expect(screen.getByText('$110+ · about 1 hr 45 min')).toBeInTheDocument();
+    // The running total follows each service as it is added.
+    expect(screen.getByText('$110+')).toBeInTheDocument();
+    expect(screen.getByText('about 1 hr 45 min')).toBeInTheDocument();
     expect(screen.getByText('You’ll be done by about 11:45 AM.')).toBeInTheDocument();
   });
 

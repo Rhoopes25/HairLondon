@@ -69,14 +69,14 @@ export function SlotSelector({
 
   return (
     <>
-      <Section title="Choose a day">
+      <Section title="Choose a day" large>
         <SlotPicker.Days
           days={days}
           selectedId={date}
           onSelect={(id) => onSelectDate(id as IsoDate)}
         />
       </Section>
-      <Section title="Choose a time">
+      <Section title="Choose a time" large>
         <SlotPicker.Times
           times={times}
           selectedId={start}

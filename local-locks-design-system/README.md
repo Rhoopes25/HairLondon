@@ -30,10 +30,10 @@ The happy path, and the one loud thing on each screen (the code for each compone
 
 | Screen | The one loud thing | Everything else |
 | --- | --- | --- |
-| Home | "Explore Stylists" (filled); once she has booked, "Book Again" (filled) | The other way in as an outline button, logo, the nav links |
+| Home | "Book Now" (filled, large); once she has booked, "Book Again" (filled, large) | "Explore Stylists" as an outline button, logo, the nav links |
 | Book, part 1 | "See who can fit me in" | The three icon steps, day and time filters marked optional and smaller |
 | Book, part 2 | Time chips on each card | Summary of her picks with Edit |
-| Stylists | The cards, each with her work and "See all work" | Search, Use my location |
+| Stylists | A large "Book Now", then the cards, each with her rating, "Read reviews", and her work | Search, Use my location, Sort and filter |
 | Profile | "Book with London" in the sticky BookBar | Tabs, back link |
 | Book: day and time | Sticky "Continue" | Change services, price note |
 | Book: details | Sticky "Confirm booking" | Recap card |
@@ -76,6 +76,8 @@ The happy path, and the one loud thing on each screen (the code for each compone
 | Booking | ServiceOption (plus service row and summary row) | Book, Profile Services tab |
 | Booking | SlotPicker | Book |
 | Booking | ConfirmBar | Book, both steps |
+| Booking | RunningTotal (and LongVisitNotice) | Book and booking, as services are picked |
+| Booking | BookNowBar | Top of Stylists, a profile, Saved, My appointments |
 | Booking | DetailsForm | Book, step 2 |
 | Booking | Confirmation | Book, step 3 |
 | Actions | Button | Everywhere |
@@ -92,7 +94,8 @@ Reuse is the rule: the day chip is the same on Stylists and Book, the Avatar and
 | Service rows with name at left and price at right | Same, plus a one-line description and duration | ServiceOption |
 | Rating line such as "5.0 (45 Reviews)" | Stars plus a plain count; "New" with no reviews | Reviews, StylistCard |
 | Date strip, time slots, then a book action | Same, with durations adding up | SlotPicker, ConfirmBar |
-| Deal badges, "spots left", sort menus | Not adopted: nothing to rush | none |
+| Deal badges, "spots left" | Not adopted: nothing to rush | none |
+| Sort and filter | Adopted calmly: sort by nearest or price, filter by price, distance, and specialty, as chips that fold away | StylistCard, Chip |
 | Horizontal carousels with "See all" | Not adopted; the portfolio is a plain two-column grid | PortfolioGrid |
 
 ## Iconography

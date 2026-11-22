@@ -18,6 +18,7 @@ import { useMyLocation, useServices, useStylist } from '@app/services';
 import {
   BackLink,
   BookBar,
+  BookNowBar,
   EmptyNote,
   PortfolioGrid,
   ProfileHeader,
@@ -32,7 +33,8 @@ import { SaveButton } from './SaveButton';
 import { ServiceDetailSheet } from './ServiceDetailSheet';
 import styles from './StylistProfilePage.module.css';
 
-const TABS = ['portfolio', 'services', 'reviews', 'about-me'] as const;
+// Reviews come second, right after the work: they are what builds trust, so they are not buried.
+const TABS = ['portfolio', 'reviews', 'services', 'about-me'] as const;
 type Tab = (typeof TABS)[number];
 
 function isTab(value: string | undefined): value is Tab {
@@ -95,6 +97,7 @@ export function StylistProfilePage() {
   return (
     <>
       <BackLink to={backTo}>{backLabel}</BackLink>
+      <BookNowBar to={bookTo} label={`Book Now with ${first}`} />
       <ProfileHeader
         name={stylist.name}
         photoUrl={stylist.photo ? assetUrl(stylist.photo) : null}
@@ -103,6 +106,7 @@ export function StylistProfilePage() {
         city={stylist.city}
         average={averageRating(stylist.reviews)}
         reviewCount={stylist.reviews.length}
+        reviewsTo={`${base}/reviews${search}`}
         bio={stylist.bio}
         aside={<SaveButton stylist={stylist} />}
       >
@@ -115,8 +119,8 @@ export function StylistProfilePage() {
           <TabRow>
             <Tabs.List label="Profile sections">
               <Tabs.Tab value="portfolio">Portfolio</Tabs.Tab>
-              <Tabs.Tab value="services">Services</Tabs.Tab>
               <Tabs.Tab value="reviews">Reviews</Tabs.Tab>
+              <Tabs.Tab value="services">Services</Tabs.Tab>
               <Tabs.Tab value="about-me">About me</Tabs.Tab>
             </Tabs.List>
           </TabRow>
@@ -128,6 +132,7 @@ export function StylistProfilePage() {
                   src: assetUrl(photo.src),
                   srcSet: photoSrcSet(photo.src),
                   alt: photo.alt,
+                  caption: photo.caption,
                 }))}
                 onSelect={(index) => navigate(`${base}/photos/${index}`)}
               />

@@ -8,6 +8,8 @@ export interface PortfolioPhotoView {
   /** The same photo at several widths (see photoSrcSet). */
   srcSet?: string;
   alt: string;
+  /** One short line under the photo naming the hair and the service. */
+  caption: string;
 }
 
 /** The tile's width in the 2, 3 and 3 column layouts, so the browser picks the smallest sharp file. */
@@ -48,11 +50,12 @@ function Tile({ photo, onSelect }: { photo: PortfolioPhotoView; onSelect?: () =>
       ) : (
         <div className={styles.photo}>{image}</div>
       )}
+      <figcaption className={styles.caption}>{photo.caption}</figcaption>
     </figure>
   );
 }
 
-/** Grid of real client work: two columns on a phone, three from sm. */
+/** Grid of client work, each with a caption naming the hair and the service: two columns on a phone, three from sm. */
 export function PortfolioGrid({ photos, onSelect }: PortfolioGridProps) {
   return (
     <div className={styles.grid}>

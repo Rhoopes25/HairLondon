@@ -3,7 +3,7 @@ import { groupAppointments } from '@src/domain/booking/appointments';
 import type { Appointment, AppointmentPhase } from '@src/domain/models/appointment';
 import { useDocumentTitle } from '@app/hooks/usePageBehavior';
 import { useAppointments, useServices } from '@app/services';
-import { EmptyNote, LinkButton, PageIntro, Section } from '@app/ui';
+import { BookNowBar, EmptyNote, LinkButton, PageIntro, Section } from '@app/ui';
 import { AppointmentCard } from './AppointmentCard';
 import styles from './AppointmentsPage.module.css';
 
@@ -31,6 +31,7 @@ export function AppointmentsPage() {
 
   return (
     <>
+      <BookNowBar to="/book" />
       <PageIntro title="My appointments">Your upcoming and past visits.</PageIntro>
 
       <div className={styles.columns}>

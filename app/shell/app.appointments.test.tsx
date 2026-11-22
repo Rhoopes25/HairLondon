@@ -212,8 +212,8 @@ describe('reviewing a past visit', () => {
     const first = within(reviews).getAllByRole('listitem')[0] as HTMLElement;
     expect(first).toHaveTextContent('Sample C.');
     expect(first).toHaveTextContent('Calm, unhurried, and exactly what I asked for.');
-    // The average now counts four reviews.
-    expect(screen.getAllByText(/4\.8 · 4 reviews/).length).toBeGreaterThan(0);
+    // The average now counts hers too: London's 56 sample reviews, plus this one.
+    expect(screen.getAllByText(/4\.7 · 57 reviews/).length).toBeGreaterThan(0);
   });
 
   it('thanks you afterwards and does not let you review the same visit twice', async () => {

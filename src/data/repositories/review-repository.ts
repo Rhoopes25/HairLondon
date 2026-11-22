@@ -1,6 +1,7 @@
 import { isValidStars } from '../../domain/reviews';
 import type { UserReview } from '../../domain/reviews';
 import type { Clock } from '../../domain/clock';
+import { toIsoDate } from '../../domain/format/date';
 import { JsonStore } from '../storage/json-store';
 import type { StorageAdapter } from '../storage/storage-adapter';
 
@@ -24,7 +25,9 @@ function isUserReview(raw: unknown): raw is UserReview {
     typeof r.name === 'string' &&
     typeof r.text === 'string' &&
     typeof r.stars === 'number' &&
-    isValidStars(r.stars)
+    isValidStars(r.stars) &&
+    // Reviews saved before dates existed have none, and must keep loading.
+    (r.date === undefined || typeof r.date === 'string')
   );
 }
 
@@ -56,6 +59,7 @@ export class ReviewRepository {
     const review: UserReview = {
       ...input,
       id: `rev_${this.clock.now().getTime().toString(36)}_${Math.random().toString(36).slice(2, 7)}`,
+      date: toIsoDate(this.clock.now()),
     };
     this.store.update((all) => [...all, review]);
     return review;

@@ -4,7 +4,7 @@ import { cx } from '@app/lib/cx';
 import styles from './Button.module.css';
 
 export type ButtonVariant = 'primary' | 'outline' | 'onPhoto';
-export type ButtonSize = 'md' | 'sm';
+export type ButtonSize = 'md' | 'sm' | 'lg';
 
 interface LookProps {
   variant?: ButtonVariant;

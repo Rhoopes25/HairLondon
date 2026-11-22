@@ -2,3 +2,8 @@
   display: block;
   margin: var(--space-3) auto 0;
 }
+
+/* The long-visit heads-up, level with the recap's edges. */
+.notice {
+  margin: var(--space-4) var(--space-5) 0;
+}

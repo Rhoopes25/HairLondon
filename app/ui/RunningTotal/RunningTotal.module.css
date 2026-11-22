@@ -1,0 +1,78 @@
+.bar {
+  margin-top: var(--space-5);
+  padding: var(--space-3) var(--space-5);
+  background: var(--white);
+  border-top: 1px solid var(--gold-soft);
+  border-bottom: 1px solid var(--gold-soft);
+}
+
+/* Keeps the total in reach while she scrolls through days and times, then rests above the action. */
+.sticky {
+  position: sticky;
+  bottom: 0;
+  z-index: 10;
+  box-shadow: 0 -6px 20px rgba(43, 36, 32, 0.06);
+  padding-bottom: calc(var(--space-3) + env(safe-area-inset-bottom, 0px));
+}
+
+.figures {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: var(--space-3);
+  margin: 0;
+}
+
+.figure {
+  display: flex;
+  flex-direction: column;
+  gap: 0.1rem;
+  min-width: 0;
+}
+
+.figure:last-child {
+  align-items: flex-end;
+  text-align: right;
+}
+
+.figure dt {
+  font-size: var(--fs-body-sm);
+  color: var(--ink-soft);
+}
+
+.figure dd {
+  margin: 0;
+}
+
+.price {
+  font-family: var(--font-display);
+  font-size: 1.6rem;
+  font-weight: 600;
+  line-height: 1.15;
+  color: var(--ink);
+}
+
+.time {
+  font-size: 1.15rem;
+  font-weight: 500;
+  line-height: 1.4;
+  color: var(--ink);
+}
+
+.note {
+  margin-top: 0.35rem;
+  font-size: var(--fs-body-sm);
+  color: var(--ink-soft);
+}
+
+@media (min-width: 640px) {
+  .bar {
+    margin-inline: var(--space-5);
+    border: 1px solid var(--gold-soft);
+    border-radius: var(--radius-lg);
+  }
+
+  .sticky {
+    bottom: var(--space-3);
+  }
+}

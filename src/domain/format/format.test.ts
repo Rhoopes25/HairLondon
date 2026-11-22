@@ -1,6 +1,15 @@
 import { describe, expect, it } from 'vitest';
-import { addDays, dayParts, formatDay, parseIsoDate, toIsoDate, weekdayOf } from './date';
+import {
+  addDays,
+  dayParts,
+  formatDay,
+  formatMonthYear,
+  parseIsoDate,
+  toIsoDate,
+  weekdayOf,
+} from './date';
 import { formatDuration } from './duration';
+import { formatExperience } from './experience';
 import { firstName, initials, reviewerName } from './name';
 import { formatPhone, isValidPhone, phoneDigits } from './phone';
 import { formatPrice, formatPriceRange, formatStartingPrice } from './price';
@@ -148,5 +157,26 @@ describe('formatOpening', () => {
       'Tomorrow, 9:30 AM',
     );
     expect(formatOpening('2026-10-14' as IsoDate, minuteOfDay(15), today)).toBe('Wed 14, 3:00 PM');
+  });
+});
+
+describe('formatMonthYear', () => {
+  it('shows the month and year of a review', () => {
+    expect(formatMonthYear('2026-09-30')).toBe('Sep 2026');
+    expect(formatMonthYear('2024-12-01')).toBe('Dec 2024');
+  });
+
+  it('shows nothing for a review saved before dates existed, or for text that is not a date', () => {
+    expect(formatMonthYear(undefined)).toBeNull();
+    expect(formatMonthYear('')).toBeNull();
+    expect(formatMonthYear('last spring')).toBeNull();
+    expect(formatMonthYear('2026-13-01')).toBeNull();
+  });
+});
+
+describe('formatExperience', () => {
+  it('says how long she has been doing hair, singular and plural', () => {
+    expect(formatExperience(8)).toBe('8 years doing hair');
+    expect(formatExperience(1)).toBe('1 year doing hair');
   });
 });

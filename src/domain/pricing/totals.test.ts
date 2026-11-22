@@ -33,7 +33,7 @@ describe('pricing', () => {
   });
 
   it('finds the starting price, and null instead of Infinity when she lists nothing', () => {
-    expect(startingPrice(kai)).toBe(30);
+    expect(startingPrice(kai)).toBe(20); // her beard trim
     expect(startingPrice({ prices: {} })).toBeNull();
   });
 

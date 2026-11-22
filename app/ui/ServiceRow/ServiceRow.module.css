@@ -30,18 +30,18 @@
 }
 
 .name {
-  font-size: var(--fs-label);
+  font-size: 1.1rem;
   font-weight: 500;
 }
 
 .desc {
-  font-size: 0.8rem;
+  font-size: 0.95rem;
   color: var(--ink-soft);
   line-height: 1.45;
 }
 
 .meta {
-  font-size: 0.8rem;
+  font-size: 0.95rem;
   color: var(--ink-soft);
   white-space: nowrap;
 }

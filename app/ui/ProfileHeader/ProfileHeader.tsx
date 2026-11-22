@@ -1,5 +1,6 @@
 import type { ReactNode } from 'react';
 import { Avatar } from '../Avatar';
+import { QuietLink } from '../Button';
 import { RatingLine } from '../Stars';
 import styles from './ProfileHeader.module.css';
 
@@ -11,6 +12,8 @@ export interface ProfileHeaderProps {
   city: string;
   average: number | null;
   reviewCount: number;
+  /** Where "Read reviews" goes. Reviews are what builds trust, so the way in is right under her name. */
+  reviewsTo?: string;
   bio: string;
   /** A small control beside the name, e.g. the save button. */
   aside?: ReactNode;
@@ -27,6 +30,7 @@ export function ProfileHeader({
   city,
   average,
   reviewCount,
+  reviewsTo,
   bio,
   aside,
   children,
@@ -41,7 +45,12 @@ export function ProfileHeader({
             <p className={styles.studio}>
               {studio}, {city}
             </p>
-            <RatingLine average={average} count={reviewCount} />
+            <div className={styles.rating}>
+              <RatingLine average={average} count={reviewCount} />
+              {reviewsTo && reviewCount > 0 ? (
+                <QuietLink to={reviewsTo}>Read reviews</QuietLink>
+              ) : null}
+            </div>
           </div>
           {aside ? <div className={styles.aside}>{aside}</div> : null}
         </div>

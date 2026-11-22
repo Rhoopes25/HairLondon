@@ -2,12 +2,13 @@ import { Link, useLocation, useNavigate, useSearchParams } from 'react-router';
 import { dayParts, formatDay } from '@src/domain/format/date';
 import { formatDuration } from '@src/domain/format/duration';
 import { firstName } from '@src/domain/format/name';
-import { formatStartingPrice } from '@src/domain/format/price';
+import { formatStartingPrice, formatStartingPriceRange } from '@src/domain/format/price';
 import { SERVICE_IDS } from '@src/domain/models/service';
 import type { ServiceId } from '@src/domain/models/service';
 import { isIsoDate } from '@src/domain/models/time';
 import type { IsoDate } from '@src/domain/models/time';
-import { startingPrice, totalPrice } from '@src/domain/pricing/totals';
+import { estimateAcrossStylists } from '@src/domain/pricing/estimate';
+import { isLongVisit, startingPrice, totalPrice } from '@src/domain/pricing/totals';
 import { isTimeOfDay, TIME_OF_DAY_IDS, TIMES_OF_DAY } from '@src/domain/scheduling/search';
 import type { TimeOfDay } from '@src/domain/scheduling/search';
 import {
@@ -23,16 +24,19 @@ import { openingChips } from '@app/features/scheduling';
 import { useDocumentTitle } from '@app/hooks/usePageBehavior';
 import { profilePath, queryString, readServiceIds } from '@app/lib/links';
 import { stylistCardIdentity, workThumbnails } from '@app/lib/stylist-card';
-import { useMyLocation, useSearchEnvironment, useStylists } from '@app/services';
+import { useDistanceOrigin, useMyLocation, useSearchEnvironment, useStylists } from '@app/services';
 import {
   BackLink,
   Button,
   Chip,
   ChipRow,
   EmptyNote,
+  LongVisitNotice,
   Narrow,
   Notice,
   PageIntro,
+  QuietLink,
+  RunningTotal,
   Section,
   SlotPicker,
   StepGuide,
@@ -74,6 +78,7 @@ export function BookPage() {
   const stylists = useStylists();
   const env = useSearchEnvironment();
   const myLocation = useMyLocation();
+  const origin = useDistanceOrigin();
   useDocumentTitle('Book');
 
   const days = searchableDays(env.clock, stylists);
@@ -118,6 +123,9 @@ export function BookPage() {
   }
 
   const outcome = searchStylists(stylists, filters, env);
+  const picked = filters.serviceIds.length > 0;
+  const visitMinutes = visitLength(env.catalog, filters.serviceIds);
+  const estimate = estimateAcrossStylists(stylists, filters.serviceIds);
   const timed = isTimed(filters);
   const activeCount =
     filters.serviceIds.length + (filters.day ? 1 : 0) + (filters.timeOfDay ? 1 : 0);
@@ -153,7 +161,14 @@ export function BookPage() {
         key={stylist.id}
         to={profile}
         {...stylistCardIdentity(stylist)}
-        distance={myLocation ? formatDistance(milesBetween(myLocation, stylist.location)) : null}
+        distance={formatDistance(milesBetween(origin, stylist.location))}
+        reviewsTo={profilePath({
+          stylistId: stylist.id,
+          tab: 'reviews',
+          serviceIds: ids,
+          date: filters.day,
+          back: here,
+        })}
         price={price}
         photos={workThumbnails(stylist)}
         seeAll={{
@@ -226,10 +241,17 @@ export function BookPage() {
             </Link>
           </div>
 
-          <Section title="Tap a time to book">
+          <Section title="Tap a time to book" large>
             <p className={styles.count} aria-live="polite">
               {countText}
             </p>
+            {myLocation ? null : (
+              <p className={styles.originNote}>
+                Distances are measured from downtown Provo. Share your location on the{' '}
+                <QuietLink to="/stylists">Stylists page</QuietLink> to see how far each one is from
+                you.
+              </p>
+            )}
 
             {!outcome.offering.length ? (
               <EmptyNote>
@@ -255,7 +277,7 @@ export function BookPage() {
         </section>
       ) : (
         <div className={styles.filters}>
-          <Section title="What do you need?">
+          <Section title="What do you need?" large>
             <p className={styles.hint}>Pick as many as you like.</p>
             <ChipRow label="Services" wrap>
               {SERVICE_IDS.map((id) => (
@@ -268,15 +290,20 @@ export function BookPage() {
                 </Chip>
               ))}
             </ChipRow>
-            {filters.serviceIds.length ? (
+            {picked ? (
               <p className={styles.estimate}>
                 {filters.serviceIds.length > 1 ? 'Together these take about ' : 'Takes about '}
-                {formatDuration(visitLength(env.catalog, filters.serviceIds))}.
+                {formatDuration(visitMinutes)}.
               </p>
+            ) : null}
+            {picked && isLongVisit(visitMinutes) ? (
+              <div className={styles.notice}>
+                <LongVisitNotice duration={formatDuration(visitMinutes)} />
+              </div>
             ) : null}
           </Section>
 
-          <Section title="Which day?" optional>
+          <Section title="Which day?" optional large>
             <SlotPicker.Days
               days={dayOptions}
               selectedId={filters.day ?? null}
@@ -286,7 +313,7 @@ export function BookPage() {
             />
           </Section>
 
-          <Section title="What time?" optional>
+          <Section title="What time?" optional large>
             <ChipRow label="Time of day" wrap>
               <Chip
                 selected={filters.timeOfDay === undefined}
@@ -307,6 +334,19 @@ export function BookPage() {
               ))}
             </ChipRow>
           </Section>
+          {picked ? (
+            <RunningTotal
+              price={estimate ? formatStartingPriceRange(estimate.min, estimate.max) : '—'}
+              duration={`about ${formatDuration(visitMinutes)}`}
+              note={
+                estimate
+                  ? estimate.stylistCount > 1
+                    ? `Starting prices from the ${estimate.stylistCount} stylists who do these.`
+                    : 'Starting price. Longer or thicker hair can cost more.'
+                  : 'Nobody does all of these together yet. Try removing one.'
+              }
+            />
+          ) : null}
           <div className={styles.next}>
             <p className={styles.count} aria-live="polite">
               {countText}

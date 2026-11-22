@@ -27,7 +27,7 @@ describe('visitLength', () => {
 describe('searchStylists', () => {
   it('gives every offering stylist up to three openings, soonest first', () => {
     const { matches } = searchStylists(STYLISTS, { serviceIds: [] }, env());
-    expect(ids(matches)).toEqual(['london', 'sadie', 'kai', 'brooke']);
+    expect(ids(matches)).toEqual(['london', 'sadie', 'kai', 'brooke', 'marcus', 'diego']);
     for (const match of matches) {
       expect(match.openings).toHaveLength(3);
       expect(`${match.openings[0]?.date}` <= `${match.openings[2]?.date}`).toBe(true);
@@ -60,7 +60,7 @@ describe('searchStylists', () => {
     const sunday = '2026-10-11' as IsoDate; // nobody works Sunday
     const outcome = searchStylists(STYLISTS, { serviceIds: [], day: sunday }, env());
     expect(outcome.matches).toEqual([]);
-    expect(outcome.alternatives.length).toBe(4);
+    expect(outcome.alternatives.length).toBe(STYLISTS.length);
   });
 
   it('has no alternatives when everything is already booked', () => {

@@ -9,14 +9,23 @@ import { addDuration } from '@src/domain/models/time';
 import { totalDuration, totalPrice } from '@src/domain/pricing/totals';
 import type { RecapRow } from '@app/ui';
 
-/** The rows shown on the details and review steps. */
+/**
+ * The rows shown on the details and review steps. The review step shows the total in the bar
+ * above Confirm instead, where it cannot be missed, so it leaves that row out (`withTotal: false`).
+ */
 export function draftRecapRows(
   draft: CompleteDraft,
   stylist: Stylist,
   catalog: ServiceCatalog,
   extra: readonly RecapRow[] = [],
+  { withTotal = true }: { withTotal?: boolean } = {},
 ): RecapRow[] {
   const length = totalDuration(catalog, draft.serviceIds);
+  const totalRow: RecapRow = {
+    label: 'Estimated total',
+    icon: 'clock',
+    value: `${formatStartingPrice(totalPrice(stylist, draft.serviceIds))}, about ${formatDuration(length)}`,
+  };
   return [
     { label: 'Stylist', icon: 'scissors', value: `${stylist.name}, ${stylist.studio}` },
     {
@@ -29,11 +38,7 @@ export function draftRecapRows(
       icon: 'calendar',
       value: `${formatDay(draft.date)}, ${formatRange(draft.start, addDuration(draft.start, length))}`,
     },
-    {
-      label: 'Estimated total',
-      icon: 'clock',
-      value: `${formatStartingPrice(totalPrice(stylist, draft.serviceIds))}, about ${formatDuration(length)}`,
-    },
+    ...(withTotal ? [totalRow] : []),
     ...extra,
   ];
 }

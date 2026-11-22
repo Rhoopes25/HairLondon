@@ -5,6 +5,7 @@ import {
   Avatar,
   BackLink,
   BookBar,
+  BookNowBar,
   Button,
   Chip,
   ChipRow,
@@ -15,6 +16,7 @@ import {
   Hero,
   Icon,
   LinkButton,
+  LongVisitNotice,
   Modal,
   NavBar,
   Narrow,
@@ -27,6 +29,7 @@ import {
   MapCard,
   Recap,
   Reviews,
+  RunningTotal,
   Section,
   ServiceOption,
   ServiceRow,
@@ -55,6 +58,7 @@ const ICONS: IconName[] = [
   'check',
   'chevron-right',
   'chevron-left',
+  'chevron-down',
   'heart',
   'calendar',
   'clock',
@@ -110,6 +114,7 @@ export function DesignLibraryPage() {
             <Button variant="outline">Outline</Button>
             <Button disabled>Disabled</Button>
             <Button size="sm">Small</Button>
+            <Button size="lg">Large (Book Now)</Button>
             <LinkButton to="/stylists">Link styled as a button</LinkButton>
             <TextButton>Quiet text button</TextButton>
             <QuietLink to="/">Quiet link</QuietLink>
@@ -133,10 +138,11 @@ export function DesignLibraryPage() {
             imageUrl={assetUrl('images/home.jpg')}
             imageLabel="A stylist holding her shears"
             title="Local Locks"
-            tagline="Local stylists you can trust."
+            tagline="Local stylists and barbers you can trust."
+            welcome="Haircuts, color, and beard trims for everyone: women, men, and kids."
             actions={[
-              { label: 'Explore Stylists', to: '/stylists' },
-              { label: 'Book Now', to: '/book', variant: 'outline' },
+              { label: 'Book Now', to: '/book' },
+              { label: 'Explore Stylists', to: '/stylists', variant: 'outline' },
             ]}
           />
         </Specimen>
@@ -267,12 +273,18 @@ export function DesignLibraryPage() {
             average={4.7}
             reviewCount={3}
             distance="2.1 mi away"
+            reviewsTo="/stylists/london/reviews"
             price={{ value: '$35+' }}
             photos={[
               { src: assetUrl('images/work-1.jpg') },
               { src: assetUrl('images/work-3.jpg') },
             ]}
             seeAll={{ to: '/stylists/london', label: 'See all of London’s work' }}
+            preview={{
+              experience: '8 years doing hair',
+              specialties: ['Lived-in blonde', 'Soft color', 'Low-upkeep cuts'],
+              profileTo: '/stylists/london',
+            }}
             slots={{
               heading: 'Next open',
               items: [
@@ -304,11 +316,34 @@ export function DesignLibraryPage() {
           </Notice>
         </Specimen>
 
+        <Specimen name="BookNowBar">
+          <BookNowBar to="/book" />
+          <BookNowBar to="/book/london" label="Book Now with London" />
+        </Specimen>
+
+        <Specimen name="RunningTotal, LongVisitNotice">
+          <RunningTotal
+            sticky={false}
+            price="$270–305+"
+            duration="about 4 hr 30 min"
+            note="Starting prices from the 3 stylists who do these."
+          />
+          <LongVisitNotice duration="4 hr 30 min" />
+        </Specimen>
+
         <Specimen name="PortfolioGrid">
           <PortfolioGrid
             photos={[
-              { src: assetUrl('images/work-1.jpg'), alt: 'Platinum balayage' },
-              { src: assetUrl('images/work-3.jpg'), alt: 'Ash blonde balayage' },
+              {
+                src: assetUrl('images/work-1.jpg'),
+                alt: 'Platinum balayage',
+                caption: 'Icy platinum balayage, long wavy hair',
+              },
+              {
+                src: assetUrl('images/work-3.jpg'),
+                alt: 'Ash blonde balayage',
+                caption: 'Ash blonde balayage with curtain bangs, long hair',
+              },
             ]}
           />
         </Specimen>
@@ -317,8 +352,20 @@ export function DesignLibraryPage() {
           <Reviews
             average={4.5}
             reviews={[
-              { id: '1', name: 'Maren T.', stars: 5, text: 'Finally found someone I trust.' },
-              { id: '2', name: 'Elise K.', stars: 4, text: 'Relaxed, no pressure.' },
+              {
+                id: '1',
+                name: 'Maren T.',
+                stars: 5,
+                date: '2026-09-30',
+                text: 'Finally found someone I trust.',
+              },
+              {
+                id: '2',
+                name: 'Elise K.',
+                stars: 4,
+                date: '2026-06-05',
+                text: 'Relaxed, no pressure.',
+              },
             ]}
           />
         </Specimen>

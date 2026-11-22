@@ -14,3 +14,8 @@ export function formatPriceRange(min: number, max: number): string {
 export function formatStartingPrice(amount: number): string {
   return `${formatPrice(amount)}+`;
 }
+
+/** "$120+" when everyone charges the same, otherwise "$120–145+". Still starting prices. */
+export function formatStartingPriceRange(min: number, max: number): string {
+  return min === max ? formatStartingPrice(min) : `$${min}–${max}+`;
+}

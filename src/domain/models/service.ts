@@ -7,6 +7,9 @@ export const SERVICE_IDS = [
   'root-touch-up',
   'blowout',
   'deep-conditioning',
+  'mens-haircut',
+  'beard-trim',
+  'kids-cut',
 ] as const;
 
 export type ServiceId = (typeof SERVICE_IDS)[number];

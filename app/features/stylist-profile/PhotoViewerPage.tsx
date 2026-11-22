@@ -65,7 +65,7 @@ export function PhotoViewerPage() {
               />
             )}
           </div>
-          <figcaption>{photo.alt}</figcaption>
+          <figcaption>{photo.caption}</figcaption>
         </figure>
 
         <nav className={styles.pager} aria-label="Photos">

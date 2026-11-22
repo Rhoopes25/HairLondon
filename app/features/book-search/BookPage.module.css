@@ -1,18 +1,30 @@
+/* The helper line under "What do you need?": body size or larger and full-strength ink, so it reads at a glance. */
 .hint {
-  font-size: var(--fs-body);
-  color: var(--ink-soft);
-  margin: -0.4rem 0 0.7rem;
+  font-size: 1.15rem;
+  color: var(--ink);
+  margin: -0.4rem 0 0.9rem;
 }
 
 .estimate {
-  margin-top: 0.75rem;
-  font-size: 0.85rem;
+  margin-top: 0.9rem;
+  font-size: 1.15rem;
+  font-weight: 500;
   color: var(--gold-ink);
+}
+
+.notice {
+  margin-top: var(--space-3);
 }
 
 .count {
   margin: -0.4rem 0 var(--space-2);
-  font-size: 0.85rem;
+  font-size: var(--fs-body);
+  color: var(--ink-soft);
+}
+
+.originNote {
+  margin: -0.4rem 0 var(--space-3);
+  font-size: var(--fs-body-sm);
   color: var(--ink-soft);
 }
 
@@ -44,7 +56,7 @@
   background: var(--white);
   border: 1.5px solid var(--cream-deep);
   border-radius: var(--radius-md);
-  font-size: var(--fs-body-sm);
+  font-size: var(--fs-body);
 }
 
 .summary p {
@@ -75,7 +87,7 @@
 .alternatives {
   margin-top: var(--space-2);
   margin-bottom: 0.65rem;
-  font-size: 0.8rem;
+  font-size: var(--fs-body);
   font-weight: 500;
   color: var(--ink-soft);
 }

@@ -30,6 +30,16 @@
   max-width: 34ch;
 }
 
+/* The larger intro of the stylist pages: the same words, easier to read at a glance. */
+.introLarge h1 {
+  font-size: 2.1rem;
+}
+
+.introLarge p {
+  font-size: 1.1rem;
+  max-width: 36ch;
+}
+
 .section {
   padding: 1.6rem var(--space-5) 0.5rem;
 }
@@ -56,6 +66,17 @@
   font-size: 0.85rem;
   font-weight: 600;
   vertical-align: 0.1em;
+}
+
+/* The Book page's headings ("Which day?", "What time?"): larger so they read at a glance on a phone. */
+.large h2 {
+  font-size: 1.65rem;
+  line-height: 1.25;
+  margin-bottom: var(--space-3);
+}
+
+.large .optionalTag {
+  font-size: 1.1rem;
 }
 
 /* Optional blocks sit back, so the required one is the loud one. */
@@ -85,6 +106,14 @@
   .intro p {
     max-width: 52ch;
     font-size: var(--fs-body);
+  }
+
+  .introLarge h1 {
+    font-size: 2.6rem;
+  }
+
+  .introLarge p {
+    font-size: 1.25rem;
   }
 
   .section {

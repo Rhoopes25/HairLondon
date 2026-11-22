@@ -1,6 +1,10 @@
+import { useId, useState } from 'react';
 import type { ReactNode } from 'react';
 import { Link } from 'react-router';
+import { cx } from '@app/lib/cx';
 import { Avatar } from '../Avatar';
+import { LinkButton } from '../Button';
+import { Icon } from '../Icon';
 import { RatingLine } from '../Stars';
 import styles from './StylistCard.module.css';
 
@@ -17,6 +21,20 @@ export interface CardSlot {
   ariaLabel: string;
 }
 
+/**
+ * What opens under "Quick look". Only what the card does not already show: her photos and rating
+ * are right there on the card, so the preview adds how long she has been at it and what she is
+ * known for, so two stylists can be compared without leaving the list.
+ */
+export interface StylistPreview {
+  /** "8 years doing hair". */
+  experience: string;
+  /** What she is known for, in her words. */
+  specialties: readonly string[];
+  /** Her whole profile: the preview is a look, not the full page. */
+  profileTo: string;
+}
+
 export interface StylistCardProps {
   /** Her profile. The name is the link, stretched over the whole card, so a tap anywhere opens it. */
   to: string;
@@ -25,16 +43,20 @@ export interface StylistCardProps {
   photoSrcSet?: string;
   studio: string;
   city: string;
-  /** "2.1 mi away", once she has shared where she is. */
+  /** "2.1 mi away". */
   distance?: string | null;
   average: number | null;
   reviewCount: number;
+  /** Where "Read reviews" goes: straight to the reviews on her profile. */
+  reviewsTo?: string;
   /** "$65+" (the plus already says it is a starting price), or "$185+" with a line under it like "about 3 hr". */
   price?: { value: string; note?: string; detail?: string } | null;
   /** Up to three thumbnails of her work. */
   photos?: readonly CardPhoto[];
   /** Puts a "See all work" tile on the third photo spot. */
   seeAll?: { to: string; label: string };
+  /** Adds a "Quick look" that opens a preview in place. Several can be open at once, to compare. */
+  preview?: StylistPreview;
   /** Her next open times, as chips that start a booking. */
   slots?: { heading: string; items: readonly CardSlot[] };
   footer?: ReactNode;
@@ -66,12 +88,16 @@ export function StylistCard({
   distance,
   average,
   reviewCount,
+  reviewsTo,
   price,
   photos = [],
   seeAll,
+  preview,
   slots,
   footer,
 }: StylistCardProps) {
+  const previewId = useId();
+  const [previewOpen, setPreviewOpen] = useState(false);
   const shown = photos.slice(0, THUMB_COUNT);
   // With fewer than three photos the tile still goes on the last spot, over the warm placeholder.
   const emptySpots = seeAll ? Math.max(0, THUMB_COUNT - shown.length) : 0;
@@ -86,9 +112,8 @@ export function StylistCard({
           </Link>
           <span className={styles.studio}>
             {studio}, {city}
-            {distance ? <span className={styles.distance}> · {distance}</span> : null}
           </span>
-          <RatingLine average={average} count={reviewCount} />
+          {distance ? <span className={styles.distance}>{distance}</span> : null}
         </div>
         {price ? (
           <div className={styles.price}>
@@ -96,6 +121,20 @@ export function StylistCard({
             <span className={styles.priceValue}>{price.value}</span>
             {price.detail ? <span className={styles.priceNote}>{price.detail}</span> : null}
           </div>
+        ) : null}
+      </div>
+
+      {/* Under the whole row, not squeezed beside the price: the rating and the way into the reviews. */}
+      <div className={styles.meta}>
+        <RatingLine average={average} count={reviewCount} />
+        {reviewsTo && reviewCount > 0 ? (
+          <Link
+            to={reviewsTo}
+            className={styles.reviewsLink}
+            aria-label={`Read reviews for ${name}`}
+          >
+            Read reviews
+          </Link>
         ) : null}
       </div>
 
@@ -132,6 +171,44 @@ export function StylistCard({
                 {slot.label}
               </Link>
             ))}
+          </div>
+        </div>
+      ) : null}
+
+      {preview ? (
+        <div className={styles.previewArea}>
+          <button
+            type="button"
+            className={cx(styles.toggle, previewOpen && styles.toggleOpen)}
+            aria-expanded={previewOpen}
+            aria-controls={previewId}
+            aria-label={`Quick look at ${name}`}
+            onClick={() => setPreviewOpen((open) => !open)}
+          >
+            <span>Quick look</span>
+            <Icon name="chevron-down" className={styles.chevron} />
+          </button>
+          {/* Always in the page, just hidden, so the button's aria-controls always has a target. */}
+          <div id={previewId} className={styles.preview} hidden={!previewOpen}>
+            <dl className={styles.facts}>
+              <div>
+                <dt>Experience</dt>
+                <dd>{preview.experience}</dd>
+              </div>
+              <div>
+                <dt>Known for</dt>
+                <dd>
+                  <ul className={styles.pills}>
+                    {preview.specialties.map((specialty) => (
+                      <li key={specialty}>{specialty}</li>
+                    ))}
+                  </ul>
+                </dd>
+              </div>
+            </dl>
+            <LinkButton to={preview.profileTo} variant="outline" size="sm">
+              View full profile
+            </LinkButton>
           </div>
         </div>
       ) : null}

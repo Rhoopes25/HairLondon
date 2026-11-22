@@ -21,11 +21,28 @@ describe('stylist profile', () => {
     expect(await screen.findByRole('heading', { level: 1, name: 'London' })).toBeInTheDocument();
     expect(tab('Portfolio')).toHaveAttribute('aria-selected', 'true');
     const panel = screen.getByRole('tabpanel', { name: 'Portfolio' });
-    expect(within(panel).getAllByRole('img')).toHaveLength(6);
-    expect(screen.getByText('4.7 · 3 reviews')).toBeInTheDocument();
+    // Six of her own, then the men's and kids' placeholders she also offers.
+    expect(within(panel).getAllByRole('img')).toHaveLength(8);
+    // Every photo says what it shows: the hair and the service.
+    expect(within(panel).getByText('Icy platinum balayage, long wavy hair')).toBeInTheDocument();
+    expect(screen.getByText('4.7 · 56 reviews')).toBeInTheDocument();
   });
 
-  it('shows the photos the teammates added for Sadie, Kai and Brooke too', async () => {
+  it('puts Reviews second in the tabs, right after the work, with a Read reviews link by her name', async () => {
+    const { user, router } = renderApp('/stylists/london');
+    await screen.findByRole('heading', { level: 1, name: 'London' });
+    expect(screen.getAllByRole('tab').map((t) => t.textContent)).toEqual([
+      'Portfolio',
+      'Reviews',
+      'Services',
+      'About me',
+    ]);
+    await user.click(screen.getByRole('link', { name: 'Read reviews' }));
+    expect(router.state.location.pathname).toBe('/stylists/london/reviews');
+    expect(tab('Reviews')).toHaveAttribute('aria-selected', 'true');
+  });
+
+  it('gives Sadie, Kai and Brooke at least six captioned photos each', async () => {
     for (const [id, name] of [
       ['sadie', 'Sadie Morgan'],
       ['kai', 'Kai Nakamura'],
@@ -34,7 +51,9 @@ describe('stylist profile', () => {
       const { unmount } = renderApp(`/stylists/${id}`);
       await screen.findByRole('heading', { level: 1, name });
       const panel = screen.getByRole('tabpanel', { name: 'Portfolio' });
-      expect(within(panel).getAllByRole('img')).toHaveLength(2);
+      const photos = within(panel).getAllByRole('img');
+      expect(photos.length).toBeGreaterThanOrEqual(6);
+      expect(within(panel).getAllByRole('figure')).toHaveLength(photos.length);
       unmount();
     }
   });
@@ -111,10 +130,12 @@ describe('the Book bar', () => {
   it('is the one Book action, always in reach, and says what happens next', async () => {
     renderApp('/stylists/london');
     await screen.findByRole('heading', { level: 1, name: 'London' });
-    // The page itself has one Book action; the "Book" in the header is the navigation.
+    // Two ways to book with her, both going to the same place: a large Book Now at the top of the
+    // page, and the bar that stays in reach. (The "Book" in the header is the navigation.)
     expect(within(screen.getByRole('main')).getAllByRole('link', { name: /^Book/ })).toHaveLength(
-      1,
+      2,
     );
+    expect(hrefOf('Book Now with London').pathname).toBe('/book/london');
     expect(screen.getByText('Services from $35+')).toBeInTheDocument();
     expect(screen.getByText('Pick services, a day, and a time next')).toBeInTheDocument();
     const href = hrefOf('Book with London');
@@ -204,31 +225,33 @@ describe('photo viewer', () => {
     const first = await screen.findByRole('button', { name: /View larger: Glossy jet black hair/ });
     await user.click(first);
 
-    expect(await screen.findByText('1 of 6')).toBeInTheDocument();
+    expect(await screen.findByText('1 of 8')).toBeInTheDocument();
     expect(router.state.location.pathname).toBe('/stylists/london/photos/0');
     expect(screen.getByAltText('Glossy jet black hair in long, soft layers')).toBeInTheDocument();
+    // The line under the photo names the hair and the service.
+    expect(screen.getByText('Soft layers and gloss, long dark hair')).toBeInTheDocument();
 
     await user.click(screen.getByRole('link', { name: 'Next' }));
-    expect(await screen.findByText('2 of 6')).toBeInTheDocument();
+    expect(await screen.findByText('2 of 8')).toBeInTheDocument();
     expect(screen.getByAltText('Icy platinum balayage on long, loose waves')).toBeInTheDocument();
 
     await user.click(screen.getByRole('link', { name: 'Previous' }));
     await user.click(screen.getByRole('link', { name: 'Previous' }));
-    expect(await screen.findByText('6 of 6')).toBeInTheDocument();
+    expect(await screen.findByText('8 of 8')).toBeInTheDocument();
   });
 
   it('responds to the arrow keys', async () => {
     const { user } = renderApp('/stylists/london/photos/0');
-    await screen.findByText('1 of 6');
+    await screen.findByText('1 of 8');
     await user.keyboard('{ArrowRight}');
-    expect(await screen.findByText('2 of 6')).toBeInTheDocument();
+    expect(await screen.findByText('2 of 8')).toBeInTheDocument();
     await user.keyboard('{ArrowLeft}');
-    expect(await screen.findByText('1 of 6')).toBeInTheDocument();
+    expect(await screen.findByText('1 of 8')).toBeInTheDocument();
   });
 
   it('offers booking from the photo, and a way back to the portfolio', async () => {
     renderApp('/stylists/london/photos/2');
-    await screen.findByText('3 of 6');
+    await screen.findByText('3 of 8');
     expect(screen.getByRole('link', { name: 'Book with London' })).toHaveAttribute(
       'href',
       '/book/london',
@@ -268,7 +291,7 @@ describe('saving a stylist', () => {
     );
     const saved = await screen.findByRole('link', { name: 'Kai Nakamura' });
     expect(saved.closest('article')).not.toHaveTextContent('from');
-    expect(saved.closest('article')).toHaveTextContent('$30+');
+    expect(saved.closest('article')).toHaveTextContent('$20+');
 
     await user.click(saved);
     await user.click(await screen.findByRole('button', { name: 'Save Kai' }));

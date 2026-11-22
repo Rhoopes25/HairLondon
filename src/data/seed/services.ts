@@ -39,4 +39,22 @@ export const SERVICES: ServiceCatalog = {
     durationMin: durationMin(30),
     description: 'A moisture treatment for dry or color-tired hair.',
   },
+  'mens-haircut': {
+    id: 'mens-haircut',
+    name: 'Men’s Haircut',
+    durationMin: durationMin(30),
+    description: 'Clipper or scissor cut, neck cleaned up, and styled. Fades and tapers too.',
+  },
+  'beard-trim': {
+    id: 'beard-trim',
+    name: 'Beard Trim',
+    durationMin: durationMin(30),
+    description: 'Shaped, trimmed, and lined up with a clean neckline.',
+  },
+  'kids-cut': {
+    id: 'kids-cut',
+    name: 'Kids’ Cut',
+    durationMin: durationMin(30),
+    description: 'A patient, quick cut for ages 12 and under. Bring a snack if it helps.',
+  },
 };

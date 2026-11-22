@@ -9,7 +9,11 @@ describe('entry screen', () => {
     expect(
       await screen.findByRole('heading', { level: 1, name: 'Local Locks' }),
     ).toBeInTheDocument();
-    expect(screen.getByText('Local stylists you can trust.')).toBeInTheDocument();
+    expect(screen.getByText('Local stylists and barbers you can trust.')).toBeInTheDocument();
+    // It says plainly that it is for everyone.
+    expect(
+      screen.getByText('Haircuts, color, and beard trims for everyone: women, men, and kids.'),
+    ).toBeInTheDocument();
     expect(screen.getByRole('link', { name: 'Book Now' })).toHaveAttribute('href', '/book');
     expect(screen.getByRole('link', { name: 'Explore Stylists' })).toHaveAttribute(
       'href',
@@ -17,7 +21,7 @@ describe('entry screen', () => {
     );
   });
 
-  it('leads a first-time visitor to the stylists, with Book Now one tap away and nothing else', async () => {
+  it('leads a first-time visitor to Book Now, with Explore Stylists one tap away and nothing else', async () => {
     renderApp('/');
     await screen.findByRole('heading', { level: 1, name: 'Local Locks' });
     const main = screen.getByRole('main');
@@ -26,7 +30,11 @@ describe('entry screen', () => {
       within(main)
         .getAllByRole('link')
         .map((link) => link.textContent),
-    ).toEqual(['Explore Stylists', 'Book Now']);
+    ).toEqual(['Book Now', 'Explore Stylists']);
+    // Both are the large size, and only Book Now is filled.
+    expect(screen.getByRole('link', { name: 'Book Now' }).className).toMatch(/primary/);
+    expect(screen.getByRole('link', { name: 'Book Now' }).className).toMatch(/lg/);
+    expect(screen.getByRole('link', { name: 'Explore Stylists' }).className).toMatch(/outline/);
   });
 
   it('treats a signed-in client who has never booked like a first visit', async () => {
@@ -39,7 +47,7 @@ describe('entry screen', () => {
         within(main)
           .getAllByRole('link')
           .map((link) => link.textContent),
-      ).toEqual(['Explore Stylists', 'Book Now']),
+      ).toEqual(['Book Now', 'Explore Stylists']),
     );
     expect(screen.queryByText('Nothing booked yet.', { exact: false })).not.toBeInTheDocument();
   });
@@ -179,7 +187,7 @@ describe('stylists list', () => {
     renderApp('/stylists');
     const list = await screen.findByRole('region', { name: 'Stylists' });
     const cards = await within(list).findAllByRole('article');
-    expect(cards).toHaveLength(4);
+    expect(cards).toHaveLength(6);
     const london = cards[0];
     if (!london) throw new Error('no cards');
     expect(within(london).getByRole('link', { name: 'London' })).toHaveAttribute(
@@ -187,7 +195,7 @@ describe('stylists list', () => {
       expect.stringContaining('/stylists/london'),
     );
     expect(london).toHaveTextContent('Hair by London, Provo');
-    expect(london).toHaveTextContent('4.7 · 3 reviews');
+    expect(london).toHaveTextContent('4.7 · 56 reviews');
     expect(london).not.toHaveTextContent('from');
     expect(london).toHaveTextContent('$35+');
   });
@@ -197,6 +205,7 @@ describe('stylists list', () => {
     const list = await screen.findByRole('region', { name: 'Stylists' });
     const [london] = await within(list).findAllByRole('article');
     if (!london) throw new Error('no cards');
+    // Three thumbnails, and nothing else: the quick look adds no photos of its own.
     expect(london.querySelectorAll('img[loading="lazy"]')).toHaveLength(3);
     expect(within(london).queryByText('Next open')).toBeNull();
     expect(within(london).queryAllByRole('link', { name: /^Book London, / })).toHaveLength(0);

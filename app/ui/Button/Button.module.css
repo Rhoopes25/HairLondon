@@ -21,6 +21,16 @@
   padding: 0.95rem 1.5rem;
 }
 
+/* The one big way in: Book Now. Taller and larger type than md, still pill-shaped. */
+.lg {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 3.5rem;
+  padding: 0.95rem 2.25rem;
+  font-size: 1.15rem;
+}
+
 .sm {
   display: inline-flex;
   align-items: center;
@@ -34,6 +44,10 @@
 .fullWidth {
   display: block;
   width: 100%;
+}
+
+.lg.fullWidth {
+  display: flex;
 }
 
 /* Filled: the one action color. gold-ink keeps white text above 4.5:1. */

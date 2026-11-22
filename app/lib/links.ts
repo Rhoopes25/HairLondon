@@ -1,6 +1,8 @@
 import { isIsoDate, asMinuteOfDay } from '@src/domain/models/time';
 import type { IsoDate, MinuteOfDay } from '@src/domain/models/time';
 import type { ServiceId } from '@src/domain/models/service';
+import { parseBrowse } from '@src/domain/stylists/browse';
+import type { BrowseOptions } from '@src/domain/stylists/browse';
 import { parseServiceIds, serviceIdsParam } from '@src/domain/stylists/filter';
 
 /**
@@ -96,4 +98,25 @@ export function readStart(params: URLSearchParams): MinuteOfDay | null {
   return Number.isInteger(minutes) && minutes >= 0 && minutes < 24 * 60
     ? asMinuteOfDay(minutes)
     : null;
+}
+
+/** How the Stylists page is sorted and filtered: `?sort=price&price=35&within=10&area=color`. */
+export function readBrowse(params: URLSearchParams): BrowseOptions {
+  return parseBrowse({
+    sort: params.get('sort'),
+    price: params.get('price'),
+    within: params.get('within'),
+    area: params.get('area'),
+  });
+}
+
+/** The Stylists page's whole state in one query string: her search, then the sort and filters. */
+export function stylistsSearch(query: string, browse: BrowseOptions): string {
+  return queryString({
+    q: query.trim() ? query : undefined,
+    sort: browse.sort,
+    price: browse.maxPrice === undefined ? undefined : String(browse.maxPrice),
+    within: browse.maxMiles === undefined ? undefined : String(browse.maxMiles),
+    area: browse.area,
+  });
 }
